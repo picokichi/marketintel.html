@@ -1,6 +1,5 @@
-
-
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -111,56 +110,70 @@ body::before {
 <main class="main">
 
   <!-- ===== NEW TAB ===== -->
+
   <div id="tNew">
 
-    <!-- Home -->
-    <div id="vHome">
-      <div style="text-align:center;padding:12px 0 22px">
-        <div style="font-size:36px;margin-bottom:8px">📊</div>
-        <h1 style="font-size:20px;font-weight:900;font-family:var(--sans);margin-bottom:8px;background:linear-gradient(135deg,var(--accent2),#90cdf4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">MarketIntel</h1>
-        <p style="font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:20px;">株式市場の重要ニュースをAIが分析し<br>X・note・ブログ用コンテンツを自動生成</p>
-      </div>
+```
+<!-- Home -->
+<div id="vHome">
+  <div style="text-align:center;padding:12px 0 22px">
+    <div style="font-size:36px;margin-bottom:8px">📊</div>
+    <h1 style="font-size:20px;font-weight:900;font-family:var(--sans);margin-bottom:8px;background:linear-gradient(135deg,var(--accent2),#90cdf4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">MarketIntel</h1>
+    <p style="font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:20px;">株式市場の重要ニュースをAIが分析し<br>X・note・ブログ用コンテンツを自動生成</p>
+  </div>
 
-      <div class="how-to-banner mb16">
-        <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:10px;">📋 使い方</div>
-        <div class="how-step"><div class="step-num">1</div><div class="step-txt">下の「記事を生成する」ボタンをタップ</div></div>
-        <div class="how-step"><div class="step-num">2</div><div class="step-txt">Claude.aiが開き、プロンプトが自動コピーされます</div></div>
-        <div class="how-step"><div class="step-num">3</div><div class="step-txt">チャット欄に貼り付けて送信</div></div>
-        <div class="how-step"><div class="step-num">4</div><div class="step-txt"><strong>「記事更新ファイルを受け取る」</strong>ボタンで記事を取り込む</div></div>
-      </div>
+  <div class="how-to-banner mb16">
+    <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:10px;">📋 使い方</div>
+    <div class="how-step"><div class="step-num">1</div><div class="step-txt">「記事を生成する」をタップするとプロンプトが表示される</div></div>
+    <div class="how-step"><div class="step-num">2</div><div class="step-txt">「プロンプトをコピー」ボタンをタップ</div></div>
+    <div class="how-step"><div class="step-num">3</div><div class="step-txt">「Claude.aiを開く」で移動し、貼り付けて送信</div></div>
+    <div class="how-step"><div class="step-num">4</div><div class="step-txt">戻ったら<strong>「JSONを読み込む」</strong>で記事を取り込む</div></div>
+  </div>
 
-      <button class="btn btn-primary mb8" onclick="onGenerate()" style="font-size:14px;padding:14px;">
-        ⚡ 記事を生成する
-      </button>
-      <button class="btn btn-ghost" onclick="document.getElementById('fileIn').click()" style="padding:11px;font-size:12px;">
-        📥 記事更新ファイルを受け取る
-      </button>
-      <input type="file" id="fileIn" accept=".json" class="hidden" onchange="loadJson(event)">
+  <button class="btn btn-primary mb8" onclick="onGenerate()" style="font-size:14px;padding:14px;">
+    ⚡ 記事を生成する
+  </button>
 
-      <div id="homeMsg" class="hidden" style="margin-top:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:11px;font-size:11px;color:#68d391;font-family:var(--sans);line-height:1.7;"></div>
-      <div id="homeErr" class="hidden" style="margin-top:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:11px;font-size:11px;color:#fc8181;font-family:var(--sans);line-height:1.7;"></div>
+  <div id="promptBox" class="hidden" style="margin-top:12px;">
+    <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:6px;">📋 プロンプト（コピーしてClaude.aiに貼り付け）</div>
+    <textarea id="promptText" readonly style="width:100%;height:140px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:10px;line-height:1.6;resize:none;-webkit-user-select:text;user-select:text;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn btn-primary" id="copyPromptBtn" onclick="copyPrompt()" style="flex:1;padding:11px;font-size:12px;">📋 コピー</button>
+      <a href="https://claude.ai" target="_blank" class="btn btn-ghost" style="flex:1;padding:11px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center;">🤖 Claude.aiを開く</a>
     </div>
+  </div>
 
-    <!-- Article select -->
-    <div id="vSelect" class="hidden">
-      <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">記事を選択</h2>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">公開する記事を1件選んでください</p>
-      <div id="candList"></div>
-      <div style="display:flex;gap:8px;margin-top:6px;">
-        <button class="btn btn-outline" style="flex:1;padding:11px;" onclick="showHome()">戻る</button>
-        <button class="btn btn-primary" id="pubBtn" style="flex:2;padding:11px;" onclick="doPublish()" disabled>この記事を公開する</button>
-      </div>
-    </div>
+  <button class="btn btn-ghost" onclick="document.getElementById('fileIn').click()" style="padding:11px;font-size:12px;margin-top:8px;">
+    📥 JSONを読み込む
+  </button>
+  <input type="file" id="fileIn" accept=".json" class="hidden" onchange="loadJson(event)">
 
-    <!-- Article detail (from new) -->
-    <div id="vArticle" class="hidden">
-      <button class="back-btn" onclick="backFromArticle()">← 戻る</button>
-      <div id="artBody"></div>
-    </div>
+  <div id="homeMsg" class="hidden" style="margin-top:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:11px;font-size:11px;color:#68d391;font-family:var(--sans);line-height:1.7;"></div>
+  <div id="homeErr" class="hidden" style="margin-top:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:11px;font-size:11px;color:#fc8181;font-family:var(--sans);line-height:1.7;"></div>
+</div>
+
+<!-- Article select -->
+<div id="vSelect" class="hidden">
+  <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">記事を選択</h2>
+  <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">公開する記事を1件選んでください</p>
+  <div id="candList"></div>
+  <div style="display:flex;gap:8px;margin-top:6px;">
+    <button class="btn btn-outline" style="flex:1;padding:11px;" onclick="showHome()">戻る</button>
+    <button class="btn btn-primary" id="pubBtn" style="flex:2;padding:11px;" onclick="doPublish()" disabled>この記事を公開する</button>
+  </div>
+</div>
+
+<!-- Article detail (from new) -->
+<div id="vArticle" class="hidden">
+  <button class="back-btn" onclick="backFromArticle()">← 戻る</button>
+  <div id="artBody"></div>
+</div>
+```
 
   </div>
 
   <!-- ===== PUB TAB ===== -->
+
   <div id="tPub" class="hidden">
     <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:14px;">公開済み記事</h2>
     <div id="pubList"></div>
@@ -172,36 +185,40 @@ body::before {
   </div>
 
   <!-- ===== SETTINGS TAB ===== -->
+
   <div id="tCfg" class="hidden">
     <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:16px;">設定</h2>
 
-    <div class="card mb12">
-      <div class="section-lbl" style="margin-bottom:10px;">💰 アフィリエイトリンク</div>
-      <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:12px;line-height:1.7;">記事末尾に自動挿入するリンクを登録。ASPで発行したURLを貼り付けてください。</p>
-      <label class="affili-lbl">SBI証券</label>
-      <input class="affili-in" id="aSBI" placeholder="https://accesstrade.net/...">
-      <label class="affili-lbl">楽天証券</label>
-      <input class="affili-in" id="aRak" placeholder="https://...">
-      <label class="affili-lbl">GMOクリック証券</label>
-      <input class="affili-in" id="aGMO" placeholder="https://...">
-      <label class="affili-lbl">FX口座（任意）</label>
-      <input class="affili-in" id="aFX" placeholder="https://...">
-      <button class="btn btn-primary" style="padding:11px;" onclick="saveAffili()">💾 保存する</button>
-    </div>
+```
+<div class="card mb12">
+  <div class="section-lbl" style="margin-bottom:10px;">💰 アフィリエイトリンク</div>
+  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:12px;line-height:1.7;">記事末尾に自動挿入するリンクを登録。ASPで発行したURLを貼り付けてください。</p>
+  <label class="affili-lbl">SBI証券</label>
+  <input class="affili-in" id="aSBI" placeholder="https://accesstrade.net/...">
+  <label class="affili-lbl">楽天証券</label>
+  <input class="affili-in" id="aRak" placeholder="https://...">
+  <label class="affili-lbl">GMOクリック証券</label>
+  <input class="affili-in" id="aGMO" placeholder="https://...">
+  <label class="affili-lbl">FX口座（任意）</label>
+  <input class="affili-in" id="aFX" placeholder="https://...">
+  <button class="btn btn-primary" style="padding:11px;" onclick="saveAffili()">💾 保存する</button>
+</div>
 
-    <div class="card mb12">
-      <div class="section-lbl" style="margin-bottom:10px;">🗂️ データ管理</div>
-      <button class="btn btn-outline" style="padding:10px;font-size:12px;" onclick="clearAll()">公開済み記事を全件削除</button>
-    </div>
+<div class="card mb12">
+  <div class="section-lbl" style="margin-bottom:10px;">🗂️ データ管理</div>
+  <button class="btn btn-outline" style="padding:10px;font-size:12px;" onclick="clearAll()">公開済み記事を全件削除</button>
+</div>
 
-    <div class="card">
-      <div class="section-lbl" style="margin-bottom:8px;">📱 ホーム画面に追加する方法</div>
-      <p style="font-size:11px;color:var(--muted);font-family:var(--sans);line-height:1.8;">
-        Safari で開いている場合：<br>
-        下の共有ボタン（□↑）→「ホーム画面に追加」→「追加」<br><br>
-        追加後はアプリとして起動できます。
-      </p>
-    </div>
+<div class="card">
+  <div class="section-lbl" style="margin-bottom:8px;">📱 ホーム画面に追加する方法</div>
+  <p style="font-size:11px;color:var(--muted);font-family:var(--sans);line-height:1.8;">
+    Safari で開いている場合：<br>
+    下の共有ボタン（□↑）→「ホーム画面に追加」→「追加」<br><br>
+    追加後はアプリとして起動できます。
+  </p>
+</div>
+```
+
   </div>
 
 </main>
@@ -251,39 +268,32 @@ function showSelect() {
 // ── Generate: copy prompt + open Claude.ai ───────────────
 function onGenerate() {
   const avoidTitles = S.pub.map(a => a.title).slice(0, 5);
-  const today = new Date().toLocaleDateString('ja-JP');
-  const avoidNote = avoidTitles.length ? `\n既出記事（除外）: ${avoidTitles.join(' / ')}` : '';
+  const avoidNote = avoidTitles.length ? '\n既出記事（除外）: ' + avoidTitles.join(' / ') : '';
+  const prompt = '株価に関わりそうな金融ニュースを集めて3つピックアップして記事にしてください。\n\n条件:\n①記事は日本語。最後に参照元リンク貼り付け\n②ピックアップするニュースは過去に記事にした情報以外にする\n③記事の最後にニュースに関連する上場企業(大型株、中小型株それぞれ1社以上)を選定し、上昇下降予測を付け加えること\n④記事をアウトプットする前に各記事のタイトルと概要を提示し、こちらが選択した後に記事をアウトプットすること' + avoidNote + '\n\n記事を生成後、以下のJSON形式のデータも出力してください（marketintel.htmlに読み込ませるため）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要","content":"本文","large_name":"大型株名","large_ticker":"7203","large_pred":"上昇","large_reason":"根拠","small_name":"中小株名","small_ticker":"4689","small_pred":"下降","small_reason":"根拠","source":"URL"},{"id":"2","title":"...","summary":"...","content":"...","large_name":"...","large_ticker":"...","large_pred":"横ばい","large_reason":"...","small_name":"...","small_ticker":"...","small_pred":"上昇","small_reason":"...","source":"URL"},{"id":"3","title":"...","summary":"...","content":"...","large_name":"...","large_ticker":"...","large_pred":"下降","large_reason":"...","small_name":"...","small_ticker":"...","small_pred":"上昇","small_reason":"...","source":"URL"}]}\n```';
 
-  const prompt = `株価に関わりそうな金融ニュースを集めて3つピックアップして記事にしてください。
+  // Show prompt in textarea
+  const box = document.getElementById('promptBox');
+  const ta = document.getElementById('promptText');
+  ta.value = prompt;
+  box.classList.remove('hidden');
 
-条件:
-①記事は日本語。最後に参照元リンク貼り付け
-②ピックアップするニュースは過去に記事にした情報以外にする
-③記事の最後にニュースに関連する上場企業(大型株、中小型株それぞれ1社以上)を選定し、上昇下降予測を付け加えること
-④記事をアウトプットする前に各記事のタイトルと概要を提示し、こちらが選択した後に記事をアウトプットすること
-${avoidNote}
+  // Scroll to prompt box
+  setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
 
-記事を生成後、以下のJSON形式のデータも出力してください（marketintel.htmlに読み込ませるため）:
-\`\`\`json
-{"articles":[{"id":"1","title":"タイトル","summary":"概要","content":"本文","large_name":"大型株名","large_ticker":"7203","large_pred":"上昇","large_reason":"根拠","small_name":"中小株名","small_ticker":"4689","small_pred":"下降","small_reason":"根拠","source":"URL"},{"id":"2",...},{"id":"3",...}]}
-\`\`\``;
-
-  // Copy prompt
+function copyPrompt() {
+  const ta = document.getElementById('promptText');
+  ta.select();
+  ta.setSelectionRange(0, 99999);
   try {
-    navigator.clipboard.writeText(prompt);
-  } catch {
-    const ta = document.createElement('textarea');
-    ta.value = prompt; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-  }
-
-  showMsg('homeMsg', '📋 プロンプトをコピーしました！\nClaude.aiを開いてチャット欄に貼り付けて送信してください。\n\n記事生成後「記事更新ファイルを受け取る」ボタンでJSONを読み込んでください。');
-
-  // Open Claude.ai after short delay
-  setTimeout(() => {
-    window.open('https://claude.ai', '_blank');
-  }, 800);
+    document.execCommand('copy');
+  } catch(e) {}
+  try {
+    navigator.clipboard.writeText(ta.value).catch(() => {});
+  } catch(e) {}
+  const btn = document.getElementById('copyPromptBtn');
+  btn.textContent = '✅ コピーしました';
+  setTimeout(() => { btn.textContent = '📋 コピー'; }, 2000);
 }
 
 // ── Load JSON file ────────────────────────────────────────
@@ -512,5 +522,6 @@ async function doCopy(id, btn) {
   setTimeout(()=>{ btn.textContent='📋 コピーする'; btn.classList.remove('ok'); }, 2000);
 }
 </script>
+
 </body>
 </html>
