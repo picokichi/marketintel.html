@@ -124,10 +124,10 @@ body::before {
 
   <div class="how-to-banner mb16">
     <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:10px;">📋 使い方</div>
-    <div class="how-step"><div class="step-num">1</div><div class="step-txt">「記事を生成する」をタップするとプロンプトが表示される</div></div>
-    <div class="how-step"><div class="step-num">2</div><div class="step-txt">「プロンプトをコピー」ボタンをタップ</div></div>
-    <div class="how-step"><div class="step-num">3</div><div class="step-txt">「Claude.aiを開く」で移動し、貼り付けて送信</div></div>
-    <div class="how-step"><div class="step-num">4</div><div class="step-txt">戻ったら<strong>「JSONを読み込む」</strong>で記事を取り込む</div></div>
+    <div class="how-step"><div class="step-num">1</div><div class="step-txt">「記事を生成する」をタップ → プロンプトをコピー</div></div>
+    <div class="how-step"><div class="step-num">2</div><div class="step-txt">Claude.aiアプリに貼り付けて送信</div></div>
+    <div class="how-step"><div class="step-num">3</div><div class="step-txt">出力されたJSONをコピー</div></div>
+    <div class="how-step"><div class="step-num">4</div><div class="step-txt">戻って<strong>「テキストを貼り付け」</strong>→ 読み込む → 記事を選んで公開</div></div>
   </div>
 
   <button class="btn btn-primary mb8" onclick="onGenerate()" style="font-size:14px;padding:14px;">
@@ -284,7 +284,7 @@ function showSelect() {
 function onGenerate() {
   const avoidTitles = S.pub.map(a => a.title).slice(0, 5);
   const avoidNote = avoidTitles.length ? '\n既出記事（除外）: ' + avoidTitles.join(' / ') : '';
-  const prompt = '株価に関わりそうな金融ニュースを集めて3つピックアップして記事にしてください。\n\n条件:\n①記事は日本語。最後に参照元リンク貼り付け\n②ピックアップするニュースは過去に記事にした情報以外にする\n③記事の最後にニュースに関連する上場企業(大型株、中小型株それぞれ1社以上)を選定し、上昇下降予測を付け加えること\n④記事をアウトプットする前に各記事のタイトルと概要を提示し、こちらが選択した後に記事をアウトプットすること' + avoidNote + '\n\n記事を生成後、以下のJSON形式のデータも出力してください（marketintel.htmlに読み込ませるため）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要","content":"本文","large_name":"大型株名","large_ticker":"7203","large_pred":"上昇","large_reason":"根拠","small_name":"中小株名","small_ticker":"4689","small_pred":"下降","small_reason":"根拠","source":"URL"},{"id":"2","title":"...","summary":"...","content":"...","large_name":"...","large_ticker":"...","large_pred":"横ばい","large_reason":"...","small_name":"...","small_ticker":"...","small_pred":"上昇","small_reason":"...","source":"URL"},{"id":"3","title":"...","summary":"...","content":"...","large_name":"...","large_ticker":"...","large_pred":"下降","large_reason":"...","small_name":"...","small_ticker":"...","small_pred":"上昇","small_reason":"...","source":"URL"}]}\n```';
+  const prompt = '株価に関わりそうな金融ニュースを集めて3つピックアップして記事にしてください。\n\n条件:\n①記事は全て日本語。最後に参照元リンク貼り付け\n②ピックアップするニュースは過去に記事にした情報以外にする\n③記事の最後にニュースに関連する上場企業(大型株、中小型株それぞれ1社以上)を選定し、上昇下降予測を付け加えること\n④3件全ての記事を一度に出力すること（選択待ちは不要）' + avoidNote + '\n\n以下のJSON形式のみで出力してください（説明文不要・JSONだけ出力）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要100字","content":"本文500字","large_name":"大型株名","large_ticker":"7203","large_pred":"上昇","large_reason":"根拠50字","small_name":"中小株名","small_ticker":"4689","small_pred":"下降","small_reason":"根拠50字","source":"https://www.nikkei.com"},{"id":"2","title":"タイトル2","summary":"概要2","content":"本文2","large_name":"企業名","large_ticker":"6758","large_pred":"横ばい","large_reason":"根拠","small_name":"企業名","small_ticker":"3382","small_pred":"上昇","small_reason":"根拠","source":"https://www.bloomberg.co.jp"},{"id":"3","title":"タイトル3","summary":"概要3","content":"本文3","large_name":"企業名","large_ticker":"9984","large_pred":"下降","large_reason":"根拠","small_name":"企業名","small_ticker":"2413","small_pred":"上昇","small_reason":"根拠","source":"https://jp.reuters.com"}]}\n```';
 
   // Show prompt in textarea
   const box = document.getElementById('promptBox');
