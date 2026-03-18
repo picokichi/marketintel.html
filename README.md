@@ -143,10 +143,25 @@ body::before {
     </div>
   </div>
 
-  <button class="btn btn-ghost" onclick="document.getElementById('fileIn').click()" style="padding:11px;font-size:12px;margin-top:8px;">
-    📥 JSONを読み込む
-  </button>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <button class="btn btn-ghost" onclick="document.getElementById('fileIn').click()" style="flex:1;padding:11px;font-size:12px;">
+      📥 ファイルから
+    </button>
+    <button class="btn btn-ghost" onclick="showPasteBox()" style="flex:1;padding:11px;font-size:12px;">
+      📋 テキストを貼り付け
+    </button>
+  </div>
   <input type="file" id="fileIn" accept=".json" class="hidden" onchange="loadJson(event)">
+
+  <!-- Paste JSON box -->
+  <div id="pasteBox" class="hidden" style="margin-top:10px;">
+    <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:6px;">📋 ClaudeのJSONをここに貼り付け</div>
+    <textarea id="pasteText" style="width:100%;height:120px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:10px;line-height:1.6;resize:none;" placeholder='{"articles":[...]} の形式で貼り付けてください'></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn btn-outline" onclick="hidePasteBox()" style="flex:1;padding:10px;font-size:12px;">キャンセル</button>
+      <button class="btn btn-primary" onclick="loadPastedJson()" style="flex:2;padding:10px;font-size:12px;">✅ 読み込む</button>
+    </div>
+  </div>
 
   <div id="homeMsg" class="hidden" style="margin-top:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:11px;font-size:11px;color:#68d391;font-family:var(--sans);line-height:1.7;"></div>
   <div id="homeErr" class="hidden" style="margin-top:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:11px;font-size:11px;color:#fc8181;font-family:var(--sans);line-height:1.7;"></div>
@@ -294,6 +309,42 @@ function copyPrompt() {
   const btn = document.getElementById('copyPromptBtn');
   btn.textContent = '✅ コピーしました';
   setTimeout(() => { btn.textContent = '📋 コピー'; }, 2000);
+}
+
+// ── Paste JSON directly ──────────────────────────────────
+function showPasteBox() {
+  document.getElementById('pasteBox').classList.remove('hidden');
+  document.getElementById('pasteText').value = '';
+  setTimeout(() => document.getElementById('pasteText').focus(), 100);
+}
+function hidePasteBox() {
+  document.getElementById('pasteBox').classList.add('hidden');
+}
+function loadPastedJson() {
+  const raw = document.getElementById('pasteText').value.trim();
+  if (!raw) { showMsg('homeErr', '⚠️ テキストが空です'); return; }
+  try {
+    // Extract JSON from code block if present
+    const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
+    const jsonStr = match ? (match[1] || match[0]) : raw;
+    const d = JSON.parse(jsonStr.trim());
+    if (!d.articles?.length) throw new Error('articles が見つかりません');
+    S.cands = d.articles.map(a => ({
+      id: a.id, title: a.title, summary: a.summary, content: a.content,
+      relatedStocks: {
+        large: { name: a.large_name, ticker: a.large_ticker, prediction: a.large_pred, reason: a.large_reason },
+        small: { name: a.small_name, ticker: a.small_ticker, prediction: a.small_pred, reason: a.small_reason },
+      },
+      sources: [a.source].filter(Boolean),
+    }));
+    S.selIdx = null;
+    hidePasteBox();
+    document.getElementById('homeMsg').classList.add('hidden');
+    renderCands();
+    showSelect();
+  } catch(err) {
+    showMsg('homeErr', '⚠️ 読み込みに失敗しました: ' + err.message);
+  }
 }
 
 // ── Load JSON file ────────────────────────────────────────
