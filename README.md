@@ -490,9 +490,8 @@ function loadPaste(){
   const raw=document.getElementById('pasteText').value.trim();
   if(!raw){showErr('テキストが空です');return;}
   try{
-    const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/)||raw.match(/(\{[\s\S]*\})/);
-    const js=m?(m[1]||m[0]):raw;
-    const d=JSON.parse(js.trim());
+    const js=extractJson(raw);
+    const d=JSON.parse(js);
     if(!d.articles?.length)throw new Error('articles が見つかりません');
     S.cands=parseArts(d);S.selIdx=null;hidePaste();
     document.getElementById('homeMsg').classList.add('hidden');
@@ -636,18 +635,37 @@ function copyCheckPrompt(){
   setTimeout(()=>{b.textContent='📋 コピー';},2000);
 }
 
+function sanitizeJson(raw){
+  return raw
+    .replace(/\u201c|\u201d|\u2018|\u2019/g,'"') // 全角引用符→半角
+    .replace(/[\u2018\u2019]/g,"'")                 // 全角シングルクォート→半角
+    .replace(/\u2014|\u2013/g,'-')                  // 全角ダッシュ→半角
+    .replace(/[\u00a0]/g,' ')                        // ノーブレークスペース→半角スペース
+    .trim();
+}
+
+function extractJson(raw){
+  // Try code block first
+  const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if(m)return sanitizeJson(m[1]);
+  // Try first { ... } block
+  const start=raw.indexOf('{');
+  const end=raw.lastIndexOf('}');
+  if(start!==-1&&end!==-1&&end>start)return sanitizeJson(raw.slice(start,end+1));
+  return sanitizeJson(raw);
+}
+
 function loadCheckResult(){
   const raw=document.getElementById('checkResultText').value.trim();
   if(!raw){document.getElementById('checkErr').textContent='⚠️ テキストが空です';document.getElementById('checkErr').classList.remove('hidden');return;}
   try{
-    const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/)||raw.match(/(\{[\s\S]*\})/);
-    const js=m?(m[1]||m[0]):raw;
-    const d=JSON.parse(js.trim());
+    const js=extractJson(raw);
+    const d=JSON.parse(js);
     S.checkResult=d.checks||[];
     renderCheckResult();
     showView('vCheckResult');
   }catch(e){
-    document.getElementById('checkErr').textContent='⚠️ 読み込み失敗: '+e.message;
+    document.getElementById('checkErr').textContent='⚠️ 読み込み失敗: '+e.message+'（ヒント: ChatGPTの出力をそのままコピーしてください）';
     document.getElementById('checkErr').classList.remove('hidden');
   }
 }
@@ -737,9 +755,8 @@ function loadFixResult(){
   const raw=document.getElementById('fixResultText').value.trim();
   if(!raw)return;
   try{
-    const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/)||raw.match(/(\{[\s\S]*\})/);
-    const js=m?(m[1]||m[0]):raw;
-    const d=JSON.parse(js.trim());
+    const js=extractJson(raw);
+    const d=JSON.parse(js);
     if(!d.articles?.length)throw new Error('articles が見つかりません');
     const fixed=d.articles[0];
     // Build fixedCand from original + overrides
