@@ -632,9 +632,9 @@ async function loadPricesForArticle(art){
     updatePriceBadge(s.ticker,'株価取得中...',null,null);
     const data=await fetchPriceWithChange(s.ticker);
     if(data){
-      updatePriceBadge(s.ticker,data.price,data.change,data.changePct);
+      updatePriceBadge(s.ticker,data.price,data.change,data.changePct,data);
     } else {
-      updatePriceBadge(s.ticker,'取得失敗',null,null);
+      updatePriceBadge(s.ticker,'取得失敗',null,null,null);
     }
   }
 }
@@ -642,16 +642,25 @@ async function loadPricesForArticle(art){
 async function fetchPriceWithChange(ticker){
   const token=await getJQToken();
   if(!token)return null;
+  // Fetch 30 days to always find the latest available close price
   const to=new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const from=new Date(Date.now()-7*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
-  const code=ticker.length===4?ticker+'0':ticker;
+  const from=new Date(Date.now()-30*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
+  // J-Quants uses 4-digit codes directly (NOT 5-digit)
+  // For codes like 464A, use as-is; for 4-digit numeric, use as-is
+  const code=ticker.replace(/[^0-9A-Za-z]/g,'');
   try{
+    // Try auth refresh if token might be expired
+    const freshToken=await getJQToken();
     const res=await fetch(`https://api.jquants.com/v1/prices/daily_quotes?code=${code}&from=${from}&to=${to}`,{
-      headers:{Authorization:token}
+      headers:{Authorization:freshToken}
     });
-    if(!res.ok)return null;
+    if(!res.ok){
+      // Log error for debugging
+      console.warn('J-Quants API error:',res.status,'for',code);
+      return null;
+    }
     const d=await res.json();
-    const quotes=(d.daily_quotes||[]).sort((a,b)=>b.Date.localeCompare(a.Date));
+    const quotes=(d.daily_quotes||[]).filter(q=>q.Close!==null).sort((a,b)=>b.Date.localeCompare(a.Date));
     if(quotes.length<1)return null;
     const latest=quotes[0];
     const prev=quotes.length>1?quotes[1]:null;
@@ -659,23 +668,29 @@ async function fetchPriceWithChange(ticker){
     const change=prev?price-prev.Close:0;
     const changePct=prev?((price-prev.Close)/prev.Close*100):0;
     return{price,change,changePct,date:latest.Date};
-  }catch(e){return null;}
+  }catch(e){
+    console.warn('fetchPriceWithChange error:',e,ticker);
+    return null;
+  }
 }
 
-function updatePriceBadge(ticker,price,change,changePct){
+function updatePriceBadge(ticker,price,change,changePct,data){
   // Update all elements with this ticker (stockA and spotlight may share)
   document.querySelectorAll(`#price_${ticker}`).forEach(el=>{
     if(price===null||price==='株価取得中...'||price==='取得失敗'){
-      el.innerHTML=`<span class="${price==='株価取得中...'?'price-loading':''}${price==='取得失敗'?'price-chg-flat':''}" style="font-size:10px">${price}</span>`;
+      el.innerHTML=`<span class="${price==='株価取得中...'?'price-loading':''}" style="font-size:10px;color:var(--muted)">${price}</span>`;
       return;
     }
     const fmt=new Intl.NumberFormat('ja-JP').format(price);
     const sign=change>=0?'+':'';
     const cls=change>0?'price-chg-up':change<0?'price-chg-down':'price-chg-flat';
     const arrow=change>0?'▲':change<0?'▼':'－';
+    // Format date for display (YYYYMMDD → M/D)
+    const dateStr=data&&data.date?data.date.replace(/(\d{4})(\d{2})(\d{2})/,(_,y,m,d)=>`${parseInt(m)}/${parseInt(d)}終値`):'終値';
     el.innerHTML=`
       <span class="price-val">${fmt}円</span>
       <span class="${cls}">${arrow}${sign}${changePct.toFixed(1)}%</span>
+      <span style="font-size:9px;color:var(--muted);margin-left:2px">${dateStr}</span>
     `;
   });
 }
@@ -865,7 +880,7 @@ async function fetchPrice(ticker){
   // Get last 10 days of daily prices
   const to=new Date().toISOString().slice(0,10).replace(/-/g,'');
   const from=new Date(Date.now()-14*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
-  const code=ticker.padEnd(5,'0'); // J-Quants uses 5-digit codes
+  const code=ticker.replace(/[^0-9A-Za-z]/g,''); // J-Quants uses 4-digit codes as-is
   try{
     const res=await fetch(`https://api.jquants.com/v1/prices/daily_quotes?code=${code}&from=${from}&to=${to}`,{
       headers:{Authorization:token}
