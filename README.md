@@ -101,6 +101,21 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .price-chg-down{font-size:10px;color:var(–down);}
 .price-chg-flat{font-size:10px;color:var(–flat);}
 .price-loading{font-size:10px;color:var(–muted);animation:pulse 1s ease-in-out infinite;}
+/* Check & Diff UI */
+.check-badge{display:inline-flex;align-items:center;gap:4px;border-radius:5px;padding:2px 8px;font-size:10px;font-family:var(–sans);font-weight:700;}
+.check-error{background:rgba(239,68,68,.15);color:var(–down);border:1px solid rgba(239,68,68,.3);}
+.check-warn{background:rgba(245,158,11,.15);color:var(–flat);border:1px solid rgba(245,158,11,.3);}
+.check-ok{background:rgba(34,197,94,.12);color:var(–up);border:1px solid rgba(34,197,94,.25);}
+.diff-block{border-radius:8px;overflow:hidden;margin-bottom:10px;border:1px solid var(–border);}
+.diff-orig{background:rgba(239,68,68,.07);padding:9px 12px;border-bottom:1px solid var(–border);}
+.diff-new{background:rgba(34,197,94,.07);padding:9px 12px;}
+.diff-label{font-size:9px;font-family:var(–sans);font-weight:700;margin-bottom:3px;}
+.diff-text{font-size:12px;line-height:1.7;color:var(–text);}
+.step-indicator{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-family:var(–sans);}
+.step-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.step-active{background:var(–accent);color:white;}
+.step-done{background:rgba(34,197,94,.2);color:var(–up);}
+.step-pending{background:rgba(99,179,237,.1);color:var(–muted);}
 </style>
 
 </head>
@@ -200,6 +215,76 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <div id="vArticle" class="hidden">
     <button class="back-btn" onclick="backArt()">← 戻る</button>
     <div id="artBody"></div>
+  </div>
+
+  <!-- CHECK FLOW: Step1 - Generate check prompt -->
+
+  <div id="vCheck" class="hidden">
+    <button class="back-btn" onclick="backToSelect()">← 記事選択へ戻る</button>
+    <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">🔍 ステップ①: ChatGPTでチェック</h2>
+    <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:12px;">チェックプロンプトをコピーしてChatGPTに貼り付けてください</p>
+    <div class="step-indicator">
+      <div class="step-dot step-active">1</div><span style="font-size:11px;color:var(--accent2)">チェックプロンプトをChatGPTへ</span>
+      <div class="step-dot step-pending" style="margin-left:auto">2</div><span style="font-size:11px;color:var(--muted)">結果を貼り付け</span>
+    </div>
+    <textarea id="checkPromptText" readonly style="width:100%;height:160px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:10px;font-family:monospace;padding:9px;line-height:1.5;resize:none;-webkit-user-select:text;user-select:text;margin-bottom:8px;"></textarea>
+    <div style="display:flex;gap:7px;margin-bottom:12px;">
+      <button class="btn btn-p" id="cpCheckBtn" onclick="copyCheckPrompt()" style="flex:1;padding:10px;font-size:12px;">📋 コピー</button>
+      <a href="https://chatgpt.com" target="_blank" class="btn btn-g" style="flex:1;padding:10px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center;">🤖 ChatGPTを開く</a>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">📋 チェック結果JSONを貼り付け</div>
+    <textarea id="checkResultText" style="width:100%;height:110px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:9px;line-height:1.6;resize:none;" placeholder='{"checks":[...]} の形式で貼り付けてください'></textarea>
+    <div style="display:flex;gap:7px;margin-top:8px;">
+      <button class="btn btn-o" onclick="skipCheck()" style="flex:1;padding:10px;font-size:12px;">スキップして公開</button>
+      <button class="btn btn-p" onclick="loadCheckResult()" style="flex:2;padding:10px;font-size:12px;">✅ チェック結果を読み込む</button>
+    </div>
+    <div id="checkErr" class="hidden" style="margin-top:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px;font-size:11px;color:#fc8181;font-family:var(--sans);"></div>
+  </div>
+
+  <!-- CHECK FLOW: Step2 - Show check results & generate fix prompt -->
+
+  <div id="vCheckResult" class="hidden">
+    <button class="back-btn" onclick="showView('vCheck')">← チェックへ戻る</button>
+    <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">📋 チェック結果</h2>
+    <div id="checkSummary" style="margin-bottom:12px;"></div>
+    <div id="checkIssueList" style="margin-bottom:14px;"></div>
+    <div id="fixPromptSection" class="hidden">
+      <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">🔧 ステップ②: Claudeで修正</div>
+      <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:8px;">修正プロンプトをコピーしてClaude.aiに貼り付けてください</p>
+      <textarea id="fixPromptText" readonly style="width:100%;height:140px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:10px;font-family:monospace;padding:9px;line-height:1.5;resize:none;-webkit-user-select:text;user-select:text;margin-bottom:8px;"></textarea>
+      <div style="display:flex;gap:7px;margin-bottom:12px;">
+        <button class="btn btn-p" id="cpFixBtn" onclick="copyFixPrompt()" style="flex:1;padding:10px;font-size:12px;">📋 コピー</button>
+        <a href="https://claude.ai" target="_blank" class="btn btn-g" style="flex:1;padding:10px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center;">🤖 Claudeを開く</a>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">📋 修正済みJSONを貼り付け</div>
+      <textarea id="fixResultText" style="width:100%;height:110px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:9px;line-height:1.6;resize:none;" placeholder='{"articles":[...]} の形式で貼り付けてください'></textarea>
+      <div style="display:flex;gap:7px;margin-top:8px;">
+        <button class="btn btn-o" onclick="skipFix()" style="flex:1;padding:10px;font-size:12px;">修正せず公開</button>
+        <button class="btn btn-p" onclick="loadFixResult()" style="flex:2;padding:10px;font-size:12px;">✅ 修正済みを読み込む</button>
+      </div>
+    </div>
+    <div id="noIssuesSection" class="hidden">
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:12px;text-align:center;font-family:var(--sans);">
+        <div style="font-size:16px;margin-bottom:4px;">✅</div>
+        <div style="font-size:13px;font-weight:700;color:var(--up);margin-bottom:4px;">問題なし！</div>
+        <div style="font-size:11px;color:var(--muted);">チェックに全て合格しました</div>
+      </div>
+      <button class="btn btn-p" style="margin-top:10px;padding:12px;" onclick="proceedToAuthor()">この記事で進む →</button>
+    </div>
+  </div>
+
+  <!-- CHECK FLOW: Step3 - Diff viewer -->
+
+  <div id="vDiff" class="hidden">
+    <button class="back-btn" onclick="showView('vCheckResult')">← チェック結果へ戻る</button>
+    <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">🔎 修正前後の比較</h2>
+    <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:12px;">修正内容を確認して承認・却下してください</p>
+    <div id="diffList" style="margin-bottom:14px;"></div>
+    <div style="display:flex;gap:7px;">
+      <button class="btn btn-o" style="flex:1;padding:11px;" onclick="rejectFix()">🗑 記事を破棄</button>
+      <button class="btn btn-g" style="flex:1;padding:11px;" onclick="skipFix()">元のまま公開</button>
+      <button class="btn btn-p" style="flex:2;padding:11px;" onclick="approveFix()">✅ 修正を承認して進む</button>
+    </div>
   </div>
 </div>
 
@@ -315,6 +400,7 @@ let S={
   cands:[],selIdx:null,curArt:null,backFrom:'select',
   authorOpts:[],selAuthor:null,
   preds:DB.g('mi_preds')||[],
+  checkCand:null,checkResult:null,fixedCand:null,
 };
 
 window.onload=()=>{
@@ -344,8 +430,8 @@ function goTab(t,el){
   if(t==='track'){renderTrack();}
 }
 
-function showHome(){['vSelect','vArticle','vAuthor'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('vHome').classList.remove('hidden');}
-function showSelect(){['vHome','vArticle','vAuthor'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('vSelect').classList.remove('hidden');}
+function showHome(){['vSelect','vArticle','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vHome').classList.remove('hidden');}
+function showSelect(){['vHome','vArticle','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vSelect').classList.remove('hidden');}
 function showAuthor(){['vHome','vSelect','vArticle'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('vAuthor').classList.remove('hidden');}
 
 // ── Status ────────────────────────────────────────────────
@@ -472,13 +558,23 @@ function selCand(i){S.selIdx=i;document.getElementById('pubBtn').disabled=false;
 
 function doPublish(){
   if(S.selIdx===null)return;
-  // Show author comment selector for the selected article
   const cand=S.cands[S.selIdx];
-  if(cand.authorComments&&cand.authorComments.length>0){
-    showAuthorForArticle(cand);
-    return;
-  }
-  finalPublish(cand);
+  // Go to check flow first
+  S.checkCand=cand;
+  S.checkResult=null;
+  S.fixedCand=null;
+  startCheckFlow(cand);
+}
+
+function backToSelect(){showSelect();}
+
+function showView(id){
+  ['vHome','vSelect','vAuthor','vArticle','vCheck','vCheckResult','vDiff'].forEach(v=>{
+    const el=document.getElementById(v);
+    if(el)el.classList.add('hidden');
+  });
+  const target=document.getElementById(id);
+  if(target)target.classList.remove('hidden');
 }
 
 function showAuthorForArticle(cand){
@@ -494,6 +590,217 @@ function showAuthorForArticle(cand){
   document.querySelector('#vAuthor h2').textContent='今日の一言を選ぶ';
   document.querySelector('#vAuthor p').textContent='「'+cand.title.slice(0,30)+'…」の記事に付ける一言を選んでください。';
   showAuthor();
+}
+
+// ── Check Flow ───────────────────────────────────────────
+function startCheckFlow(cand){
+  const artJson=JSON.stringify({articles:[{
+    id:cand.id,title:cand.title,summary:cand.summary,content:cand.content,
+    category:cand.category,x_post:cand.xPost,
+    stock_a_name:cand.relatedStocks.stockA?.name,stock_a_ticker:cand.relatedStocks.stockA?.ticker,
+    stock_a_pred:cand.relatedStocks.stockA?.prediction,stock_a_reason:cand.relatedStocks.stockA?.reason,
+    spotlight_name:cand.relatedStocks.spotlight?.name,spotlight_ticker:cand.relatedStocks.spotlight?.ticker,
+    spotlight_pred:cand.relatedStocks.spotlight?.prediction,spotlight_reason:cand.relatedStocks.spotlight?.reason,
+    sources:cand.sources
+  }]},null,2);
+
+  const prompt=`以下の金融記事JSONをチェックしてください。
+
+【チェック項目】
+①コンプライアンス: 断定的な投資勧誘・誇大表現（「必ず上がる」「今すぐ買え」「絶対に儲かる」等）を検出
+②ファクト: 数字・社名・証券コードの整合性（コードと社名が一致しているか）
+③ソース: URLが実在しそうか、一次ソースか（公式サイト・主要メディアか）
+④読みやすさ: 1段落が極端に長い・難解な専門用語の未説明・誤字脱字
+
+【出力ルール】
+・JSON形式のみで出力（説明文・マークダウン不要）
+・severity: "error"（必ず修正）/"warn"（要確認）/"ok"（問題なし）
+・問題がなければempty配列で返す
+
+{"checks":[{"article_id":"1","type":"compliance","severity":"error","field":"content","issue":"問題の説明","suggestion":"修正案"},{"article_id":"1","type":"fact","severity":"ok","field":"stock_a_ticker","issue":"","suggestion":""}]}
+
+===対象JSON===
+${artJson}`;
+
+  document.getElementById('checkPromptText').value=prompt;
+  document.getElementById('checkResultText').value='';
+  document.getElementById('checkErr').classList.add('hidden');
+  showView('vCheck');
+}
+
+function copyCheckPrompt(){
+  const t=document.getElementById('checkPromptText');t.select();t.setSelectionRange(0,99999);
+  try{document.execCommand('copy');}catch(e){}
+  try{navigator.clipboard.writeText(t.value).catch(()=>{});}catch(e){}
+  const b=document.getElementById('cpCheckBtn');b.textContent='✅ コピーしました';
+  setTimeout(()=>{b.textContent='📋 コピー';},2000);
+}
+
+function loadCheckResult(){
+  const raw=document.getElementById('checkResultText').value.trim();
+  if(!raw){document.getElementById('checkErr').textContent='⚠️ テキストが空です';document.getElementById('checkErr').classList.remove('hidden');return;}
+  try{
+    const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/)||raw.match(/(\{[\s\S]*\})/);
+    const js=m?(m[1]||m[0]):raw;
+    const d=JSON.parse(js.trim());
+    S.checkResult=d.checks||[];
+    renderCheckResult();
+    showView('vCheckResult');
+  }catch(e){
+    document.getElementById('checkErr').textContent='⚠️ 読み込み失敗: '+e.message;
+    document.getElementById('checkErr').classList.remove('hidden');
+  }
+}
+
+function skipCheck(){
+  S.checkResult=[];
+  proceedToAuthor();
+}
+
+function renderCheckResult(){
+  const checks=S.checkResult||[];
+  const errors=checks.filter(c=>c.severity==='error');
+  const warns=checks.filter(c=>c.severity==='warn');
+  const issues=checks.filter(c=>c.severity!=='ok'&&c.issue);
+
+  // Summary
+  const sumEl=document.getElementById('checkSummary');
+  sumEl.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:8px;">
+    <span class="check-badge check-error">🔴 要修正 ${errors.length}件</span>
+    <span class="check-badge check-warn">⚠️ 要確認 ${warns.length}件</span>
+    <span class="check-badge check-ok">✅ 問題なし ${checks.filter(c=>c.severity==='ok').length}件</span>
+  </div>`;
+
+  // Issues list
+  const listEl=document.getElementById('checkIssueList');
+  if(issues.length===0){
+    listEl.innerHTML='';
+    document.getElementById('noIssuesSection').classList.remove('hidden');
+    document.getElementById('fixPromptSection').classList.add('hidden');
+    return;
+  }
+  document.getElementById('noIssuesSection').classList.add('hidden');
+  document.getElementById('fixPromptSection').classList.remove('hidden');
+
+  listEl.innerHTML=issues.map(c=>`
+    <div style="background:var(--surface);border:1px solid ${c.severity==='error'?'rgba(239,68,68,.3)':'rgba(245,158,11,.3)'};border-radius:8px;padding:11px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+        <span class="check-badge ${c.severity==='error'?'check-error':'check-warn'}">${c.severity==='error'?'🔴 要修正':'⚠️ 要確認'}</span>
+        <span style="font-size:10px;color:var(--muted);font-family:var(--sans)">${c.type} / ${c.field}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text);margin-bottom:4px">${c.issue}</div>
+      ${c.suggestion?`<div style="font-size:11px;color:var(--accent2);font-family:var(--sans)">💡 ${c.suggestion}</div>`:''}
+    </div>`).join('');
+
+  // Build fix prompt
+  const artJson=JSON.stringify({articles:[{
+    id:S.checkCand.id,title:S.checkCand.title,summary:S.checkCand.summary,
+    content:S.checkCand.content,category:S.checkCand.category,x_post:S.checkCand.xPost,
+    stock_a_name:S.checkCand.relatedStocks.stockA?.name,stock_a_ticker:S.checkCand.relatedStocks.stockA?.ticker,
+    stock_a_pred:S.checkCand.relatedStocks.stockA?.prediction,stock_a_reason:S.checkCand.relatedStocks.stockA?.reason,
+    spotlight_name:S.checkCand.relatedStocks.spotlight?.name,spotlight_ticker:S.checkCand.relatedStocks.spotlight?.ticker,
+    spotlight_pred:S.checkCand.relatedStocks.spotlight?.prediction,spotlight_reason:S.checkCand.relatedStocks.spotlight?.reason,
+    sources:S.checkCand.sources
+  }]},null,2);
+  const checksJson=JSON.stringify({checks:issues},null,2);
+
+  const fixPrompt=`以下の金融記事JSONをチェック結果に基づいて修正してください。
+
+【修正ルール】
+・severity:"error"は必ず修正する
+・severity:"warn"は内容を判断して修正する
+・修正したフィールドはchangesに記録する
+・記事の論旨・銘柄選定・予測は変更しない
+・金融商品取引法に抵触する断定表現を除去し「〜の可能性がある」「〜と考えられる」に変換
+
+【出力形式】JSONのみ（説明文不要）:
+{"articles":[{全フィールドを含む記事JSON,"changes":[{"field":"フィールド名","original":"修正前の文","revised":"修正後の文","reason":"修正理由"}]}]}
+
+===元の記事JSON===
+${artJson}
+
+===チェック結果===
+${checksJson}`;
+
+  document.getElementById('fixPromptText').value=fixPrompt;
+}
+
+function copyFixPrompt(){
+  const t=document.getElementById('fixPromptText');t.select();t.setSelectionRange(0,99999);
+  try{document.execCommand('copy');}catch(e){}
+  try{navigator.clipboard.writeText(t.value).catch(()=>{});}catch(e){}
+  const b=document.getElementById('cpFixBtn');b.textContent='✅ コピーしました';
+  setTimeout(()=>{b.textContent='📋 コピー';},2000);
+}
+
+function loadFixResult(){
+  const raw=document.getElementById('fixResultText').value.trim();
+  if(!raw)return;
+  try{
+    const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/)||raw.match(/(\{[\s\S]*\})/);
+    const js=m?(m[1]||m[0]):raw;
+    const d=JSON.parse(js.trim());
+    if(!d.articles?.length)throw new Error('articles が見つかりません');
+    const fixed=d.articles[0];
+    // Build fixedCand from original + overrides
+    S.fixedCand={...S.checkCand,
+      title:fixed.title||S.checkCand.title,
+      summary:fixed.summary||S.checkCand.summary,
+      content:fixed.content||S.checkCand.content,
+      xPost:fixed.x_post||S.checkCand.xPost,
+      changes:fixed.changes||[]
+    };
+    renderDiff(fixed.changes||[]);
+    showView('vDiff');
+  }catch(e){alert('読み込み失敗: '+e.message);}
+}
+
+function renderDiff(changes){
+  const el=document.getElementById('diffList');
+  if(!changes.length){
+    el.innerHTML='<div class="empty">変更箇所がありませんでした</div>';
+    return;
+  }
+  el.innerHTML=changes.map(c=>`
+    <div class="diff-block">
+      <div style="background:rgba(99,179,237,.08);padding:6px 12px;font-size:9px;color:var(--accent2);font-family:var(--sans);font-weight:700;">
+        📝 ${c.field} — ${c.reason||''}
+      </div>
+      <div class="diff-orig">
+        <div class="diff-label" style="color:var(--down)">🔴 修正前</div>
+        <div class="diff-text" style="color:#fc8181">${esc(c.original||'')}</div>
+      </div>
+      <div class="diff-new">
+        <div class="diff-label" style="color:var(--up)">✅ 修正後</div>
+        <div class="diff-text" style="color:#68d391">${esc(c.revised||'')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function skipFix(){proceedToAuthor();}
+
+function rejectFix(){
+  if(!confirm('この記事を破棄しますか？'))return;
+  S.checkCand=null;S.checkResult=null;S.fixedCand=null;
+  showSelect();
+}
+
+function approveFix(){
+  if(!S.fixedCand){proceedToAuthor();return;}
+  // Replace checkCand with fixedCand
+  if(S.selIdx!==null)S.cands[S.selIdx]={...S.cands[S.selIdx],...S.fixedCand};
+  S.checkCand=S.cands[S.selIdx];
+  proceedToAuthor();
+}
+
+function proceedToAuthor(){
+  const cand=S.fixedCand||S.checkCand||S.cands[S.selIdx];
+  if(!cand)return;
+  if(cand.authorComments&&cand.authorComments.length>0){
+    showAuthorForArticle(cand);
+    return;
+  }
+  finalPublish(cand);
 }
 
 function finalPublish(cand){
