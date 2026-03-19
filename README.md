@@ -95,6 +95,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .split-free{background:rgba(34,197,94,.05);border-bottom:2px dashed rgba(34,197,94,.3);padding:12px;}
 .split-paid{background:rgba(250,204,21,.04);padding:12px;}
 .split-tag{font-size:9px;font-weight:700;font-family:var(–sans);letter-spacing:.08em;margin-bottom:5px;}
+.price-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.3);border:1px solid rgba(99,179,237,.15);border-radius:6px;padding:3px 9px;margin-top:4px;font-family:var(–sans);}
+.price-val{font-size:12px;font-weight:700;color:var(–text);}
+.price-chg-up{font-size:10px;color:var(–up);}
+.price-chg-down{font-size:10px;color:var(–down);}
+.price-chg-flat{font-size:10px;color:var(–flat);}
+.price-loading{font-size:10px;color:var(–muted);animation:pulse 1s ease-in-out infinite;}
 </style>
 
 </head>
@@ -518,6 +524,7 @@ function finalPublish(cand){
   ['vHome','vSelect','vAuthor'].forEach(id=>document.getElementById(id).classList.add('hidden'));
   document.getElementById('vArticle').classList.remove('hidden');
   updateStatus();
+  loadPricesForArticle(art);
 }
 
 function backArt(){
@@ -545,6 +552,7 @@ function openPub(i){
   document.getElementById('pubList').classList.add('hidden');
   document.getElementById('artBodyPub').innerHTML=buildArtHTML(S.curArt);
   document.getElementById('vArtPub').classList.remove('hidden');
+  loadPricesForArticle(S.curArt);
 }
 function backPub(){document.getElementById('vArtPub').classList.add('hidden');renderPubList();}
 
@@ -616,6 +624,62 @@ function genTrackPost(){
   el.classList.remove('hidden');
 }
 
+// ── Live price loader ────────────────────────────────────
+async function loadPricesForArticle(art){
+  if(!S.jqToken)return;
+  const stocks=[art.relatedStocks.stockA,art.relatedStocks.spotlight].filter(s=>s&&s.name&&s.ticker);
+  for(const s of stocks){
+    updatePriceBadge(s.ticker,'株価取得中...',null,null);
+    const data=await fetchPriceWithChange(s.ticker);
+    if(data){
+      updatePriceBadge(s.ticker,data.price,data.change,data.changePct);
+    } else {
+      updatePriceBadge(s.ticker,'取得失敗',null,null);
+    }
+  }
+}
+
+async function fetchPriceWithChange(ticker){
+  const token=await getJQToken();
+  if(!token)return null;
+  const to=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const from=new Date(Date.now()-7*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
+  const code=ticker.length===4?ticker+'0':ticker;
+  try{
+    const res=await fetch(`https://api.jquants.com/v1/prices/daily_quotes?code=${code}&from=${from}&to=${to}`,{
+      headers:{Authorization:token}
+    });
+    if(!res.ok)return null;
+    const d=await res.json();
+    const quotes=(d.daily_quotes||[]).sort((a,b)=>b.Date.localeCompare(a.Date));
+    if(quotes.length<1)return null;
+    const latest=quotes[0];
+    const prev=quotes.length>1?quotes[1]:null;
+    const price=latest.Close;
+    const change=prev?price-prev.Close:0;
+    const changePct=prev?((price-prev.Close)/prev.Close*100):0;
+    return{price,change,changePct,date:latest.Date};
+  }catch(e){return null;}
+}
+
+function updatePriceBadge(ticker,price,change,changePct){
+  // Update all elements with this ticker (stockA and spotlight may share)
+  document.querySelectorAll(`#price_${ticker}`).forEach(el=>{
+    if(price===null||price==='株価取得中...'||price==='取得失敗'){
+      el.innerHTML=`<span class="${price==='株価取得中...'?'price-loading':''}${price==='取得失敗'?'price-chg-flat':''}" style="font-size:10px">${price}</span>`;
+      return;
+    }
+    const fmt=new Intl.NumberFormat('ja-JP').format(price);
+    const sign=change>=0?'+':'';
+    const cls=change>0?'price-chg-up':change<0?'price-chg-down':'price-chg-flat';
+    const arrow=change>0?'▲':change<0?'▼':'－';
+    el.innerHTML=`
+      <span class="price-val">${fmt}円</span>
+      <span class="${cls}">${arrow}${sign}${changePct.toFixed(1)}%</span>
+    `;
+  });
+}
+
 // ── Article HTML builder ──────────────────────────────────
 function buildArtHTML(a){
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
@@ -640,12 +704,15 @@ function buildArtHTML(a){
       <div class="s-hd">📊 関連銘柄・株価予測</div>
       ${stocks.map(({l,s,star})=>`
         <div class="s-row" style="${star?'background:rgba(250,204,21,0.04);':''}" >
-          <div>
+          <div style="flex:1;min-width:0">
             <div style="font-size:9px;color:${star?'#f59e0b':'var(--muted)'};margin-bottom:2px;font-family:var(--sans);font-weight:${star?'700':'400'}">${l}</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:2px">${s.name} <span style="font-size:10px;color:var(--muted)">${s.ticker}</span></div>
-            <div style="font-size:10px;color:#a0aec0;line-height:1.6">${s.reason}</div>
+            <div style="font-size:10px;color:#a0aec0;line-height:1.6;margin-bottom:4px">${s.reason}</div>
+            <div class="price-badge" id="price_${s.ticker}">
+              <span class="price-loading">株価取得中...</span>
+            </div>
           </div>
-          <div class="pred-box" style="background:${pc(s.prediction)}20;border:1px solid ${pc(s.prediction)}40">
+          <div class="pred-box" style="background:${pc(s.prediction)}20;border:1px solid ${pc(s.prediction)}40;margin-left:8px">
             <span class="pred-arr" style="color:${pc(s.prediction)}">${pi(s.prediction)}</span>
             <span class="pred-lbl" style="color:${pc(s.prediction)}">${s.prediction}</span>
           </div>
