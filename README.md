@@ -325,7 +325,7 @@ function onGenerate(){
   const avoid=S.pub.map(a=>a.title).slice(0,5);
   const avoidNote=avoid.length?'\n既出記事（除外）: '+avoid.join(' / '):'';
 
-  const p='あなたは個人投資家向けの人気金融ブロガーです。「読まれる・シェアされる・他にはない」記事を書くのが得意です。\n\n株価に影響しそうな最新の金融ニュースを3つピックアップし、以下のスタイルで記事を書いてください。\n\n【リサーチのルール】\n・各トピックについて必ず異なるメディア（日経・Bloomberg・Reuters・Yahoo!ファイナンス・東洋経済・会社四季報など）の記事を最低3つ参照すること\n・各メディアの論調の違い・温度差を記事の中で明示すること\n・複数ソースを比較した上での独自分析・見解を必ず加えること\n・株価・出来高・騰落率などの具体的な数字を入れること。確認できた数字には（○○報道）と出典を明記し、推計・概算の場合は「〜と推定される」と注釈を入れること\n・そのニュースから3手先に何が起きるかの連鎖予測を文章として自然に組み込むこと\n\n【文体・スタイルのルール】\n・タイトルは「数字」「問い」「驚き」「逆説」で始める\n・冒頭1〜2文で読者を引き込むフックを入れる（毎記事で異なる表現を使うこと）\n・「だからどうなる？」「投資家として何をすべきか？」まで踏み込む\n・専門用語は必ずかみ砕いて説明する\n・筆者の見解・予測を強めに断言する\n・読者への問いかけを最低1回入れる\n・締めは「次に注目すべきポイント」で終わる\n\n【銘柄提示のルール】\n・大型株（時価総額1兆円超）を1社以上\n・中型株（時価総額1000億〜1兆円）を1社以上\n・小型株（株価1000円未満の隠れ恩恵株）を1社以上。ニュースとの直接的な因果関係を「〜だからこの会社の〜が増える」の形で説明すること\n・各銘柄に上昇/下降/横ばいの予測と50字以内の根拠を付ける\n\n【筆者コメントのルール】\n・各記事に「筆者の今日の一言」として異なるトーンの3パターンを生成すること\n・パターン1: 強気・煽り系（「これは乗り遅れたら一生後悔する」「今すぐ口座を開け」系）\n・パターン2: 中立・分析系（「両面を見て自分で判断する」「データが示す通り」系）\n・パターン3: 警戒・逆張り系（「みんなが強気のときこそ疑え」「ここに落とし穴がある」系）\n\n【X投稿文のルール】\n・各記事にX専用の投稿文を別途作成\n・冒頭は数字・驚き・問い・対立構造のいずれかで始める\n・銘柄名・証券コード・予測方向（↑↓→）を必ず含める\n・ハッシュタグは #日本株 #株式投資 #小型株 #個人投資家 を末尾に\n・280文字以内\n\n【記事カテゴリ】以下から1つ割り当て: 金融政策/半導体/エネルギー/海運/アクティビスト/決算/マクロ経済/為替/不動産/防衛・宇宙\n\n【その他条件】\n・記事は全て日本語、800〜1000字\n・過去に記事にした情報以外を選ぶ\n・3件全て一度に出力（選択待ち不要）'+avoidNote+'\n\n以下のJSON形式のみで出力（説明文不要・JSONだけ）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要100字","content":"本文800〜1000字","category":"カテゴリ","x_post":"X投稿文280字以内","author_comments":["強気系一言","中立系一言","警戒系一言"],"large_name":"大型株名","large_ticker":"7203","large_pred":"上昇","large_reason":"根拠50字","mid_name":"中型株名","mid_ticker":"6758","mid_pred":"横ばい","mid_reason":"根拠50字","small_name":"小型株名","small_ticker":"1234","small_pred":"上昇","small_reason":"因果関係と根拠50字","sources":["URL1","URL2","URL3"]},{"id":"2",...},{"id":"3",...}]}\n```';
+  const p='あなたは個人投資家向けの人気金融ブロガーです。「読まれる・シェアされる・他にはない」記事を書くのが得意です。\n\n株価に影響しそうな最新の金融ニュースを3つピックアップし、以下のスタイルで記事を書いてください。\n\n【リサーチのルール】\n・各トピックについて必ず異なるメディア（日経・Bloomberg・Reuters・Yahoo!ファイナンス・東洋経済・会社四季報など）の記事を最低3つ参照すること\n・各メディアの論調の違い・温度差を記事の中で明示すること\n・複数ソースを比較した上での独自分析・見解を必ず加えること\n・株価・出来高・騰落率などの具体的な数字を入れること。確認できた数字には（○○報道）と出典を明記し、推計・概算の場合は「〜と推定される」と注釈を入れること\n・そのニュースから3手先に何が起きるかの連鎖予測を文章として自然に組み込むこと\n\n【文体・スタイルのルール】\n・タイトルは「数字」「問い」「驚き」「逆説」で始める\n・冒頭1〜2文で読者を引き込むフックを入れる（毎記事で異なる表現を使うこと）\n・「だからどうなる？」「投資家として何をすべきか？」まで踏み込む\n・専門用語は必ずかみ砕いて説明する\n・筆者の見解・予測を強めに断言する\n・読者への問いかけを最低1回入れる\n・締めは「次に注目すべきポイント」で終わる\n\n【銘柄提示のルール】\n・関連株Aとして: ニュースに最も直接的に関連する主要企業を1社選ぶ（規模不問）\\n・注目株として: 必ず「証券コード 株価」でWeb検索して当日または前日終値が1000円未満であることを確認した銘柄を1社選ぶ。ニュースとの因果関係を「〜だからこの会社の〜が増える」の形で説明すること。検索で確認できなかった場合は別の銘柄を検索すること\\n・【厳守】株価の具体的な数値は出力に記載しないこと。株価確認は選定目的のみ\\n・各銘柄に上昇/下降/横ばいの予測と50字以内の根拠を付ける\n\n【筆者コメントのルール】\n・各記事に「筆者の今日の一言」として異なるトーンの3パターンを生成すること\n・パターン1: 強気・煽り系（「これは乗り遅れたら一生後悔する」「今すぐ口座を開け」系）\n・パターン2: 中立・分析系（「両面を見て自分で判断する」「データが示す通り」系）\n・パターン3: 警戒・逆張り系（「みんなが強気のときこそ疑え」「ここに落とし穴がある」系）\n\n【X投稿文のルール】\n・各記事にX専用の投稿文を別途作成\n・冒頭は数字・驚き・問い・対立構造のいずれかで始める\n・銘柄名・証券コード・予測方向（↑↓→）を必ず含める\n・ハッシュタグは #日本株 #株式投資 #小型株 #個人投資家 を末尾に\n・280文字以内\n\n【記事カテゴリ】以下から1つ割り当て: 金融政策/半導体/エネルギー/海運/アクティビスト/決算/マクロ経済/為替/不動産/防衛・宇宙\n\n【その他条件】\n・記事は全て日本語、800〜1000字\n・過去に記事にした情報以外を選ぶ\n・3件全て一度に出力（選択待ち不要）'+avoidNote+'\n\n以下のJSON形式のみで出力（説明文不要・JSONだけ）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要100字","content":"本文800〜1000字","category":"カテゴリ","x_post":"X投稿文280字以内","author_comments":["強気系一言","中立系一言","警戒系一言"],"stock_a_name":"関連株A企業名","stock_a_ticker":"7203","stock_a_pred":"上昇","stock_a_reason":"根拠50字","spotlight_name":"注目株企業名（株価確認済み1000円未満）","spotlight_ticker":"1234","spotlight_pred":"上昇","spotlight_reason":"ニュースとの因果関係と根拠50字（株価数値記載禁止）","sources":["URL1","URL2","URL3"]},{"id":"2",...},{"id":"3",...}]}\n```';
 
   document.getElementById('promptText').value=p;
   document.getElementById('promptBox').classList.remove('hidden');
@@ -352,9 +352,8 @@ function parseArts(d){
     authorComments:Array.isArray(a.author_comments)?a.author_comments:[],
     chosenComment:'',
     relatedStocks:{
-      large:{name:a.large_name,ticker:a.large_ticker,prediction:a.large_pred,reason:a.large_reason},
-      mid:{name:a.mid_name,ticker:a.mid_ticker,prediction:a.mid_pred,reason:a.mid_reason},
-      small:{name:a.small_name,ticker:a.small_ticker,prediction:a.small_pred,reason:a.small_reason},
+      stockA:{name:a.stock_a_name,ticker:a.stock_a_ticker,prediction:a.stock_a_pred,reason:a.stock_a_reason},
+      spotlight:{name:a.spotlight_name,ticker:a.spotlight_ticker,prediction:a.spotlight_pred,reason:a.spotlight_reason},
     },
     sources:Array.isArray(a.sources)?a.sources.filter(Boolean):[a.source].filter(Boolean),
   }));
@@ -419,8 +418,8 @@ function renderCands(){
           <div style="font-size:13px;font-weight:700;margin-bottom:4px;line-height:1.5">${a.title}</div>
           <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:7px">${a.summary}</div>
           <div style="display:flex;gap:5px;flex-wrap:wrap">
-            ${[a.relatedStocks.large,a.relatedStocks.mid,a.relatedStocks.small].filter(s=>s&&s.name).map(s=>`
-              <span class="badge"><span style="color:#a0aec0">${s.name}</span><span style="color:${pc(s.prediction)};font-weight:700;margin-left:3px">${pi(s.prediction)}${s.prediction}</span></span>`).join('')}
+            ${[a.relatedStocks.stockA,a.relatedStocks.spotlight].filter(s=>s&&s.name).map((s,i)=>`
+              <span class="badge">${i===1?'<span style="color:#f59e0b;margin-right:2px">★</span>':''}<span style="color:#a0aec0">${s.name}</span><span style="color:${pc(s.prediction)};font-weight:700;margin-left:3px">${pi(s.prediction)}${s.prediction}</span></span>`).join('')}
           </div>
         </div>
       </div></div>`;
@@ -461,7 +460,7 @@ function finalPublish(cand){
   // Save chosen comment back to cand
   if(S.selIdx!==null)S.cands[S.selIdx].chosenComment=art.chosenComment;
   // Add predictions to tracker
-  ['large','mid','small'].forEach(k=>{
+  ['stockA','spotlight'].forEach(k=>{
     const s=art.relatedStocks[k];
     if(s&&s.name){
       S.preds.push({id:Date.now()+'_'+k,name:s.name,ticker:s.ticker,pred:s.prediction,reason:s.reason,artTitle:art.title,date:art.publishedAt,result:'pending'});
@@ -550,7 +549,7 @@ function genTrackPost(){
 
 // ── Article HTML builder ──────────────────────────────────
 function buildArtHTML(a){
-  const stocks=[{l:'大型株',s:a.relatedStocks.large},{l:'中型株',s:a.relatedStocks.mid},{l:'小型株（隠れ恩恵株）',s:a.relatedStocks.small}].filter(x=>x.s&&x.s.name);
+  const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株（1000円未満）',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
   const xTxt=buildX(a);
   const freeNote=buildFreeNote(a);
   const paidNote=buildPaidNote(a);
@@ -570,10 +569,10 @@ function buildArtHTML(a){
 
     <div class="stocks-box">
       <div class="s-hd">📊 関連銘柄・株価予測</div>
-      ${stocks.map(({l,s})=>`
-        <div class="s-row">
+      ${stocks.map(({l,s,star})=>`
+        <div class="s-row" style="${star?'background:rgba(250,204,21,0.04);':''}" >
           <div>
-            <div style="font-size:9px;color:var(--muted);margin-bottom:2px;font-family:var(--sans)">${l}</div>
+            <div style="font-size:9px;color:${star?'#f59e0b':'var(--muted)'};margin-bottom:2px;font-family:var(--sans);font-weight:${star?'700':'400'}">${l}</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:2px">${s.name} <span style="font-size:10px;color:var(--muted)">${s.ticker}</span></div>
             <div style="font-size:10px;color:#a0aec0;line-height:1.6">${s.reason}</div>
           </div>
@@ -633,8 +632,8 @@ function buildArtHTML(a){
 function buildX(a){
   let base=a.xPost&&a.xPost.length>10?a.xPost:'';
   if(!base){
-    const ls=a.relatedStocks.large,ss=a.relatedStocks.small;
-    base=a.title.replace(/——.*$/,'')+'\n\n'+a.content.split('\n')[0].slice(0,60)+'…\n\n'+(ls&&ls.name?'📌 '+ls.name+'('+ls.ticker+') '+pi(ls.prediction)+ls.prediction:'')+(ss&&ss.name?'\n💎 '+ss.name+'('+ss.ticker+') '+pi(ss.prediction)+ss.prediction:'');
+    const sa=a.relatedStocks.stockA,sp=a.relatedStocks.spotlight;
+    base=a.title.replace(/——.*$/,'')+'\n\n'+a.content.split('\n')[0].slice(0,60)+'…\n\n'+(sa&&sa.name?'📌 '+sa.name+'('+sa.ticker+') '+pi(sa.prediction)+sa.prediction:'')+(sp&&sp.name?'\n★注目: '+sp.name+'('+sp.ticker+') '+pi(sp.prediction)+sp.prediction:'');
   }
   if(a.chosenComment)base='「'+a.chosenComment.slice(0,30)+'」\n\n'+base;
   if(!base.includes('#日本株'))base+='\n\n#日本株 #株式投資 #小型株 #個人投資家';
@@ -646,7 +645,7 @@ function buildFreeNote(a){
   const ctaMap={'金融政策':'利上げ局面の投資戦略','半導体':'AI・半導体相場の深掘り分析','エネルギー':'原油・エネルギー相場の先読み','為替':'円安円高を先読みする分析','防衛・宇宙':'防衛・次世代エネルギーテーマ株分析'};
   const ctaTheme=ctaMap[a.category]||'最新の株式市場分析';
   const comment=a.chosenComment?`\n\n> ✍️ **筆者の一言**\n> 「${a.chosenComment}」\n`:'';
-  const stocks=[{l:'大型株',s:a.relatedStocks.large},{l:'中型株',s:a.relatedStocks.mid},{l:'小型株',s:a.relatedStocks.small}].filter(x=>x.s&&x.s.name);
+  const stocks=[{l:'関連株A',s:a.relatedStocks.stockA},{l:'★注目株',s:a.relatedStocks.spotlight}].filter(x=>x.s&&x.s.name);
   const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} |`).join('\n');
   return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 |\n|------|------|--------|------|\n${tbl}\n\n---\n\n> 💎 **全文・小型株の詳細根拠・毎日の分析は有料マガジンで**\n> ${ctaTheme}を毎日配信中 → [AI金融アナリスト通信](${noteUrl})\n> 月額980円 | いつでも解約可能\n\n---\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
 }
@@ -655,7 +654,7 @@ function buildPaidNote(a){
   const noteUrl=S.noteUrl||'https://note.com/';
   const aff=buildAffMd(a);
   const comment=a.chosenComment?`\n\n> ✍️ **筆者の一言**\n> 「${a.chosenComment}」\n`:'';
-  const stocks=[{l:'大型株',s:a.relatedStocks.large},{l:'中型株',s:a.relatedStocks.mid},{l:'小型株（隠れ恩恵株）',s:a.relatedStocks.small}].filter(x=>x.s&&x.s.name);
+  const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株（1000円未満）',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
   const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} | ${s.reason} |`).join('\n');
   return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n${a.content}\n\n---\n\n## 関連銘柄・株価予測（詳細根拠付き）\n\n| 区分 | 銘柄 | コード | 予測 | 根拠 |\n|------|------|--------|------|------|\n${tbl}\n\n${a.sources?.length?'**参照元（'+a.sources.length+'件）:** '+a.sources.join(' / '):''}\n\n---\n${aff}\n> 💡 この記事が役に立ったら「スキ」をお願いします！\n> フォロー＆マガジン購読で毎日の分析をお届けします → [AI金融アナリスト通信](${noteUrl})\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
 }
