@@ -370,7 +370,7 @@ function loadPaste(){
     if(!d.articles?.length)throw new Error('articles が見つかりません');
     S.cands=parseArts(d);S.selIdx=null;hidePaste();
     document.getElementById('homeMsg').classList.add('hidden');
-    showAuthorStep();
+    renderCands();showSelect();
   }catch(e){showErr('読み込み失敗: '+e.message);}
 }
 
@@ -378,33 +378,13 @@ function loadFile(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=ev=>{
-    try{const d=JSON.parse(ev.target.result);if(!d.articles?.length)throw new Error('articles が見つかりません');S.cands=parseArts(d);S.selIdx=null;showAuthorStep();}
+    try{const d=JSON.parse(ev.target.result);if(!d.articles?.length)throw new Error('articles が見つかりません');S.cands=parseArts(d);S.selIdx=null;renderCands();showSelect();}
     catch(e){showErr('ファイル読み込み失敗: '+e.message);}
   };
   r.readAsText(f);e.target.value='';
 }
 
-// ── Author comment step ───────────────────────────────────
-function showAuthorStep(){
-  // Use first article's comments for now; applied to selected article later
-  // Show global comment selector (applies to all articles this session)
-  const allComments=S.cands.flatMap(a=>a.authorComments||[]);
-  if(allComments.length===0){renderCands();showSelect();return;}
-
-  // Collect unique comments from all articles, pick 3 representative ones
-  const opts=S.cands[0]?.authorComments||[];
-  S.authorOpts=opts;S.selAuthor=null;
-  document.getElementById('authorOkBtn').disabled=true;
-
-  const labels=['🔥 強気・煽り系','📊 中立・分析系','⚠️ 警戒・逆張り系'];
-  const container=document.getElementById('authorOpts');
-  container.innerHTML=opts.map((txt,i)=>`
-    <div class="author-opt" id="aopt${i}" onclick="selAuthor(${i})">
-      <div class="author-opt-tag">${labels[i]||'パターン'+(i+1)}</div>
-      <div class="author-opt-txt">「${txt}」</div>
-    </div>`).join('');
-  showAuthor();
-}
+// showAuthorStep removed - now triggered per-article after selection
 
 function selAuthor(i){
   S.selAuthor=i;
@@ -413,15 +393,16 @@ function selAuthor(i){
 }
 
 function confirmAuthor(){
-  if(S.selAuthor===null)return;
+  if(S.selAuthor===null||S.selIdx===null)return;
   const chosen=S.authorOpts[S.selAuthor]||'';
-  S.cands.forEach(a=>{a.chosenComment=chosen;});
-  renderCands();showSelect();
+  S.cands[S.selIdx].chosenComment=chosen;
+  finalPublish(S.cands[S.selIdx]);
 }
 
 function skipAuthor(){
-  S.cands.forEach(a=>{a.chosenComment='';});
-  renderCands();showSelect();
+  if(S.selIdx===null){renderCands();showSelect();return;}
+  S.cands[S.selIdx].chosenComment='';
+  finalPublish(S.cands[S.selIdx]);
 }
 
 // ── Candidates ────────────────────────────────────────────
@@ -451,7 +432,34 @@ function selCand(i){S.selIdx=i;document.getElementById('pubBtn').disabled=false;
 
 function doPublish(){
   if(S.selIdx===null)return;
-  const art={...S.cands[S.selIdx],publishedAt:new Date().toLocaleDateString('ja-JP')};
+  // Show author comment selector for the selected article
+  const cand=S.cands[S.selIdx];
+  if(cand.authorComments&&cand.authorComments.length>0){
+    showAuthorForArticle(cand);
+    return;
+  }
+  finalPublish(cand);
+}
+
+function showAuthorForArticle(cand){
+  const labels=['🔥 強気・煽り系','📊 中立・分析系','⚠️ 警戒・逆張り系'];
+  S.authorOpts=cand.authorComments;S.selAuthor=null;
+  document.getElementById('authorOkBtn').disabled=true;
+  document.getElementById('authorOpts').innerHTML=cand.authorComments.map((txt,i)=>`
+    <div class="author-opt" id="aopt${i}" onclick="selAuthor(${i})">
+      <div class="author-opt-tag">${labels[i]||'パターン'+(i+1)}</div>
+      <div class="author-opt-txt">「${txt}」</div>
+    </div>`).join('');
+  // Update author screen title to show article title
+  document.querySelector('#vAuthor h2').textContent='今日の一言を選ぶ';
+  document.querySelector('#vAuthor p').textContent='「'+cand.title.slice(0,30)+'…」の記事に付ける一言を選んでください。';
+  showAuthor();
+}
+
+function finalPublish(cand){
+  const art={...cand,publishedAt:new Date().toLocaleDateString('ja-JP')};
+  // Save chosen comment back to cand
+  if(S.selIdx!==null)S.cands[S.selIdx].chosenComment=art.chosenComment;
   // Add predictions to tracker
   ['large','mid','small'].forEach(k=>{
     const s=art.relatedStocks[k];
