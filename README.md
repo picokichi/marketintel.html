@@ -294,6 +294,8 @@ function hidePasteBox(){document.getElementById('pasteBox').classList.add('hidde
 function parseArticles(d){
   return d.articles.map(a=>({
     id:a.id,title:a.title,summary:a.summary,content:a.content,
+    category:a.category||'',
+    xPost:a.x_post||'',
     relatedStocks:{
       large:{name:a.large_name,ticker:a.large_ticker,prediction:a.large_pred,reason:a.large_reason},
       mid:{name:a.mid_name,ticker:a.mid_ticker,prediction:a.mid_pred,reason:a.mid_reason},
@@ -406,9 +408,10 @@ function buildArticleHTML(a){
   const xPost=buildX(a);
   const noteMd=buildNote(a);
   const affMd=buildAffili();
-  const affHtml=buildAffiliHtml();
+  const affHtml=buildAffiliHtml(a);
 
   return `
+    ${a.category?`<div style="display:inline-block;background:rgba(99,179,237,.15);border:1px solid rgba(99,179,237,.3);border-radius:5px;padding:2px 9px;font-size:10px;color:var(--accent2);font-family:var(--sans);margin-bottom:8px;">${a.category}</div>`:''}
     <h1 style="font-size:18px;font-weight:900;line-height:1.55;margin-bottom:12px">${a.title}</h1>
     <div class="card mb12" style="background:rgba(99,179,237,.05);border-color:rgba(99,179,237,.25)">
       <div class="section-lbl">概要</div>
@@ -471,14 +474,21 @@ function buildArticleHTML(a){
     </div>`;
 }
 
-// ── X post (buzz style) ───────────────────────────────────
+// ── X post (use AI-generated or fallback) ────────────────
 function buildX(a){
+  // Use AI-generated X post if available
+  if(a.xPost&&a.xPost.length>10){
+    let p=a.xPost;
+    // Ensure hashtags are present
+    if(!p.includes('#日本株'))p+=('\n\n#日本株 #株式投資 #小型株 #個人投資家');
+    return p.length>280?p.slice(0,276)+'...':p;
+  }
+  // Fallback: generate from article
   const ls=a.relatedStocks.large,ss=a.relatedStocks.small;
-  // Hook-first format for X
   const title=a.title.replace(/——.*$/,'');
   const hook=a.content.split('\n')[0].slice(0,60);
-  const stocks=`\n\n${ls&&ls.name?'📌 '+ls.name+'('+ls.ticker+') '+pi(ls.prediction)+ls.prediction:''}${ss&&ss.name?'\n💎 注目小型株: '+ss.name+'('+ss.ticker+') '+pi(ss.prediction)+ss.prediction:''}`;
-  const tags='\n\n#日本株 #株式投資 #金融ニュース #個人投資家 #小型株';
+  const stocks='\n\n'+(ls&&ls.name?'📌 '+ls.name+'('+ls.ticker+') '+pi(ls.prediction)+ls.prediction:'')+(ss&&ss.name?'\n💎 '+ss.name+'('+ss.ticker+') '+pi(ss.prediction)+ss.prediction:'');
+  const tags='\n\n#日本株 #株式投資 #小型株 #個人投資家';
   let p=title+'\n\n'+hook+'…'+stocks+tags;
   return p.length>280?p.slice(0,276)+'...':p;
 }
@@ -506,14 +516,30 @@ function buildAffili(){
   return ls.length?`## 💹 おすすめ証券口座\n\n${ls.join('\n')}\n`:'';
 }
 
-function buildAffiliHtml(){
+function buildAffiliHtml(article){
   const a=S.affili;const ls=[];
-  const track=(key,url,label)=>`<a href="${url}" target="_blank" onclick="trackClick('${key}')" style="display:block;background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.2);border-radius:8px;padding:10px 13px;margin-bottom:6px;text-decoration:none;color:var(--text);font-size:12px;font-family:var(--sans);">${label}</a>`;
-  if(a.sbi)ls.push(track('sbi',a.sbi+'?utm_source=marketintel&utm_medium=app&utm_campaign=sbi','💹 SBI証券 口座開設（無料） — 業界最大手'));
-  if(a.rak)ls.push(track('rak',a.rak+'?utm_source=marketintel&utm_medium=app&utm_campaign=rakuten','💹 楽天証券 口座開設（無料） — 楽天ポイントが貯まる'));
-  if(a.gmo)ls.push(track('gmo',a.gmo+'?utm_source=marketintel&utm_medium=app&utm_campaign=gmo','💹 GMOクリック証券（無料） — 手数料が業界最安水準'));
-  if(a.fx)ls.push(track('fx',a.fx+'?utm_source=marketintel&utm_medium=app&utm_campaign=fx','💹 FX口座開設'));
-  return ls.length?`<div style="margin-bottom:18px"><div class="section-lbl" style="margin-bottom:6px">💰 おすすめ証券口座</div>${ls.join('')}</div>`:'';
+  const cat=article&&article.category||'';
+  const track=(key,url,label,sub)=>`<a href="${url}" target="_blank" onclick="trackClick('${key}')" style="display:block;background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.2);border-radius:8px;padding:10px 13px;margin-bottom:6px;text-decoration:none;color:var(--text);font-size:12px;font-family:var(--sans);"><span style="font-weight:700">${label}</span><span style="display:block;font-size:10px;color:var(--muted);margin-top:2px">${sub}</span></a>`;
+
+  // Context-aware copy based on article category
+  const ctxCopy={
+    '金融政策':'利上げ局面で資産を守る — まず証券口座を開設',
+    '半導体':'AI・半導体銘柄への投資を始めるなら',
+    'エネルギー':'原油・エネルギー株を手数料ゼロで買う',
+    '海運':'海運株・高配当株への投資を始めるなら',
+    'アクティビスト':'アクティビスト銘柄を先回りするなら',
+    '決算':'好決算銘柄をすぐ買える口座はここ',
+    'マクロ経済':'マクロ変化を先読みした投資を始めるなら',
+    '為替':'円安・円高を味方につけるFX口座',
+    '不動産':'不動産株・REITへの投資を始めるなら',
+    '防衛・宇宙':'防衛・宇宙テーマ株への投資を始めるなら',
+  }[cat]||'この記事の銘柄を手数料ゼロで買うなら';
+
+  if(a.sbi)ls.push(track('sbi',a.sbi+'?utm_source=marketintel&utm_medium=app&utm_campaign=sbi_'+encodeURIComponent(cat),'💹 SBI証券 口座開設（無料）',ctxCopy));
+  if(a.rak)ls.push(track('rak',a.rak+'?utm_source=marketintel&utm_medium=app&utm_campaign=rak_'+encodeURIComponent(cat),'💹 楽天証券 口座開設（無料）','楽天ポイントが貯まる・初心者にも使いやすい'));
+  if(a.gmo)ls.push(track('gmo',a.gmo+'?utm_source=marketintel&utm_medium=app&utm_campaign=gmo_'+encodeURIComponent(cat),'💹 GMOクリック証券（無料）','手数料が業界最安水準・デイトレにも最適'));
+  if(a.fx&&(cat==='為替'||cat==='マクロ経済'||!a.sbi))ls.push(track('fx',a.fx+'?utm_source=marketintel&utm_medium=app&utm_campaign=fx_'+encodeURIComponent(cat),'💹 FX口座開設','為替変動を投資チャンスに変える'));
+  return ls.length?`<div style="margin-bottom:18px"><div class="section-lbl" style="margin-bottom:4px">💰 投資を始めるなら</div><div style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:8px;">${ctxCopy}</div>${ls.join('')}</div>`:'';
 }
 
 // ── Click tracking ────────────────────────────────────────
