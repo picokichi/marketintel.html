@@ -307,6 +307,23 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     </div>
   </div>
 
+  <!-- JUDGE FLOW: AI judgment result paste -->
+
+  <div id="vJudge" class="hidden">
+    <button class="back-btn" onclick="showView('tPred')">← 予測トラッカーへ戻る</button>
+    <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">🤖 AI判定プロンプト</h2>
+    <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">コピーしてClaudeに貼り付けてください</p>
+    <textarea id="judgePromptText" readonly style="width:100%;height:160px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:10px;font-family:monospace;padding:9px;line-height:1.5;resize:none;-webkit-user-select:text;user-select:text;margin-bottom:8px;"></textarea>
+    <div style="display:flex;gap:7px;margin-bottom:12px;">
+      <button class="btn btn-p" id="cpJudgeBtn" onclick="copyJudgePrompt()" style="flex:1;padding:10px;font-size:12px;">📋 コピー</button>
+      <a href="https://claude.ai" target="_blank" class="btn btn-g" style="flex:1;padding:10px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center;">🤖 Claudeを開く</a>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">📋 判定結果JSONを貼り付け</div>
+    <textarea id="judgeResultText" style="width:100%;height:110px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:9px;line-height:1.6;resize:none;" placeholder='{"results":[...]} の形式で貼り付けてください'></textarea>
+    <button class="btn btn-p" onclick="loadJudgeResult()" style="margin-top:8px;padding:12px;font-size:12px;">✅ 判定結果を反映する</button>
+    <div id="judgeErr" class="hidden" style="margin-top:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px;font-size:11px;color:#fc8181;font-family:var(--sans);"></div>
+  </div>
+
   <!-- CHECK FLOW: Step3 - Diff viewer -->
 
   <div id="vDiff" class="hidden">
@@ -457,7 +474,7 @@ window.onload=()=>{
     const tab=document.querySelector('.tab[onclick*="track"]');
     if(tab&&due>0)tab.textContent=`予測 ⏰${due}`;
     // Auto-judge if J-Quants token is set
-    if(S.jqToken&&due>0)autoJudgeAll();
+    // AI判定は手動でトリガー（予測トラッカーの「AI判定する」ボタンを使用）
   },500);
 };
 
@@ -498,7 +515,7 @@ function onGenerate(){
   const now=new Date();
   const todayStr=now.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'long'})+' '+now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
 
-  const p='あなたは個人投資家向けの人気金融ブロガーです。「読まれる・シェアされる・他にはない」記事を書くのが得意です。\n\n【本日の日時（システム自動取得・変更禁止）】\n'+todayStr+'\nこの日時を全ての記事・日付表現の基準とすること。「明日」「来週」「今週」「先週」などの相対表現はこの日時から計算して使用すること。この日時と異なる日付を記事に使用することは絶対に禁止。\n\n株価に影響しそうな最新の金融ニュースを3つピックアップし、以下のスタイルで記事を書いてください。\n\n【リサーチのルール】\n・各トピックについて必ず異なるメディア（日経・Bloomberg・Reuters・Yahoo!ファイナンス・東洋経済・会社四季報など）の記事を最低3つ参照すること\n・各メディアの論調の違い・温度差を記事の中で明示すること\n・複数ソースを比較した上での独自分析・見解を必ず加えること\n・株価・出来高・騰落率などの具体的な数字を入れること。確認できた数字には（○○報道）と出典を明記し、推計・概算の場合は「〜と推定される」と注釈を入れること\n・そのニュースから3手先に何が起きるかの連鎖予測を文章として自然に組み込むこと\n\n【文体・構成のルール】\n\n■ 記事の必須構成（この順番を厳守）:\n1. フック（1〜2文）: 逆説・数字・問い・驚きで始める。「〜なのに〜」「〜のはずが〜」という逆説構造を優先する\n2. ニュース事実（1段落）: 何が起きたかを簡潔に。数字と出典を入れる\n3. メディア比較（1〜2段落）: 3媒体の温度差を「A社は強気、B社は慎重——どちらが正しいか」という対立構造で書く\n4. 独自分析「だからどうなる？」（1段落）: 筆者の見解を断言する。ただし株価予測ではなく「構造・因果関係」を断言すること\n5. 3手先の連鎖→注目株の自然な登場（1段落）: 矢印(→)でリズムよく連鎖を書き、最後に「この連鎖の終着点にいる会社が〇〇だ」という形で注目株を自然に導出すること。銘柄を別添えで紹介するのは禁止\n6. 読者への問いかけ（1文）: 「あなたはどう見るか」「この数字をどう解釈するか」など\n7. 締め「次に注目すべきポイント」: 具体的な日付・指標・イベントで終わる\n\n■ Funny×Interestingの書き方ルール（全項目必須）:\n・1段落は最大4行。テンポよく短く切る\n・専門用語は「（）内に一言」で説明。長い説明は不要\n・逆説・対立・意外な因果関係を毎記事1回以上入れる\n・3手先の連鎖は矢印(→)でリズムよく書く\n・注目株は「銘柄紹介」として登場させず「連鎖の受益者として自然に登場」させる\n・断言は「株価が上がる」ではなく「この構造は見逃せない」「ここに死角がある」「市場はまだ気づいていない」など分析・構造への断言にする\n・タイトルは「数字」「問い」「驚き」「逆説」で始める\n・読者が「賢くなった気がする」「次が読みたい」と感じる終わり方にする\n\n【銘柄提示のルール】\n・【注目株発掘プロセス・厳守】以下のステップを必ず順番通りに実行すること:\\n  Step1: 記事テーマが決まったら「○○関連 低位株」「○○テーマ 小型株」でWeb検索し候補を3〜4社リストアップする\\n  Step2: 各候補について「企業名 証券コード」でWeb検索してコードを確認する（記憶でのコード出力は絶対禁止）\\n  Step3: 各候補について「証券コード 株価」でWeb検索して当日または前日終値を確認する\\n  Step4: 1000円未満の銘柄を注目株として採用する。複数ある場合は最も株価が低い銘柄を優先する\\n  Step5: 4社試して全て1000円超の場合は最も株価が低い銘柄を採用し、その旨をspotlight_reasonに記載する\\n  Step6: 各記事で異なる銘柄を選ぶこと。同じ銘柄の使い回しは禁止\\n・関連株Aについても「企業名 証券コード」でWeb検索してコードを確認してから出力すること\\n・【厳守】株価の具体的な数値・確認日・終値は一切出力に記載しないこと。「○月○日終値○○円確認済み」のような記述はspotlight_reasonを含む全フィールドで完全禁止。株価確認は選定目的のみ\\n・各銘柄に上昇/下降/横ばいの予測と50字以内の根拠を付ける\n\n【筆者コメントのルール】\n・各記事に「筆者の今日の一言」として異なるトーンの3パターンを生成すること\n・パターン1: 強気・煽り系（「これは乗り遅れたら一生後悔する」「今すぐ口座を開け」系）\n・パターン2: 中立・分析系（「両面を見て自分で判断する」「データが示す通り」系）\n・パターン3: 警戒・逆張り系（「みんなが強気のときこそ疑え」「ここに落とし穴がある」系）\n\n【X投稿文のルール】\n・各記事にX専用の投稿文を別途作成\n・冒頭は数字・驚き・問い・対立構造のいずれかで始める\n・銘柄名・証券コード・予測方向（↑↓→）を必ず含める\n・ハッシュタグは #日本株 #株式投資 #小型株 #個人投資家 を末尾に\n・280文字以内\n\n【記事カテゴリ】以下から1つ割り当て: 金融政策/半導体/エネルギー/海運/アクティビスト/決算/マクロ経済/為替/不動産/防衛・宇宙\n\n【その他条件】\n・記事は全て日本語、800〜1000字\n・過去に記事にした情報以外を選ぶ\n・3件全て一度に出力（選択待ち不要）'+avoidNote+'\n\n以下のJSON形式のみで出力（説明文不要・JSONだけ）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要100字","content":"本文800〜1000字","category":"カテゴリ","x_post":"X投稿文280字以内","author_comments":["強気系一言","中立系一言","警戒系一言"],"stock_a_name":"関連株A企業名","stock_a_ticker":"7203","stock_a_pred":"上昇","stock_a_reason":"根拠50字","spotlight_name":"注目株企業名","spotlight_ticker":"1234","spotlight_pred":"上昇","spotlight_reason":"ニュースとの因果関係と根拠50字","sources":["URL1","URL2","URL3"]},{"id":"2",...},{"id":"3",...}]}\n```';
+  const p='あなたは個人投資家向けの人気金融ブロガーです。「読まれる・シェアされる・他にはない」記事を書くのが得意です。\n\n【本日の日時（システム自動取得・変更禁止）】\n'+todayStr+'\nこの日時を全ての記事・日付表現の基準とすること。「明日」「来週」「今週」「先週」などの相対表現はこの日時から計算して使用すること。この日時と異なる日付を記事に使用することは絶対に禁止。\n\n株価に影響しそうな最新の金融ニュースを3つピックアップし、以下のスタイルで記事を書いてください。\n\n【リサーチのルール】\n・各トピックについて必ず異なるメディア（日経・Bloomberg・Reuters・Yahoo!ファイナンス・東洋経済・会社四季報など）の記事を最低3つ参照すること\n・各メディアの論調の違い・温度差を記事の中で明示すること\n・複数ソースを比較した上での独自分析・見解を必ず加えること\n・株価・出来高・騰落率などの具体的な数字を入れること。確認できた数字には（○○報道）と出典を明記し、推計・概算の場合は「〜と推定される」と注釈を入れること\n・そのニュースから3手先に何が起きるかの連鎖予測を文章として自然に組み込むこと\n\n【文体・構成のルール】\n\n■ 記事の必須構成（この順番を厳守）:\n1. フック（1〜2文）: 逆説・数字・問い・驚きで始める。「〜なのに〜」「〜のはずが〜」という逆説構造を優先する\n2. ニュース事実（1段落）: 何が起きたかを簡潔に。数字と出典を入れる\n3. メディア比較（1〜2段落）: 3媒体の温度差を「A社は強気、B社は慎重——どちらが正しいか」という対立構造で書く\n4. 独自分析「だからどうなる？」（1段落）: 筆者の見解を断言する。ただし株価予測ではなく「構造・因果関係」を断言すること\n5. 3手先の連鎖→注目株の自然な登場（1段落）: 矢印(→)でリズムよく連鎖を書き、最後に「この連鎖の終着点にいる会社が〇〇だ」という形で注目株を自然に導出すること。銘柄を別添えで紹介するのは禁止\n6. 読者への問いかけ（1文）: 「あなたはどう見るか」「この数字をどう解釈するか」など\n7. 締め「次に注目すべきポイント」: 具体的な日付・指標・イベントで終わる\n\n■ Funny×Interestingの書き方ルール（全項目必須）:\n・1段落は最大4行。テンポよく短く切る\n・専門用語は「（）内に一言」で説明。長い説明は不要\n・逆説・対立・意外な因果関係を毎記事1回以上入れる\n・3手先の連鎖は矢印(→)でリズムよく書く\n・注目株は「銘柄紹介」として登場させず「連鎖の受益者として自然に登場」させる\n・断言は「株価が上がる」ではなく「この構造は見逃せない」「ここに死角がある」「市場はまだ気づいていない」など分析・構造への断言にする\n・タイトルは「数字」「問い」「驚き」「逆説」で始める\n・読者が「賢くなった気がする」「次が読みたい」と感じる終わり方にする\n\n【銘柄提示のルール】\n・【注目株発掘プロセス・厳守】以下のステップを必ず順番通りに実行すること:\\n  Step1: 記事テーマが決まったら「○○関連 低位株」「○○テーマ 小型株」でWeb検索し候補を3〜4社リストアップする\\n  Step2: 各候補について「企業名 証券コード」でWeb検索してコードを確認する（記憶でのコード出力は絶対禁止）\\n  Step3: 各候補について「証券コード 株価」でWeb検索して当日または前日終値を確認する\\n  Step4: 1000円未満の銘柄を注目株として採用する。複数ある場合は最も株価が低い銘柄を優先する\\n  Step5: 4社試して全て1000円超の場合は最も株価が低い銘柄を採用し、その旨をspotlight_reasonに記載する\\n  Step6: 各記事で異なる銘柄を選ぶこと。同じ銘柄の使い回しは禁止\\n・関連株Aについても「企業名 証券コード」でWeb検索してコードを確認してから出力すること\\n・【株価フィールド】stock_a_price・stock_a_price_date・spotlight_price・spotlight_price_dateには検索で確認した株価（円）と確認日（M/D形式）を必ず入力すること。株価が確認できた場合のみ数値で入力し、確認できない場合は0を入力する\n・【厳守】株価の具体的な数値はstock_a_price/spotlight_priceフィールドにのみ記載すること。reasonフィールドへの株価数値・日付の記載は完全禁止\\n・各銘柄に上昇/下降/横ばいの予測と50字以内の根拠を付ける\n\n【筆者コメントのルール】\n・各記事に「筆者の今日の一言」として異なるトーンの3パターンを生成すること\n・パターン1: 強気・煽り系（「これは乗り遅れたら一生後悔する」「今すぐ口座を開け」系）\n・パターン2: 中立・分析系（「両面を見て自分で判断する」「データが示す通り」系）\n・パターン3: 警戒・逆張り系（「みんなが強気のときこそ疑え」「ここに落とし穴がある」系）\n\n【X投稿文のルール】\n・各記事にX専用の投稿文を別途作成\n・冒頭は数字・驚き・問い・対立構造のいずれかで始める\n・銘柄名・証券コード・予測方向（↑↓→）を必ず含める\n・ハッシュタグは #日本株 #株式投資 #小型株 #個人投資家 を末尾に\n・280文字以内\n\n【記事カテゴリ】以下から1つ割り当て: 金融政策/半導体/エネルギー/海運/アクティビスト/決算/マクロ経済/為替/不動産/防衛・宇宙\n\n【その他条件】\n・記事は全て日本語、800〜1000字\n・過去に記事にした情報以外を選ぶ\n・3件全て一度に出力（選択待ち不要）'+avoidNote+'\n\n以下のJSON形式のみで出力（説明文不要・JSONだけ）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要100字","content":"本文800〜1000字","category":"カテゴリ","x_post":"X投稿文280字以内","author_comments":["強気系一言","中立系一言","警戒系一言"],"stock_a_name":"関連株A企業名","stock_a_ticker":"7203","stock_a_pred":"上昇","stock_a_reason":"根拠50字","stock_a_price":1234,"stock_a_price_date":"3/20","spotlight_name":"注目株企業名","spotlight_ticker":"1234","spotlight_pred":"上昇","spotlight_reason":"ニュースとの因果関係と根拠50字","spotlight_price":567,"spotlight_price_date":"3/20","sources":["URL1","URL2","URL3"]},{"id":"2",...},{"id":"3",...}]}\n```';
 
   document.getElementById('promptText').value=p;
   document.getElementById('promptBox').classList.remove('hidden');
@@ -525,8 +542,16 @@ function parseArts(d){
     authorComments:Array.isArray(a.author_comments)?a.author_comments:[],
     chosenComment:'',
     relatedStocks:{
-      stockA:{name:a.stock_a_name,ticker:a.stock_a_ticker,prediction:a.stock_a_pred,reason:a.stock_a_reason},
-      spotlight:{name:a.spotlight_name,ticker:a.spotlight_ticker,prediction:a.spotlight_pred,reason:a.spotlight_reason},
+      stockA:{
+        name:a.stock_a_name,ticker:a.stock_a_ticker,
+        prediction:a.stock_a_pred,reason:a.stock_a_reason,
+        price:a.stock_a_price||0,priceDate:a.stock_a_price_date||''
+      },
+      spotlight:{
+        name:a.spotlight_name,ticker:a.spotlight_ticker,
+        prediction:a.spotlight_pred,reason:a.spotlight_reason,
+        price:a.spotlight_price||0,priceDate:a.spotlight_price_date||''
+      },
     },
     sources:Array.isArray(a.sources)?a.sources.filter(Boolean):[a.source].filter(Boolean),
   }));
@@ -1159,15 +1184,92 @@ function renderTrack(){
       </div>
       <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;margin-left:8px">
         ${p.result==='pending'?`
+          ${isDue?`<button onclick="genJudgePrompt()" style="padding:6px 10px;border-radius:5px;border:none;background:rgba(99,179,237,.15);color:var(--accent2);font-size:11px;cursor:pointer;font-family:var(--sans);font-weight:700;margin-bottom:4px;width:100%">🤖 AI判定する</button><br>`:''}
+          <div style="display:flex;gap:5px">
           <button onclick="setPred(${ri},'hit')" style="padding:5px 10px;border-radius:5px;border:none;background:rgba(34,197,94,.15);color:var(--up);font-size:11px;cursor:pointer;font-family:var(--sans);font-weight:700;">✓ 的中</button>
           <button onclick="setPred(${ri},'miss')" style="padding:5px 10px;border-radius:5px;border:none;background:rgba(239,68,68,.15);color:var(--down);font-size:11px;cursor:pointer;font-family:var(--sans);font-weight:700;">✗ 外れ</button>
-        `:`<div style="text-align:right"><span class="track-result ${p.result==='hit'?'track-hit':'track-miss'}">${p.result==='hit'?'✓ 的中':'✗ 外れ'}</span>${p.autoJudged?`<div style="font-size:9px;color:var(--muted);margin-top:2px;font-family:var(--sans)">${p.changePct>0?'+':''}${p.changePct}% 自動判定</div>`:''}</div>`}
+          </div>
+        `:`<div style="text-align:right"><span class="track-result ${p.result==='hit'?'track-hit':'track-miss'}">${p.result==='hit'?'✓ 的中':'✗ 外れ'}</span></div>`}
       </div>
     </div>`;
   }).join('');
 }
 
 function setPred(i,result){S.preds[i].result=result;DB.s('mi_preds',S.preds);renderTrack();}
+
+function genJudgePrompt(){
+  const now=Date.now();
+  const duePreds=S.preds.map((p,i)=>({...p,_idx:i})).filter(p=>p.result==='pending'&&p.deadlineTs&&now>=p.deadlineTs);
+  if(!duePreds.length){alert('判定期限を過ぎた予測がありません');return;}
+
+  const predList=duePreds.map(p=>`・${p.name}（${p.ticker}） 予測:${p.pred} 公開日:${p.date} 判定期限:${p.deadline} 根拠:${p.reason||''}`).join('\n');
+
+  const prompt=`以下の株価予測について、現在の株価をWeb検索で確認し判定してください。
+
+【判定ルール】
+・上昇予測: 公開日終値から+3%以上で「的中」
+・下降予測: 公開日終値から-3%以上で「的中」
+・横ばい予測: ±3%以内で「的中」
+・株価は「証券コード 株価」でWeb検索して確認すること
+
+【予測リスト】
+${predList}
+
+以下のJSON形式のみで出力（説明文不要）:
+{"results":[{"ticker":"証券コード","name":"銘柄名","pred":"予測方向","result":"hit or miss","current_price":現在株価数値,"change_pct":変化率数値,"reason":"判定理由30字"}]}`;
+
+  document.getElementById('judgePromptText').value=prompt;
+  document.getElementById('judgeResultText').value='';
+  document.getElementById('judgeErr').classList.add('hidden');
+
+  // Update showView to handle tPred tab
+  ['vHome','vSelect','vAuthor','vArticle','vCheck','vCheckResult','vDiff'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.classList.add('hidden');
+  });
+  document.getElementById('vJudge').classList.remove('hidden');
+}
+
+function copyJudgePrompt(){
+  const t=document.getElementById('judgePromptText');
+  t.select();t.setSelectionRange(0,99999);
+  try{document.execCommand('copy');}catch(e){}
+  try{navigator.clipboard.writeText(t.value).catch(()=>{});}catch(e){}
+  const b=document.getElementById('cpJudgeBtn');
+  b.textContent='✅ コピーしました';
+  setTimeout(()=>{b.textContent='📋 コピー';},2000);
+}
+
+function loadJudgeResult(){
+  const raw=document.getElementById('judgeResultText').value.trim();
+  if(!raw){document.getElementById('judgeErr').textContent='⚠️ テキストが空です';document.getElementById('judgeErr').classList.remove('hidden');return;}
+  try{
+    const js=extractJson(raw);
+    const d=JSON.parse(js);
+    if(!d.results?.length)throw new Error('results が見つかりません');
+    let updated=0;
+    d.results.forEach(r=>{
+      const idx=S.preds.findIndex(p=>p.ticker===r.ticker&&p.result==='pending');
+      if(idx!==-1){
+        S.preds[idx].result=r.result;
+        S.preds[idx].currentPrice=r.current_price;
+        S.preds[idx].changePct=r.change_pct;
+        S.preds[idx].judgeReason=r.reason;
+        S.preds[idx].autoJudged=true;
+        updated++;
+      }
+    });
+    DB.s('mi_preds',S.preds);
+    alert(updated+'件の予測を更新しました');
+    // Return to tracker
+    ['vJudge'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+    document.querySelectorAll('.tab-content').forEach(el=>el.classList.add('hidden'));
+    const tPred=document.getElementById('tPred');
+    if(tPred){tPred.classList.remove('hidden');renderTrack();}
+  }catch(e){
+    document.getElementById('judgeErr').textContent='⚠️ 読み込み失敗: '+e.message;
+    document.getElementById('judgeErr').classList.remove('hidden');
+  }
+}
 
 function genTrackPost(){
   const hits=S.preds.filter(p=>p.result==='hit').length;
@@ -1182,17 +1284,16 @@ function genTrackPost(){
   el.classList.remove('hidden');
 }
 
-// ── Live price loader ────────────────────────────────────
-async function loadPricesForArticle(art){
-  if(!S.jqToken)return;
+// ── Price badge from stored data (set at article generation time) ──
+function loadPricesForArticle(art){
   const stocks=[art.relatedStocks.stockA,art.relatedStocks.spotlight].filter(s=>s&&s.name&&s.ticker);
   for(const s of stocks){
-    updatePriceBadge(s.ticker,'株価取得中...',null,null);
-    const data=await fetchPriceWithChange(s.ticker);
-    if(data){
-      updatePriceBadge(s.ticker,data.price,data.change,data.changePct,data);
+    if(s.price&&s.price>0){
+      updatePriceBadge(s.ticker,s.price,null,null,{date:s.priceDate,stored:true});
     } else {
-      updatePriceBadge(s.ticker,'取得失敗',null,null,null);
+      // No price stored - show Yahoo Finance link
+      const el=document.getElementById('pb_'+s.ticker);
+      if(el)el.innerHTML=`<a href="https://finance.yahoo.co.jp/quote/${s.ticker}.T" target="_blank" style="font-size:10px;color:var(--accent2)">株価を確認 →</a>`;
     }
   }
 }
@@ -1205,16 +1306,18 @@ async function fetchPriceWithChange(ticker){
   const from=new Date(Date.now()-30*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
   // J-Quants uses 4-digit codes directly (NOT 5-digit)
   // For codes like 464A, use as-is; for 4-digit numeric, use as-is
-  const code=ticker.replace(/[^0-9A-Za-z]/g,'');
+  // V2: 4-digit code → 5-digit with trailing 0 (e.g. 9432 → 94320)
+  // Alphanumeric codes (e.g. 268A) use as-is
+  const rawCode=ticker.replace(/[^0-9A-Za-z]/g,'');
+  const code=(/^[0-9]{4}$/.test(rawCode))?rawCode+'0':rawCode;
   try{
-    // Try auth refresh if token might be expired
     const freshToken=await getJQToken();
-    const res=await fetch(`https://api.jquants.com/v1/prices/daily_quotes?code=${code}&from=${from}&to=${to}`,{
+    if(!freshToken)return null;
+    const res=await fetch(`https://api.jquants.com/v2/equities/bars/daily?code=${code}&from=${from.slice(0,4)+'-'+from.slice(4,6)+'-'+from.slice(6,8)}&to=${to.slice(0,4)+'-'+to.slice(4,6)+'-'+to.slice(6,8)}`,{
       headers:{'x-api-key':freshToken}
     });
     if(!res.ok){
-      // Log error for debugging
-      console.warn('J-Quants API error:',res.status,'for',code);
+      console.warn('J-Quants V2 error:',res.status,'for',code);
       return null;
     }
     const d=await res.json();
@@ -1240,16 +1343,24 @@ function updatePriceBadge(ticker,price,change,changePct,data){
       return;
     }
     const fmt=new Intl.NumberFormat('ja-JP').format(price);
-    const sign=change>=0?'+':'';
-    const cls=change>0?'price-chg-up':change<0?'price-chg-down':'price-chg-flat';
-    const arrow=change>0?'▲':change<0?'▼':'－';
-    // Format date for display (YYYYMMDD → M/D)
-    const dateStr=data&&data.date?data.date.replace(/(\d{4})(\d{2})(\d{2})/,(_,y,m,d)=>`${parseInt(m)}/${parseInt(d)}終値`):'終値';
-    el.innerHTML=`
-      <span class="price-val">${fmt}円</span>
-      <span class="${cls}">${arrow}${sign}${changePct.toFixed(1)}%</span>
-      <span style="font-size:9px;color:var(--muted);margin-left:2px">${dateStr}</span>
-    `;
+    if(data&&data.stored){
+      // Stored price from generation time - show with date
+      const dateLabel=data.date?data.date+'記事生成時':'記事生成時';
+      el.innerHTML=`
+        <span class="price-val">${fmt}円</span>
+        <span style="font-size:9px;color:var(--muted);margin-left:2px">${dateLabel}</span>
+      `;
+    } else {
+      const sign=change>=0?'+':'';
+      const cls=change>0?'price-chg-up':change<0?'price-chg-down':'price-chg-flat';
+      const arrow=change>0?'▲':change<0?'▼':'－';
+      const dateStr=data&&data.date?data.date+'終値':'終値';
+      el.innerHTML=`
+        <span class="price-val">${fmt}円</span>
+        <span class="${cls}">${arrow}${sign}${changePct.toFixed(1)}%</span>
+        <span style="font-size:9px;color:var(--muted);margin-left:2px">${dateStr}</span>
+      `;
+    }
   });
 }
 
@@ -1490,9 +1601,13 @@ async function fetchPrice(ticker){
   // Get last 10 days of daily prices
   const to=new Date().toISOString().slice(0,10).replace(/-/g,'');
   const from=new Date(Date.now()-14*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
-  const code=ticker.replace(/[^0-9A-Za-z]/g,''); // J-Quants uses 4-digit codes as-is
+  // V2: 4-digit → 5-digit with trailing 0
+  const rawCode2=ticker.replace(/[^0-9A-Za-z]/g,'');
+  const code=(/^[0-9]{4}$/.test(rawCode2))?rawCode2+'0':rawCode2;
   try{
-    const res=await fetch(`https://api.jquants.com/v1/prices/daily_quotes?code=${code}&from=${from}&to=${to}`,{
+    const fromFmt=from.slice(0,4)+'-'+from.slice(4,6)+'-'+from.slice(6,8);
+    const toFmt=to.slice(0,4)+'-'+to.slice(4,6)+'-'+to.slice(6,8);
+    const res=await fetch(`https://api.jquants.com/v2/equities/bars/daily?code=${code}&from=${fromFmt}&to=${toFmt}`,{
       headers:{'x-api-key':token}
     });
     if(!res.ok)return null;
