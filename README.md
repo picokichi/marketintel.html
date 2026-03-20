@@ -190,12 +190,33 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 
   <div id="vAuthor" class="hidden">
     <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">今日の一言を選ぶ</h2>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">AIが3パターン生成しました。最も「あなたらしい」一言を選んでください。記事冒頭とX投稿に自動挿入されます。</p>
-    <div id="authorOpts"></div>
-    <div style="display:flex;gap:7px;margin-top:8px;">
-      <button class="btn btn-o" style="flex:1;padding:10px;" onclick="skipAuthor()">スキップ</button>
-      <button class="btn btn-p" id="authorOkBtn" style="flex:2;padding:10px;" onclick="confirmAuthor()" disabled>この一言で進む →</button>
-    </div>
+    <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">記事の冒頭・X投稿に自動挿入されます。<br>「AIの分析」の前に置く<strong style="color:var(--text)">あなた自身の感情・視点</strong>です。</p>
+
+```
+<!-- Tab selector -->
+<div style="display:flex;gap:4px;margin-bottom:10px;">
+  <button id="tabHuman" onclick="switchAuthorTab('human')" style="flex:1;padding:7px;border-radius:7px;border:none;font-size:11px;font-family:var(--sans);font-weight:700;cursor:pointer;background:rgba(250,204,21,.2);color:#f59e0b;">😊 素直な反応</button>
+  <button id="tabAI" onclick="switchAuthorTab('ai')" style="flex:1;padding:7px;border-radius:7px;border:none;font-size:11px;font-family:var(--sans);font-weight:700;cursor:pointer;background:rgba(99,179,237,.08);color:var(--muted);">🤖 AI生成コメント</button>
+</div>
+
+<!-- Human reaction templates -->
+<div id="humanOpts">
+  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">👆 タップして選ぶだけ。金融知識ゼロでもOK。</p>
+  <div id="humanOptList"></div>
+</div>
+
+<!-- AI generated comments -->
+<div id="aiOpts" class="hidden">
+  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">AIが記事のテーマに合わせて3パターン生成しました</p>
+  <div id="authorOpts"></div>
+</div>
+
+<div style="display:flex;gap:7px;margin-top:10px;">
+  <button class="btn btn-o" style="flex:1;padding:10px;" onclick="skipAuthor()">スキップ</button>
+  <button class="btn btn-p" id="authorOkBtn" style="flex:2;padding:10px;" onclick="confirmAuthor()" disabled>この一言で進む →</button>
+</div>
+```
+
   </div>
 
   <!-- Article select -->
@@ -398,7 +419,7 @@ let S={
   jqRefreshToken:DB.g('mi_jqrefresh')||'',
   baselinePrices:DB.g('mi_baselines')||{},
   cands:[],selIdx:null,curArt:null,backFrom:'select',
-  authorOpts:[],selAuthor:null,
+  authorOpts:[],selAuthor:null,authorCategoryHook:'',
   preds:DB.g('mi_preds')||[],
   checkCand:null,checkResult:null,fixedCand:null,
 };
@@ -513,20 +534,29 @@ function loadFile(e){
 
 function selAuthor(i){
   S.selAuthor=i;
-  document.querySelectorAll('.author-opt').forEach((el,idx)=>el.classList.toggle('sel',idx===i));
+  document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('aopt'+i).classList.add('sel');
   document.getElementById('authorOkBtn').disabled=false;
 }
 
 function confirmAuthor(){
   if(S.selAuthor===null||S.selIdx===null)return;
-  const chosen=S.authorOpts[S.selAuthor]||'';
+  let chosen='';
+  if(typeof S.selAuthor==='string'&&S.selAuthor.startsWith('human_')){
+    const idx=parseInt(S.selAuthor.replace('human_',''));
+    chosen=HUMAN_TEMPLATES[idx]?.txt||'';
+  } else {
+    chosen=S.authorOpts[S.selAuthor]||'';
+  }
   S.cands[S.selIdx].chosenComment=chosen;
+  S.cands[S.selIdx].categoryHook=S.authorCategoryHook||getCategoryHook(S.cands[S.selIdx].category||'');
   finalPublish(S.cands[S.selIdx]);
 }
 
 function skipAuthor(){
   if(S.selIdx===null){renderCands();showSelect();return;}
   S.cands[S.selIdx].chosenComment='';
+  S.cands[S.selIdx].categoryHook=S.authorCategoryHook||getCategoryHook(S.cands[S.selIdx].category||'');
   finalPublish(S.cands[S.selIdx]);
 }
 
@@ -1031,7 +1061,12 @@ function buildArtHTML(a){
     ${a.category?`<div style="display:inline-block;background:rgba(99,179,237,.15);border:1px solid rgba(99,179,237,.3);border-radius:5px;padding:2px 9px;font-size:10px;color:var(--accent2);font-family:var(--sans);margin-bottom:8px;">${a.category}</div>`:''}
     <h1 style="font-size:18px;font-weight:900;line-height:1.55;margin-bottom:10px">${a.title}</h1>
 
-    ${a.chosenComment?`<div style="background:rgba(250,204,21,.08);border-left:3px solid #f59e0b;padding:10px 13px;margin-bottom:14px;border-radius:0 8px 8px 0;"><div style="font-size:9px;color:#f59e0b;font-family:var(--sans);margin-bottom:3px;">✍️ 筆者の一言</div><div style="font-size:12px;line-height:1.8;color:#fef3c7;font-style:italic;">「${a.chosenComment}」</div></div>`:''}
+    <div style="background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:#f59e0b;font-family:var(--sans);margin-bottom:${a.chosenComment?'8px':'0'}">
+        📱 ${a.categoryHook||'今日のニュースをAIに分析させてみた'}
+      </div>
+      ${a.chosenComment?`<div style="font-size:12px;line-height:1.8;color:#fef3c7;font-style:italic;border-top:1px solid rgba(250,204,21,.15);padding-top:7px;margin-top:2px;">「${a.chosenComment}」</div>`:''}
+    </div>
 
     <div class="card mb12" style="background:rgba(99,179,237,.05);border-color:rgba(99,179,237,.25)">
       <div class="lbl">概要</div>
@@ -1119,7 +1154,8 @@ function buildFreeNote(a){
   const noteUrl=S.noteUrl||'https://note.com/';
   const ctaMap={'金融政策':'利上げ局面の投資戦略','半導体':'AI・半導体相場の深掘り分析','エネルギー':'原油・エネルギー相場の先読み','為替':'円安円高を先読みする分析','防衛・宇宙':'防衛・次世代エネルギーテーマ株分析'};
   const ctaTheme=ctaMap[a.category]||'最新の株式市場分析';
-  const comment=a.chosenComment?`\n\n> ✍️ **筆者の一言**\n> 「${a.chosenComment}」\n`:'';
+  const hook=a.categoryHook||getCategoryHook(a.category||'');
+  const comment=`\n\n---\n\n**📱 ${hook}**${a.chosenComment?'\n\n> 「'+a.chosenComment+'」':''}\n`;
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA},{l:'★注目株',s:a.relatedStocks.spotlight}].filter(x=>x.s&&x.s.name);
   const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} |`).join('\n');
   return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 |\n|------|------|--------|------|\n${tbl}\n\n---\n\n> 💎 **全文・詳細分析は有料マガジンで**\n> ${ctaTheme}を毎日配信中 → [AI金融アナリスト通信](${noteUrl})\n> 月額980円 | いつでも解約可能\n\n---\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
@@ -1128,7 +1164,8 @@ function buildFreeNote(a){
 function buildPaidNote(a){
   const noteUrl=S.noteUrl||'https://note.com/';
   const aff=buildAffMd(a);
-  const comment=a.chosenComment?`\n\n> ✍️ **筆者の一言**\n> 「${a.chosenComment}」\n`:'';
+  const hook=a.categoryHook||getCategoryHook(a.category||'');
+  const comment=`\n\n---\n\n**📱 ${hook}**${a.chosenComment?'\n\n> 「'+a.chosenComment+'」':''}\n`;
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
   const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} | ${s.reason} |`).join('\n');
   return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n${a.content}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 | 根拠 |\n|------|------|--------|------|------|\n${tbl}\n\n${a.sources?.length?'**参照元（'+a.sources.length+'件）:** '+a.sources.join(' / '):''}\n\n---\n${aff}\n> 💡 この記事が役に立ったら「スキ」をお願いします！\n> フォロー＆マガジン購読で毎日の分析をお届けします → [AI金融アナリスト通信](${noteUrl})\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
