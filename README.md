@@ -397,13 +397,14 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <div class="card mb12">
     <div class="lbl" style="margin-bottom:9px;">🤖 J-Quants 株価自動取得</div>
     <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:8px;line-height:1.7;">
-      登録: <a href="https://application.jpx-jquants.com" target="_blank" style="color:var(--accent2)">application.jpx-jquants.com</a>（無料）<br>
-      メールアドレスとパスワードを入力すると株価を自動取得・自動更新します
+      ① <a href="https://application.jpx-jquants.com" target="_blank" style="color:var(--accent2)">J-Quantsにログイン</a>（2段階認証で）<br>
+      ② ログイン後に<a href="https://api.jquants.com/v1/token/auth_refresh" target="_blank" style="color:var(--accent2)">このURL</a>を開く<br>
+      ③ 表示された <code style="color:#f6e05e;font-size:10px;">refreshToken</code> の値をコピー<br>
+      ④ 下の欄に貼り付けて「保存」
     </p>
-    <input class="aff-in" id="jqEmail" type="email" placeholder="メールアドレス" style="margin-bottom:6px;">
-    <input class="aff-in" id="jqPassword" type="password" placeholder="パスワード" style="margin-bottom:8px;">
+    <input class="aff-in" id="jqRefreshInput" placeholder="refreshToken をここに貼り付け" style="margin-bottom:8px;font-family:monospace;font-size:11px;">
     <div id="jqStatus" style="font-size:10px;font-family:var(--sans);margin-bottom:8px;color:var(--muted);"></div>
-    <button class="btn btn-p" style="padding:10px;" onclick="saveJQ()">🔗 接続する</button>
+    <button class="btn btn-p" style="padding:10px;" onclick="saveJQ()">💾 保存して接続</button>
     <div id="jqStatus" style="font-size:10px;font-family:var(--sans);color:var(--muted);margin-top:6px;"></div>
   </div>
 
@@ -446,13 +447,14 @@ window.onload=()=>{
   loadAffUI();updateStatus();renderClickStats();
   document.getElementById('genInv').value=S.inv;
   document.getElementById('noteUrl').value=S.noteUrl;
-  // Load J-Quants credentials
-  const jqEmailEl=document.getElementById('jqEmail');
-  const jqPassEl=document.getElementById('jqPassword');
+  // Load J-Quants status
   const jqStatusEl=document.getElementById('jqStatus');
-  if(jqEmailEl)jqEmailEl.value=S.jqEmail||'';
-  if(jqPassEl&&S.jqPassword)jqPassEl.value=S.jqPassword;
-  if(jqStatusEl&&S.jqToken){jqStatusEl.textContent='✅ 接続済み（自動更新有効）';jqStatusEl.style.color='var(--up)';}
+  const jqRtEl=document.getElementById('jqRefreshInput');
+  if(jqRtEl&&S.jqRefreshToken)jqRtEl.value=S.jqRefreshToken.slice(0,20)+'...';
+  if(jqStatusEl){
+    if(S.jqToken){jqStatusEl.textContent='✅ 接続済み（自動更新有効）';jqStatusEl.style.color='var(--up)';}
+    else if(S.jqRefreshToken){jqStatusEl.textContent='⚠️ リフレッシュトークンあり（IDトークン未取得）';jqStatusEl.style.color='var(--flat)';}
+  }
   // Check for due predictions and update tab badge
   setTimeout(()=>{
     const now=new Date().getTime();
@@ -1417,20 +1419,20 @@ function saveInv(){S.inv=parseInt(document.getElementById('genInv').value);DB.s(
 function saveNote(){S.noteUrl=document.getElementById('noteUrl').value.trim();DB.s('mi_noteurl',S.noteUrl);alert('保存しました ✓');}
 
 function saveJQ(){
-  const email=document.getElementById('jqEmail').value.trim();
-  const pass=document.getElementById('jqPassword').value.trim();
-  if(!email||!pass){alert('メールアドレスとパスワードを入力してください');return;}
-  S.jqEmail=email;S.jqPassword=pass;
-  DB.s('mi_jqemail',email);DB.s('mi_jqpass',pass);
-  document.getElementById('jqStatus').textContent='🔄 接続中...';
-  document.getElementById('jqStatus').style.color='var(--accent2)';
-  jqLogin(email,pass).then(ok=>{
+  const rt=document.getElementById('jqRefreshInput').value.trim();
+  if(!rt){alert('refreshToken を入力してください');return;}
+  S.jqRefreshToken=rt;
+  DB.s('mi_jqrefresh',rt);
+  const statusEl=document.getElementById('jqStatus');
+  statusEl.textContent='🔄 接続中...';
+  statusEl.style.color='var(--accent2)';
+  jqRefresh().then(ok=>{
     if(ok){
-      document.getElementById('jqStatus').textContent='✅ 接続済み（自動更新有効）';
-      document.getElementById('jqStatus').style.color='var(--up)';
+      statusEl.textContent='✅ 接続済み（IDトークン取得完了・23時間有効）';
+      statusEl.style.color='var(--up)';
     } else {
-      document.getElementById('jqStatus').textContent='❌ 接続失敗。メールアドレス・パスワードを確認してください';
-      document.getElementById('jqStatus').style.color='var(--down)';
+      statusEl.textContent='❌ 接続失敗。refreshToken が無効か期限切れです。手順②からやり直してください';
+      statusEl.style.color='var(--down)';
     }
   });
   if(t){
@@ -1480,16 +1482,10 @@ async function getJQToken(){
   // Check if current token is still valid (with 5min buffer)
   const expiry=S.jqTokenExpiry||DB.g('mi_jqexpiry')||0;
   if(S.jqToken&&Date.now()<expiry-300000)return S.jqToken;
-  // Try refresh
-  if(S.jqRefreshToken){
+  // Auto-refresh with refresh token
+  if(S.jqRefreshToken||DB.g('mi_jqrefresh')){
+    if(!S.jqRefreshToken)S.jqRefreshToken=DB.g('mi_jqrefresh');
     const ok=await jqRefresh();
-    if(ok)return S.jqToken;
-  }
-  // Try login with saved credentials
-  const email=S.jqEmail||DB.g('mi_jqemail');
-  const pass=S.jqPassword||DB.g('mi_jqpass');
-  if(email&&pass){
-    const ok=await jqLogin(email,pass);
     if(ok)return S.jqToken;
   }
   return S.jqToken||null;
