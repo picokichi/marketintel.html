@@ -625,7 +625,7 @@ function showAuthorForArticle(cand){
   const vAuthorDesc=document.getElementById('vAuthorDesc');
   if(vAuthorH2)vAuthorH2.textContent='今日の一言を選ぶ';
   // Sanitize title - remove backticks and special chars that break display
-  const safeTitle=cand.title.replace(/`/g,'').replace(/\/g,'').slice(0,30);
+    const safeTitle=(cand.title||'').split('`').join('').split('\\').join('').slice(0,30)
   if(vAuthorDesc)vAuthorDesc.textContent='「'+safeTitle+'…」の記事に付ける一言を選んでください。';
   showAuthor();
 }
