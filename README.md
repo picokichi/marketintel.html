@@ -199,19 +199,32 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <button id="tabAI" onclick="switchAuthorTab('ai')" style="flex:1;padding:7px;border-radius:7px;border:none;font-size:11px;font-family:var(--sans);font-weight:700;cursor:pointer;background:rgba(99,179,237,.08);color:var(--muted);">🤖 AI生成コメント</button>
 </div>
 
+<!-- Article preview (collapsed) -->
+<details style="margin-bottom:10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:8px 12px;">
+  <summary style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);cursor:pointer;user-select:none;">📄 記事を確認する（タップで開く）</summary>
+  <div id="authorPreview" style="font-size:11px;line-height:1.8;color:#a0aec0;margin-top:8px;max-height:180px;overflow-y:auto;white-space:pre-wrap;"></div>
+</details>
+
 <!-- Human reaction templates -->
 <div id="humanOpts">
-  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">👆 タップして選ぶだけ。金融知識ゼロでもOK。</p>
+  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">👆 タップして選ぶだけ。毎回違うパターンが出ます。</p>
   <div id="humanOptList"></div>
+  <button onclick="refreshHumanTemplates()" style="margin-top:6px;width:100%;padding:7px;background:rgba(99,179,237,.08);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--accent2);font-family:var(--sans);cursor:pointer;">🔄 別のパターンを表示</button>
 </div>
 
 <!-- AI generated comments -->
 <div id="aiOpts" class="hidden">
-  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">AIが記事のテーマに合わせて3パターン生成しました</p>
+  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">AIが記事のテーマに合わせて生成しました（コンプラチェック後）</p>
   <div id="authorOpts"></div>
 </div>
 
-<div style="display:flex;gap:7px;margin-top:10px;">
+<!-- Custom free input -->
+<div style="margin-top:10px;">
+  <div style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:4px;">✏️ 自分の言葉で書く（任意）</div>
+  <textarea id="customComment" placeholder="自由に一言を書いてください（例:「この銘柄、先週から気になってた」）" style="width:100%;height:60px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:var(--sans);padding:8px;resize:none;line-height:1.6;" oninput="onCustomInput(this.value)"></textarea>
+</div>
+
+<div style="display:flex;gap:7px;margin-top:8px;">
   <button class="btn btn-o" style="flex:1;padding:10px;" onclick="skipAuthor()">スキップ</button>
   <button class="btn btn-p" id="authorOkBtn" style="flex:2;padding:10px;" onclick="confirmAuthor()" disabled>この一言で進む →</button>
 </div>
@@ -382,13 +395,15 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   </div>
 
   <div class="card mb12">
-    <div class="lbl" style="margin-bottom:9px;">🤖 J-Quants APIキー（予測自動判定）</div>
+    <div class="lbl" style="margin-bottom:9px;">🤖 J-Quants 株価自動取得</div>
     <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:8px;line-height:1.7;">
       登録: <a href="https://application.jpx-jquants.com" target="_blank" style="color:var(--accent2)">application.jpx-jquants.com</a>（無料）<br>
-      設定するとアプリを開くたびに判定期限を過ぎた予測を自動判定します
+      メールアドレスとパスワードを入力すると株価を自動取得・自動更新します
     </p>
-    <input class="aff-in" id="jqToken" placeholder="Bearer eyJ..." style="margin-bottom:8px;font-family:monospace;font-size:11px;">
-    <button class="btn btn-p" style="padding:10px;" onclick="saveJQ()">💾 保存する</button>
+    <input class="aff-in" id="jqEmail" type="email" placeholder="メールアドレス" style="margin-bottom:6px;">
+    <input class="aff-in" id="jqPassword" type="password" placeholder="パスワード" style="margin-bottom:8px;">
+    <div id="jqStatus" style="font-size:10px;font-family:var(--sans);margin-bottom:8px;color:var(--muted);"></div>
+    <button class="btn btn-p" style="padding:10px;" onclick="saveJQ()">🔗 接続する</button>
     <div id="jqStatus" style="font-size:10px;font-family:var(--sans);color:var(--muted);margin-top:6px;"></div>
   </div>
 
@@ -417,6 +432,9 @@ let S={
   noteUrl:DB.g('mi_noteurl')||'',
   jqToken:DB.g('mi_jqtoken')||'',
   jqRefreshToken:DB.g('mi_jqrefresh')||'',
+  jqEmail:DB.g('mi_jqemail')||'',
+  jqPassword:DB.g('mi_jqpass')||'',
+  jqTokenExpiry:DB.g('mi_jqexpiry')||0,
   baselinePrices:DB.g('mi_baselines')||{},
   cands:[],selIdx:null,curArt:null,backFrom:'select',
   authorOpts:[],selAuthor:null,authorCategoryHook:'',
@@ -428,7 +446,13 @@ window.onload=()=>{
   loadAffUI();updateStatus();renderClickStats();
   document.getElementById('genInv').value=S.inv;
   document.getElementById('noteUrl').value=S.noteUrl;
-  document.getElementById('jqToken').value=S.jqToken;
+  // Load J-Quants credentials
+  const jqEmailEl=document.getElementById('jqEmail');
+  const jqPassEl=document.getElementById('jqPassword');
+  const jqStatusEl=document.getElementById('jqStatus');
+  if(jqEmailEl)jqEmailEl.value=S.jqEmail||'';
+  if(jqPassEl&&S.jqPassword)jqPassEl.value=S.jqPassword;
+  if(jqStatusEl&&S.jqToken){jqStatusEl.textContent='✅ 接続済み（自動更新有効）';jqStatusEl.style.color='var(--up)';}
   // Check for due predictions and update tab badge
   setTimeout(()=>{
     const now=new Date().getTime();
@@ -546,9 +570,12 @@ function selAuthor(i){
 function confirmAuthor(){
   if(S.selAuthor===null||S.selIdx===null)return;
   let chosen='';
-  if(typeof S.selAuthor==='string'&&S.selAuthor.startsWith('human_')){
+  if(S.selAuthor==='custom'){
+    const customEl=document.getElementById('customComment');
+    chosen=(customEl?.value||'').trim();
+  } else if(typeof S.selAuthor==='string'&&S.selAuthor.startsWith('human_')){
     const idx=parseInt(S.selAuthor.replace('human_',''));
-    chosen=HUMAN_TEMPLATES[idx]?.txt||'';
+    chosen=(S._currentHumanTemplates||[])[idx]?.txt||'';
   } else {
     chosen=S.authorOpts[S.selAuthor]||'';
   }
@@ -610,6 +637,20 @@ function showView(id){
   if(target)target.classList.remove('hidden');
 }
 
+// ── Strip internal processing text from displayed fields ──
+function cleanReason(text){
+  if(!text)return '';
+  // Remove "コードXXXX確認済み（...）。" patterns
+  text=text.replace(/コード[0-9A-Za-z]+(確認済み)?[（(][^）)]{0,60}[）)][。、]? ?/g,'');
+  // Remove "1000円未満確認済み"
+  text=text.replace(/[・、]?1000円未満確認済み[・、]? ?/g,'');
+  // Remove "（Yahoo!・松井証券...確認済み）" type notes
+  text=text.replace(/（[^）]{0,80}確認済み[^）]{0,30}）/g,'');
+  // Remove "Step5適用・" etc
+  text=text.replace(/Step[0-9]+(適用)?[・:]? ?/g,'');
+  return text.trim();
+}
+
 // ── Category hook mapping ────────────────────────────────
 function getCategoryHook(cat){
   const m={'金融政策':'今日の金融政策ニュースをAIに分析させてみた','半導体':'今日の半導体ニュースをAIに分析させてみた','エネルギー':'今日の原油・エネルギーニュースをAIに分析させてみた','海運':'今日の海運ニュースをAIに分析させてみた','アクティビスト':'気になったアクティビスト案件をAIに深掘りさせてみた','決算':'気になった決算をAIに深掘りさせてみた','マクロ経済':'今日のマクロ経済ニュースをAIに分析させてみた','為替':'今日の円安・為替ニュースをAIに分析させてみた','不動産':'今日の不動産ニュースをAIに分析させてみた','防衛・宇宙':'今日の防衛・宇宙ニュースをAIに分析させてみた'};
@@ -617,15 +658,37 @@ function getCategoryHook(cat){
 }
 
 // ── Human reaction templates ──────────────────────────────
-const HUMAN_TEMPLATES=[
-  {tag:'😲 驚き系',txt:'正直この会社名、今日まで知らなかった'},
-  {tag:'🤔 疑問系',txt:'なぜ全員が下がっている日にこの株だけ上がるのか、最初は意味がわからなかった'},
-  {tag:'💡 発見系',txt:'仕組みを理解したら急に株価の動きが見えた気がした'},
-  {tag:'😰 葛藤系',txt:'買いたい気持ちと怖い気持ちが半々。これが投資の本質なのかもしれない'},
-  {tag:'📚 学習系',txt:'今日初めて知った言葉がある。でも調べたら意外とシンプルだった'},
-  {tag:'😤 共感系',txt:'急落のニュースを見て売りたくなった。でもデータを見たら踏みとどまった'},
-  {tag:'🎯 気づき系',txt:'AIの分析を読んで「そういうことか」と腑に落ちた瞬間があった'},
-];
+// ── Dynamic human reaction template pool ─────────────────
+const HUMAN_TEMPLATE_POOL={
+  驚き:['正直この会社名、今日まで知らなかった','こんな数字が出ていたとは思わなかった','AIに聞いてみて初めて気づいた','ニュースを見た瞬間「え、これ本当?」となった','この銘柄、完全にノーマークだった'],
+  疑問:['なぜ全員が下がっている日にこの株だけ上がるのか、最初は意味がわからなかった','この二つのニュースがなぜ繋がるのか、最初はわからなかった','素人目には逆に見える動きがある','「なぜ今?」という疑問が頭から離れなかった','数字は出ているのに、なぜ市場が動かないのか不思議だった'],
+  発見:['仕組みを理解したら急に株価の動きが見えた気がした','点と点が繋がった瞬間があった','AIの説明で「そういう構造だったのか」と腑に落ちた','調べると意外とシンプルな話だった','こういう見方があったのかと思った'],
+  葛藤:['買いたい気持ちと怖い気持ちが半々','データは強いのに、なぜか踏み出せない感覚がある','「今が買い場」と言われるほど逆に慎重になってしまう','リスクとリターンを考えると、まだ整理できていない'],
+  学習:['今日また一つ投資用語を覚えた','知識が増えると世界の見え方が変わるな、と感じた','AIに分析させることで自分も勉強になった','知らなかったことを知ると、ニュースの読み方が変わる'],
+  共感:['急落のニュースを見て売りたくなった。でもデータを見たら踏みとどまった','感情と分析が引っ張り合う感覚、投資の難しさを実感している','みんなが怖がっている局面で冷静でいるのは難しい','こういうニュースが出ると、どうしても不安になる'],
+  気づき:['AIの分析を読んで「そういうことか」と腑に落ちた瞬間があった','3手先を読む、ということが少しわかってきた','個別株より「流れ」を読む方が大事なのかもしれない','ニュースの裏側にある構造を見るクセがついてきた'],
+};
+
+const HUMAN_TEMPLATE_TAGS={
+  驚き:'😲 驚き系', 疑問:'🤔 疑問系', 発見:'💡 発見系',
+  葛藤:'😰 葛藤系', 学習:'📚 学習系', 共感:'😤 共感系', 気づき:'🎯 気づき系'
+};
+
+// Pick 5 random templates from pool (different each call)
+function getHumanTemplates(category){
+  const keys=Object.keys(HUMAN_TEMPLATE_POOL);
+  // Shuffle keys
+  const shuffled=keys.sort(()=>Math.random()-0.5);
+  const result=[];
+  for(const k of shuffled){
+    const pool=HUMAN_TEMPLATE_POOL[k];
+    // Pick random entry from this category's pool
+    const txt=pool[Math.floor(Math.random()*pool.length)];
+    result.push({tag:HUMAN_TEMPLATE_TAGS[k],txt,key:k});
+    if(result.length>=5)break;
+  }
+  return result;
+}
 
 function switchAuthorTab(tab){
   const isHuman=tab==='human';
@@ -639,8 +702,41 @@ function switchAuthorTab(tab){
   if(tA){tA.style.background=isHuman?'rgba(99,179,237,.08)':'rgba(99,179,237,.2)';tA.style.color=isHuman?'var(--muted)':'var(--accent2)';}
 }
 
+function renderHumanTemplates(){
+  const hListEl=document.getElementById('humanOptList');
+  if(!hListEl)return;
+  hListEl.innerHTML=(S._currentHumanTemplates||[]).map((t,i)=>`<div class="author-opt" id="hopt${i}" onclick="selHuman(${i})"><div class="author-opt-tag">${t.tag}</div><div class="author-opt-txt">「${t.txt}」</div></div>`).join('');
+}
+
+function refreshHumanTemplates(){
+  // Clear current selection if it was human
+  if(typeof S.selAuthor==='string'&&S.selAuthor.startsWith('human_')){
+    S.selAuthor=null;
+    document.getElementById('authorOkBtn').disabled=true;
+  }
+  S._currentHumanTemplates=getHumanTemplates(S.checkCand?.category||'');
+  renderHumanTemplates();
+}
+
+function onCustomInput(val){
+  if(val.trim().length>0){
+    // Custom input takes priority - deselect other options
+    document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
+    S.selAuthor='custom';
+    document.getElementById('authorOkBtn').disabled=false;
+  } else {
+    if(S.selAuthor==='custom'){
+      S.selAuthor=null;
+      document.getElementById('authorOkBtn').disabled=true;
+    }
+  }
+}
+
 function selHuman(i){
   S.selAuthor='human_'+i;
+  // Clear custom input
+  const customEl=document.getElementById('customComment');
+  if(customEl)customEl.value='';
   document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
   const el=document.getElementById('hopt'+i);
   if(el)el.classList.add('sel');
@@ -671,11 +767,27 @@ function showAuthorForArticle(cand){
       : '<div style="font-size:11px;color:var(--muted);font-family:var(--sans)">AIコメントが生成されていません</div>';
   }
 
-  // Render human templates
-  const hListEl=document.getElementById('humanOptList');
-  if(hListEl){
-    hListEl.innerHTML=HUMAN_TEMPLATES.map((t,i)=>`<div class="author-opt" id="hopt${i}" onclick="selHuman(${i})"><div class="author-opt-tag">${t.tag}</div><div class="author-opt-txt">「${t.txt}」</div></div>`).join('');
+  // Render human templates (dynamic)
+  S._currentHumanTemplates=getHumanTemplates(cand.category||'');
+  renderHumanTemplates();
+
+  // Show compact preview: summary + spotlight reason
+  const previewEl=document.getElementById('authorPreview');
+  if(previewEl){
+    const sp=cand.relatedStocks&&cand.relatedStocks.spotlight;
+    const sa=cand.relatedStocks&&cand.relatedStocks.stockA;
+    const predIcon=function(p){return p==='上昇'?'↑':p==='下降'?'↓':'→';};
+    const parts=[];
+    parts.push('📰 '+(cand.summary||'').slice(0,80));
+    if(sa)parts.push('📌 関連株A: '+sa.name+' ('+sa.ticker+') '+predIcon(sa.prediction));
+    if(sp)parts.push('⭐ 注目株: '+sp.name+' ('+sp.ticker+') '+predIcon(sp.prediction)+' — '+cleanReason(sp.reason||'').slice(0,60));
+    previewEl.textContent=parts.join(' / ');
   }
+
+  // Reset custom input
+put
+  const customEl=document.getElementById('customComment');
+  if(customEl)customEl.value='';
 
   // Update desc safely
   const safeTitle=(cand.title||'').slice(0,30);
@@ -1176,7 +1288,7 @@ function buildArtHTML(a){
           <div style="flex:1;min-width:0">
             <div style="font-size:9px;color:${star?'#f59e0b':'var(--muted)'};margin-bottom:2px;font-family:var(--sans);font-weight:${star?'700':'400'}">${l}</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:2px">${s.name} <span style="font-size:10px;color:var(--muted)">${s.ticker}</span></div>
-            <div style="font-size:10px;color:#a0aec0;line-height:1.6;margin-bottom:4px">${s.reason}</div>
+            <div style="font-size:10px;color:#a0aec0;line-height:1.6;margin-bottom:4px">${cleanReason(s.reason)}</div>
             <div class="price-badge" id="price_${s.ticker}">
               <span class="price-loading">株価取得中...</span>
             </div>
@@ -1262,7 +1374,7 @@ function buildPaidNote(a){
   const hook=a.categoryHook||getCategoryHook(a.category||'');
   const comment=`\n\n---\n\n**📱 ${hook}**${a.chosenComment?'\n\n> 「'+a.chosenComment+'」':''}\n`;
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
-  const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} | ${s.reason} |`).join('\n');
+  const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} | ${cleanReason(s.reason)} |`).join('\n');
   return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n${a.content}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 | 根拠 |\n|------|------|--------|------|------|\n${tbl}\n\n${a.sources?.length?'**参照元（'+a.sources.length+'件）:** '+a.sources.join(' / '):''}\n\n---\n${aff}\n> 💡 この記事が役に立ったら「スキ」をお願いします！\n> フォロー＆マガジン購読で毎日の分析をお届けします → [AI金融アナリスト通信](${noteUrl})\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
 }
 
@@ -1305,8 +1417,22 @@ function saveInv(){S.inv=parseInt(document.getElementById('genInv').value);DB.s(
 function saveNote(){S.noteUrl=document.getElementById('noteUrl').value.trim();DB.s('mi_noteurl',S.noteUrl);alert('保存しました ✓');}
 
 function saveJQ(){
-  const t=document.getElementById('jqToken').value.trim();
-  S.jqToken=t;DB.s('mi_jqtoken',t);
+  const email=document.getElementById('jqEmail').value.trim();
+  const pass=document.getElementById('jqPassword').value.trim();
+  if(!email||!pass){alert('メールアドレスとパスワードを入力してください');return;}
+  S.jqEmail=email;S.jqPassword=pass;
+  DB.s('mi_jqemail',email);DB.s('mi_jqpass',pass);
+  document.getElementById('jqStatus').textContent='🔄 接続中...';
+  document.getElementById('jqStatus').style.color='var(--accent2)';
+  jqLogin(email,pass).then(ok=>{
+    if(ok){
+      document.getElementById('jqStatus').textContent='✅ 接続済み（自動更新有効）';
+      document.getElementById('jqStatus').style.color='var(--up)';
+    } else {
+      document.getElementById('jqStatus').textContent='❌ 接続失敗。メールアドレス・パスワードを確認してください';
+      document.getElementById('jqStatus').style.color='var(--down)';
+    }
+  });
   if(t){
     document.getElementById('jqStatus').textContent='✅ 保存しました。次回アプリ起動時から自動判定が有効になります。';
     document.getElementById('jqStatus').style.color='var(--up)';
@@ -1316,18 +1442,57 @@ function saveJQ(){
 }
 
 // ── J-Quants API ──────────────────────────────────────────
+async function jqLogin(email,pass){
+  try{
+    // Step1: get refresh token
+    const r1=await fetch('https://api.jquants.com/v1/token/auth_user',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({mailaddress:email,password:pass})
+    });
+    if(!r1.ok)return false;
+    const d1=await r1.json();
+    const refreshToken=d1.refreshToken;
+    if(!refreshToken)return false;
+    S.jqRefreshToken=refreshToken;
+    DB.s('mi_jqrefresh',refreshToken);
+    // Step2: get id token
+    return await jqRefresh();
+  }catch(e){console.warn('jqLogin error:',e);return false;}
+}
+
+async function jqRefresh(){
+  try{
+    if(!S.jqRefreshToken)return false;
+    const r2=await fetch('https://api.jquants.com/v1/token/auth_refresh?refreshtoken='+encodeURIComponent(S.jqRefreshToken));
+    if(!r2.ok)return false;
+    const d2=await r2.json();
+    if(!d2.idToken)return false;
+    S.jqToken='Bearer '+d2.idToken;
+    DB.s('mi_jqtoken',S.jqToken);
+    S.jqTokenExpiry=Date.now()+23*3600*1000; // expire in 23h
+    DB.s('mi_jqexpiry',S.jqTokenExpiry);
+    return true;
+  }catch(e){console.warn('jqRefresh error:',e);return false;}
+}
+
 async function getJQToken(){
-  // Try refresh token first
+  // Check if current token is still valid (with 5min buffer)
+  const expiry=S.jqTokenExpiry||DB.g('mi_jqexpiry')||0;
+  if(S.jqToken&&Date.now()<expiry-300000)return S.jqToken;
+  // Try refresh
   if(S.jqRefreshToken){
-    try{
-      const res=await fetch('https://api.jquants.com/v1/token/auth_refresh?refreshtoken='+encodeURIComponent(S.jqRefreshToken));
-      if(res.ok){
-        const d=await res.json();
-        if(d.idToken){S.jqToken='Bearer '+d.idToken;DB.s('mi_jqtoken',S.jqToken);return S.jqToken;}
-      }
-    }catch(e){}
+    const ok=await jqRefresh();
+    if(ok)return S.jqToken;
   }
-  return S.jqToken;
+  // Try login with saved credentials
+  const email=S.jqEmail||DB.g('mi_jqemail');
+  const pass=S.jqPassword||DB.g('mi_jqpass');
+  if(email&&pass){
+    const ok=await jqLogin(email,pass);
+    if(ok)return S.jqToken;
+  }
+  return S.jqToken||null;
 }
 
 async function fetchPrice(ticker){
