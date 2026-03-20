@@ -395,14 +395,13 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   </div>
 
   <div class="card mb12">
-    <div class="lbl" style="margin-bottom:9px;">🤖 J-Quants 株価自動取得</div>
+    <div class="lbl" style="margin-bottom:9px;">🤖 J-Quants 株価自動取得（V2）</div>
     <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:8px;line-height:1.7;">
-      ① <a href="https://application.jpx-jquants.com" target="_blank" style="color:var(--accent2)">J-Quantsにログイン</a>（2段階認証で）<br>
-      ② ログイン後に<a href="https://api.jquants.com/v1/token/auth_refresh" target="_blank" style="color:var(--accent2)">このURL</a>を開く<br>
-      ③ 表示された <code style="color:#f6e05e;font-size:10px;">refreshToken</code> の値をコピー<br>
-      ④ 下の欄に貼り付けて「保存」
+      ① <a href="https://jpx-jquants.com/dashboard/" target="_blank" style="color:var(--accent2)">J-Quantsダッシュボード</a>にログイン<br>
+      ② 「APIキー」をコピー（永続有効・再発行可能）<br>
+      ③ 下の欄に貼り付けて「保存して接続」
     </p>
-    <input class="aff-in" id="jqRefreshInput" placeholder="refreshToken をここに貼り付け" style="margin-bottom:8px;font-family:monospace;font-size:11px;">
+    <input class="aff-in" id="jqApiKeyInput" placeholder="APIキーをここに貼り付け" style="margin-bottom:8px;font-family:monospace;font-size:11px;">
     <div id="jqStatus" style="font-size:10px;font-family:var(--sans);margin-bottom:8px;color:var(--muted);"></div>
     <button class="btn btn-p" style="padding:10px;" onclick="saveJQ()">💾 保存して接続</button>
     <div id="jqStatus" style="font-size:10px;font-family:var(--sans);color:var(--muted);margin-top:6px;"></div>
@@ -432,10 +431,8 @@ let S={
   lastGen:DB.g('mi_lastgen')||null,
   noteUrl:DB.g('mi_noteurl')||'',
   jqToken:DB.g('mi_jqtoken')||'',
+  jqApiKey:DB.g('mi_jqapikey')||DB.g('mi_jqtoken')||'',
   jqRefreshToken:DB.g('mi_jqrefresh')||'',
-  jqEmail:DB.g('mi_jqemail')||'',
-  jqPassword:DB.g('mi_jqpass')||'',
-  jqTokenExpiry:DB.g('mi_jqexpiry')||0,
   baselinePrices:DB.g('mi_baselines')||{},
   cands:[],selIdx:null,curArt:null,backFrom:'select',
   authorOpts:[],selAuthor:null,authorCategoryHook:'',
@@ -447,14 +444,12 @@ window.onload=()=>{
   loadAffUI();updateStatus();renderClickStats();
   document.getElementById('genInv').value=S.inv;
   document.getElementById('noteUrl').value=S.noteUrl;
-  // Load J-Quants status
+  // Load J-Quants API key status
   const jqStatusEl=document.getElementById('jqStatus');
-  const jqRtEl=document.getElementById('jqRefreshInput');
-  if(jqRtEl&&S.jqRefreshToken)jqRtEl.value=S.jqRefreshToken.slice(0,20)+'...';
-  if(jqStatusEl){
-    if(S.jqToken){jqStatusEl.textContent='✅ 接続済み（自動更新有効）';jqStatusEl.style.color='var(--up)';}
-    else if(S.jqRefreshToken){jqStatusEl.textContent='⚠️ リフレッシュトークンあり（IDトークン未取得）';jqStatusEl.style.color='var(--flat)';}
-  }
+  const jqKeyEl=document.getElementById('jqApiKeyInput');
+  const storedKey=S.jqApiKey||DB.g('mi_jqapikey')||S.jqToken||'';
+  if(jqKeyEl&&storedKey)jqKeyEl.value=storedKey.slice(0,12)+'...';
+  if(jqStatusEl&&storedKey){jqStatusEl.textContent='✅ APIキー設定済み';jqStatusEl.style.color='var(--up)';}
   // Check for due predictions and update tab badge
   setTimeout(()=>{
     const now=new Date().getTime();
@@ -1215,7 +1210,7 @@ async function fetchPriceWithChange(ticker){
     // Try auth refresh if token might be expired
     const freshToken=await getJQToken();
     const res=await fetch(`https://api.jquants.com/v1/prices/daily_quotes?code=${code}&from=${from}&to=${to}`,{
-      headers:{Authorization:freshToken}
+      headers:{'x-api-key':freshToken}
     });
     if(!res.ok){
       // Log error for debugging
@@ -1419,19 +1414,23 @@ function saveInv(){S.inv=parseInt(document.getElementById('genInv').value);DB.s(
 function saveNote(){S.noteUrl=document.getElementById('noteUrl').value.trim();DB.s('mi_noteurl',S.noteUrl);alert('保存しました ✓');}
 
 function saveJQ(){
-  const rt=document.getElementById('jqRefreshInput').value.trim();
-  if(!rt){alert('refreshToken を入力してください');return;}
-  S.jqRefreshToken=rt;
-  DB.s('mi_jqrefresh',rt);
+  const apiKey=document.getElementById('jqApiKeyInput').value.trim();
+  if(!apiKey){alert('APIキーを入力してください');return;}
+  S.jqApiKey=apiKey;
+  DB.s('mi_jqapikey',apiKey);
+  // Also set jqToken for backward compat
+  S.jqToken=apiKey;
+  DB.s('mi_jqtoken',apiKey);
   const statusEl=document.getElementById('jqStatus');
-  statusEl.textContent='🔄 接続中...';
+  statusEl.textContent='🔄 接続テスト中...';
   statusEl.style.color='var(--accent2)';
-  jqRefresh().then(ok=>{
-    if(ok){
-      statusEl.textContent='✅ 接続済み（IDトークン取得完了・23時間有効）';
+  // Test with a known ticker
+  fetchPriceWithChange('9432').then(data=>{
+    if(data){
+      statusEl.textContent='✅ 接続成功！株価自動取得が有効になりました';
       statusEl.style.color='var(--up)';
     } else {
-      statusEl.textContent='❌ 接続失敗。refreshToken が無効か期限切れです。手順②からやり直してください';
+      statusEl.textContent='❌ 接続失敗。APIキーを確認してください';
       statusEl.style.color='var(--down)';
     }
   });
@@ -1479,16 +1478,10 @@ async function jqRefresh(){
 }
 
 async function getJQToken(){
-  // Check if current token is still valid (with 5min buffer)
-  const expiry=S.jqTokenExpiry||DB.g('mi_jqexpiry')||0;
-  if(S.jqToken&&Date.now()<expiry-300000)return S.jqToken;
-  // Auto-refresh with refresh token
-  if(S.jqRefreshToken||DB.g('mi_jqrefresh')){
-    if(!S.jqRefreshToken)S.jqRefreshToken=DB.g('mi_jqrefresh');
-    const ok=await jqRefresh();
-    if(ok)return S.jqToken;
-  }
-  return S.jqToken||null;
+  // V2: just return the API key directly (permanent, no refresh needed)
+  const key=S.jqApiKey||DB.g('mi_jqapikey')||S.jqToken||DB.g('mi_jqtoken')||'';
+  if(key)S.jqToken=key;
+  return key||null;
 }
 
 async function fetchPrice(ticker){
@@ -1500,7 +1493,7 @@ async function fetchPrice(ticker){
   const code=ticker.replace(/[^0-9A-Za-z]/g,''); // J-Quants uses 4-digit codes as-is
   try{
     const res=await fetch(`https://api.jquants.com/v1/prices/daily_quotes?code=${code}&from=${from}&to=${to}`,{
-      headers:{Authorization:token}
+      headers:{'x-api-key':token}
     });
     if(!res.ok)return null;
     const d=await res.json();
