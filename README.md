@@ -190,7 +190,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 
   <div id="vAuthor" class="hidden">
     <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">今日の一言を選ぶ</h2>
-    <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">記事の冒頭・X投稿に自動挿入されます。<br>「AIの分析」の前に置く<strong style="color:var(--text)">あなた自身の感情・視点</strong>です。</p>
+    <p id="vAuthorDesc" style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">記事の冒頭・X投稿に自動挿入されます。<br>「AIの分析」の前に置く<strong style="color:var(--text)">あなた自身の感情・視点</strong>です。</p>
 
 ```
 <!-- Tab selector -->
@@ -620,8 +620,13 @@ function showAuthorForArticle(cand){
       <div class="author-opt-txt">「${txt}」</div>
     </div>`).join('');
   // Update author screen title to show article title
-  document.querySelector('#vAuthor h2').textContent='今日の一言を選ぶ';
-  document.querySelector('#vAuthor p').textContent='「'+cand.title.slice(0,30)+'…」の記事に付ける一言を選んでください。';
+  // Use getElementById-safe approach to avoid querySelector grabbing wrong elements
+  const vAuthorH2=document.querySelector('#vAuthor h2');
+  const vAuthorDesc=document.getElementById('vAuthorDesc');
+  if(vAuthorH2)vAuthorH2.textContent='今日の一言を選ぶ';
+  // Sanitize title - remove backticks and special chars that break display
+  const safeTitle=cand.title.replace(/`/g,'').replace(/\/g,'').slice(0,30);
+  if(vAuthorDesc)vAuthorDesc.textContent='「'+safeTitle+'…」の記事に付ける一言を選んでください。';
   showAuthor();
 }
 
