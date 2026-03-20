@@ -453,7 +453,7 @@ function goTab(t,el){
 
 function showHome(){['vSelect','vArticle','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vHome').classList.remove('hidden');}
 function showSelect(){['vHome','vArticle','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vSelect').classList.remove('hidden');}
-function showAuthor(){['vHome','vSelect','vArticle'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('vAuthor').classList.remove('hidden');}
+function showAuthor(){['vHome','vSelect','vArticle','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vAuthor').classList.remove('hidden');}
 
 // ── Status ────────────────────────────────────────────────
 function updateStatus(){
@@ -787,23 +787,48 @@ function copyFixPrompt(){
 
 function loadFixResult(){
   const raw=document.getElementById('fixResultText').value.trim();
-  if(!raw)return;
+  if(!raw){alert('テキストが空です');return;}
   try{
-    const js=extractJson(raw);
+    // Strict: only extract content between first { and last }
+    const start=raw.indexOf('{');
+    const end=raw.lastIndexOf('}');
+    if(start===-1||end===-1||end<=start)throw new Error('JSONが見つかりません。{...}の形式で貼り付けてください');
+    const js=sanitizeJson(raw.slice(start,end+1));
     const d=JSON.parse(js);
     if(!d.articles?.length)throw new Error('articles が見つかりません');
     const fixed=d.articles[0];
-    // Build fixedCand from original + overrides
-    S.fixedCand={...S.checkCand,
+    // Build fixedCand preserving relatedStocks from original
+    S.fixedCand={
+      ...S.checkCand,
       title:fixed.title||S.checkCand.title,
       summary:fixed.summary||S.checkCand.summary,
       content:fixed.content||S.checkCand.content,
       xPost:fixed.x_post||S.checkCand.xPost,
+      category:fixed.category||S.checkCand.category,
+      authorComments:fixed.author_comments||S.checkCand.authorComments,
+      // Rebuild relatedStocks from fixed JSON fields
+      relatedStocks:{
+        stockA:{
+          name:fixed.stock_a_name||S.checkCand.relatedStocks?.stockA?.name,
+          ticker:fixed.stock_a_ticker||S.checkCand.relatedStocks?.stockA?.ticker,
+          prediction:fixed.stock_a_pred||S.checkCand.relatedStocks?.stockA?.prediction,
+          reason:fixed.stock_a_reason||S.checkCand.relatedStocks?.stockA?.reason,
+        },
+        spotlight:{
+          name:fixed.spotlight_name||S.checkCand.relatedStocks?.spotlight?.name,
+          ticker:fixed.spotlight_ticker||S.checkCand.relatedStocks?.spotlight?.ticker,
+          prediction:fixed.spotlight_pred||S.checkCand.relatedStocks?.spotlight?.prediction,
+          reason:fixed.spotlight_reason||S.checkCand.relatedStocks?.spotlight?.reason,
+        }
+      },
+      sources:fixed.sources||S.checkCand.sources,
       changes:fixed.changes||[]
     };
     renderDiff(fixed.changes||[]);
     showView('vDiff');
-  }catch(e){alert('読み込み失敗: '+e.message);}
+  }catch(e){
+    alert('読み込み失敗: '+e.message+'\n\nヒント: JSONの{...}部分だけを貼り付けてください。説明文や```は不要です。');
+  }
 }
 
 function renderDiff(changes){
@@ -879,7 +904,7 @@ function finalPublish(cand){
   S.pub.unshift(art);DB.s('mi_pub',S.pub);
   S.curArt=art;S.backFrom='select';
   document.getElementById('artBody').innerHTML=buildArtHTML(art);
-  ['vHome','vSelect','vAuthor'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  ['vHome','vSelect','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});
   document.getElementById('vArticle').classList.remove('hidden');
   updateStatus();
   loadPricesForArticle(art);
