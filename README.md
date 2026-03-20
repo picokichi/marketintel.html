@@ -189,7 +189,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <!-- Author comment selector -->
 
   <div id="vAuthor" class="hidden">
-    <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">今日の一言を選ぶ</h2>
+    <h2 id="vAuthorTitle" style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">今日の一言を選ぶ</h2>
     <p id="vAuthorDesc" style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">記事の冒頭・X投稿に自動挿入されます。<br>「AIの分析」の前に置く<strong style="color:var(--text)">あなた自身の感情・視点</strong>です。</p>
 
 ```
@@ -610,23 +610,84 @@ function showView(id){
   if(target)target.classList.remove('hidden');
 }
 
+// ── Category hook mapping ────────────────────────────────
+function getCategoryHook(cat){
+  const m={'金融政策':'今日の金融政策ニュースをAIに分析させてみた','半導体':'今日の半導体ニュースをAIに分析させてみた','エネルギー':'今日の原油・エネルギーニュースをAIに分析させてみた','海運':'今日の海運ニュースをAIに分析させてみた','アクティビスト':'気になったアクティビスト案件をAIに深掘りさせてみた','決算':'気になった決算をAIに深掘りさせてみた','マクロ経済':'今日のマクロ経済ニュースをAIに分析させてみた','為替':'今日の円安・為替ニュースをAIに分析させてみた','不動産':'今日の不動産ニュースをAIに分析させてみた','防衛・宇宙':'今日の防衛・宇宙ニュースをAIに分析させてみた'};
+  return m[cat]||'今日のニュースをAIに分析させてみた';
+}
+
+// ── Human reaction templates ──────────────────────────────
+const HUMAN_TEMPLATES=[
+  {tag:'😲 驚き系',txt:'正直この会社名、今日まで知らなかった'},
+  {tag:'🤔 疑問系',txt:'なぜ全員が下がっている日にこの株だけ上がるのか、最初は意味がわからなかった'},
+  {tag:'💡 発見系',txt:'仕組みを理解したら急に株価の動きが見えた気がした'},
+  {tag:'😰 葛藤系',txt:'買いたい気持ちと怖い気持ちが半々。これが投資の本質なのかもしれない'},
+  {tag:'📚 学習系',txt:'今日初めて知った言葉がある。でも調べたら意外とシンプルだった'},
+  {tag:'😤 共感系',txt:'急落のニュースを見て売りたくなった。でもデータを見たら踏みとどまった'},
+  {tag:'🎯 気づき系',txt:'AIの分析を読んで「そういうことか」と腑に落ちた瞬間があった'},
+];
+
+function switchAuthorTab(tab){
+  const isHuman=tab==='human';
+  const hEl=document.getElementById('humanOpts');
+  const aEl=document.getElementById('aiOpts');
+  if(hEl)hEl.classList.toggle('hidden',!isHuman);
+  if(aEl)aEl.classList.toggle('hidden',isHuman);
+  const tH=document.getElementById('tabHuman');
+  const tA=document.getElementById('tabAI');
+  if(tH){tH.style.background=isHuman?'rgba(250,204,21,.2)':'rgba(99,179,237,.08)';tH.style.color=isHuman?'#f59e0b':'var(--muted)';}
+  if(tA){tA.style.background=isHuman?'rgba(99,179,237,.08)':'rgba(99,179,237,.2)';tA.style.color=isHuman?'var(--muted)':'var(--accent2)';}
+}
+
+function selHuman(i){
+  S.selAuthor='human_'+i;
+  document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
+  const el=document.getElementById('hopt'+i);
+  if(el)el.classList.add('sel');
+  document.getElementById('authorOkBtn').disabled=false;
+}
+
+function selAuthor(i){
+  S.selAuthor=i;
+  document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
+  const el=document.getElementById('aopt'+i);
+  if(el)el.classList.add('sel');
+  document.getElementById('authorOkBtn').disabled=false;
+}
+
 function showAuthorForArticle(cand){
   const labels=['🔥 強気・煽り系','📊 中立・分析系','⚠️ 警戒・逆張り系'];
-  S.authorOpts=cand.authorComments;S.selAuthor=null;
+  const comments=Array.isArray(cand.authorComments)?cand.authorComments:[];
+  S.authorOpts=comments;
+  S.selAuthor=null;
+  S.authorCategoryHook=getCategoryHook(cand.category||'');
   document.getElementById('authorOkBtn').disabled=true;
-  document.getElementById('authorOpts').innerHTML=cand.authorComments.map((txt,i)=>`
-    <div class="author-opt" id="aopt${i}" onclick="selAuthor(${i})">
-      <div class="author-opt-tag">${labels[i]||'パターン'+(i+1)}</div>
-      <div class="author-opt-txt">「${txt}」</div>
-    </div>`).join('');
-  // Update author screen title to show article title
-  // Use getElementById-safe approach to avoid querySelector grabbing wrong elements
-  const vAuthorH2=document.querySelector('#vAuthor h2');
-  const vAuthorDesc=document.getElementById('vAuthorDesc');
-  if(vAuthorH2)vAuthorH2.textContent='今日の一言を選ぶ';
-  // Sanitize title - remove backticks and special chars that break display
-    const safeTitle=(cand.title||'').split('`').join('').split('\\').join('').slice(0,30)
-  if(vAuthorDesc)vAuthorDesc.textContent='「'+safeTitle+'…」の記事に付ける一言を選んでください。';
+
+  // Render AI options (safe - guard against empty array)
+  const aiEl=document.getElementById('authorOpts');
+  if(aiEl){
+    aiEl.innerHTML=comments.length>0
+      ? comments.map((txt,i)=>`<div class="author-opt" id="aopt${i}" onclick="selAuthor(${i})"><div class="author-opt-tag">${labels[i]||'パターン'+(i+1)}</div><div class="author-opt-txt">「${(txt||'').slice(0,60)}」</div></div>`).join('')
+      : '<div style="font-size:11px;color:var(--muted);font-family:var(--sans)">AIコメントが生成されていません</div>';
+  }
+
+  // Render human templates
+  const hListEl=document.getElementById('humanOptList');
+  if(hListEl){
+    hListEl.innerHTML=HUMAN_TEMPLATES.map((t,i)=>`<div class="author-opt" id="hopt${i}" onclick="selHuman(${i})"><div class="author-opt-tag">${t.tag}</div><div class="author-opt-txt">「${t.txt}」</div></div>`).join('');
+  }
+
+  // Update desc safely
+  const safeTitle=(cand.title||'').slice(0,30);
+  const descEl=document.getElementById('vAuthorDesc');
+  if(descEl){
+    descEl.innerHTML='記事の冒頭・X投稿に自動挿入されます。<br><strong style="color:var(--text)">あなた自身の感情・視点</strong>です。<br><span style="font-size:10px;color:var(--accent2);font-family:var(--sans)">🔖 '+S.authorCategoryHook+'</span>';
+  }
+  const h2El=document.getElementById('vAuthorTitle');
+  if(h2El)h2El.textContent='「'+safeTitle+'…」の一言を選ぶ';
+
+  // Default to human tab
+  switchAuthorTab('human');
   showAuthor();
 }
 
