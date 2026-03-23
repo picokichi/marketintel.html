@@ -11,7 +11,13 @@
 <title>MarketIntel</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0e1a;--surface:rgba(255,255,255,0.03);--border:rgba(99,179,237,0.15);--accent:#4299e1;--accent2:#63b3ed;--text:#e2e8f0;--muted:#718096;--up:#22c55e;--down:#ef4444;--flat:#f59e0b;--serif:'Noto Serif JP',Georgia,serif;--sans:'Noto Sans JP',sans-serif;}
+/* ── 全CSS変数を正しい半角ハイフン(-)で統一（全角ダッシュ混入バグを修正） ── */
+:root{
+  --bg:#0a0e1a;--surface:rgba(255,255,255,0.03);--border:rgba(99,179,237,0.15);
+  --accent:#4299e1;--accent2:#63b3ed;--text:#e2e8f0;--muted:#718096;
+  --up:#22c55e;--down:#ef4444;--flat:#f59e0b;
+  --serif:'Noto Serif JP',Georgia,serif;--sans:'Noto Sans JP',sans-serif;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--serif);-webkit-font-smoothing:antialiased;}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(99,179,237,0.03)1px,transparent 1px),linear-gradient(90deg,rgba(99,179,237,0.03)1px,transparent 1px);background-size:36px 36px;}
@@ -54,70 +60,58 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .empty{text-align:center;color:#4a5568;padding:40px 0;font-family:var(--sans);font-size:13px;}
 .hidden{display:none!important;}
 .mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}.mb14{margin-bottom:14px;}
-
-/* Author comment selector */
 .author-box{background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.2);border-radius:10px;padding:13px;margin-bottom:12px;}
-.author-title{font-size:11px;font-weight:700;color:#f59e0b;font-family:var(–sans);margin-bottom:8px;}
+.author-title{font-size:11px;font-weight:700;color:#f59e0b;font-family:var(--sans);margin-bottom:8px;}
 .author-opt{background:rgba(0,0,0,.3);border:1px solid rgba(250,204,21,.15);border-radius:8px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:.2s;}
 .author-opt:last-child{margin-bottom:0;}
 .author-opt.sel{background:rgba(250,204,21,.1);border-color:rgba(250,204,21,.4);}
 .author-opt-txt{font-size:12px;line-height:1.7;color:#e2e8f0;}
-.author-opt-tag{font-size:9px;color:#f59e0b;font-family:var(–sans);margin-bottom:3px;}
-
-/* Status bar */
-.stat-bar{background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.12);border-radius:8px;padding:9px 12px;margin-bottom:12px;display:flex;justify-content:space-between;font-family:var(–sans);}
-.stat-item{font-size:9px;color:var(–muted);}
-.stat-val{font-size:11px;font-weight:700;color:var(–accent2);margin-top:1px;}
-.stat-warn{color:var(–flat);}
-
-/* Prediction tracker */
-.track-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(99,179,237,.07);font-family:var(–sans);}
+.author-opt-tag{font-size:9px;color:#f59e0b;font-family:var(--sans);margin-bottom:3px;}
+.stat-bar{background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.12);border-radius:8px;padding:9px 12px;margin-bottom:12px;display:flex;justify-content:space-between;font-family:var(--sans);}
+.stat-item{font-size:9px;color:var(--muted);}
+.stat-val{font-size:11px;font-weight:700;color:var(--accent2);margin-top:1px;}
+.stat-warn{color:var(--flat);}
+.track-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(99,179,237,.07);font-family:var(--sans);}
 .track-row:last-child{border-bottom:none;}
 .track-name{font-size:12px;font-weight:700;}
-.track-pred{font-size:10px;margin-top:1px;color:var(–muted);}
+.track-pred{font-size:10px;margin-top:1px;color:var(--muted);}
 .track-result{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;}
-.track-pending{background:rgba(113,128,150,.15);color:var(–muted);}
-.track-hit{background:rgba(34,197,94,.15);color:var(–up);}
-.track-miss{background:rgba(239,68,68,.15);color:var(–down);}
-.track-due{background:rgba(250,204,21,.15);color:var(–flat);animation:pulse 1.5s ease-in-out infinite;}
+.track-pending{background:rgba(113,128,150,.15);color:var(--muted);}
+.track-hit{background:rgba(34,197,94,.15);color:var(--up);}
+.track-miss{background:rgba(239,68,68,.15);color:var(--down);}
+.track-due{background:rgba(250,204,21,.15);color:var(--flat);animation:pulse 1.5s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
-
-/* How-to */
 .how{background:rgba(99,179,237,.06);border:1px solid rgba(99,179,237,.18);border-radius:10px;padding:12px;margin-bottom:12px;}
 .how-step{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px;}
 .how-step:last-child{margin-bottom:0;}
-.step-n{width:19px;height:19px;border-radius:50%;background:var(–accent);color:#fff;font-size:10px;font-weight:700;font-family:var(–sans);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.step-t{font-size:11px;color:#a0aec0;line-height:1.6;font-family:var(–sans);}
-.step-t strong{color:var(–text);}
-
-/* Free/paid split preview */
-.split-box{border:1px solid var(–border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.step-n{width:19px;height:19px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;font-family:var(--sans);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-t{font-size:11px;color:#a0aec0;line-height:1.6;font-family:var(--sans);}
+.step-t strong{color:var(--text);}
+.split-box{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
 .split-free{background:rgba(34,197,94,.05);border-bottom:2px dashed rgba(34,197,94,.3);padding:12px;}
 .split-paid{background:rgba(250,204,21,.04);padding:12px;}
-.split-tag{font-size:9px;font-weight:700;font-family:var(–sans);letter-spacing:.08em;margin-bottom:5px;}
-.price-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.3);border:1px solid rgba(99,179,237,.15);border-radius:6px;padding:3px 9px;margin-top:4px;font-family:var(–sans);}
-.price-val{font-size:12px;font-weight:700;color:var(–text);}
-.price-chg-up{font-size:10px;color:var(–up);}
-.price-chg-down{font-size:10px;color:var(–down);}
-.price-chg-flat{font-size:10px;color:var(–flat);}
-.price-loading{font-size:10px;color:var(–muted);animation:pulse 1s ease-in-out infinite;}
-/* Check & Diff UI */
-.check-badge{display:inline-flex;align-items:center;gap:4px;border-radius:5px;padding:2px 8px;font-size:10px;font-family:var(–sans);font-weight:700;}
-.check-error{background:rgba(239,68,68,.15);color:var(–down);border:1px solid rgba(239,68,68,.3);}
-.check-warn{background:rgba(245,158,11,.15);color:var(–flat);border:1px solid rgba(245,158,11,.3);}
-.check-ok{background:rgba(34,197,94,.12);color:var(–up);border:1px solid rgba(34,197,94,.25);}
-.diff-block{border-radius:8px;overflow:hidden;margin-bottom:10px;border:1px solid var(–border);}
-.diff-orig{background:rgba(239,68,68,.07);padding:9px 12px;border-bottom:1px solid var(–border);}
+.split-tag{font-size:9px;font-weight:700;font-family:var(--sans);letter-spacing:.08em;margin-bottom:5px;}
+.price-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.3);border:1px solid rgba(99,179,237,.15);border-radius:6px;padding:3px 9px;margin-top:4px;font-family:var(--sans);}
+.price-val{font-size:12px;font-weight:700;color:var(--text);}
+.price-chg-up{font-size:10px;color:var(--up);}
+.price-chg-down{font-size:10px;color:var(--down);}
+.price-chg-flat{font-size:10px;color:var(--flat);}
+.price-loading{font-size:10px;color:var(--muted);animation:pulse 1s ease-in-out infinite;}
+.check-badge{display:inline-flex;align-items:center;gap:4px;border-radius:5px;padding:2px 8px;font-size:10px;font-family:var(--sans);font-weight:700;}
+.check-error{background:rgba(239,68,68,.15);color:var(--down);border:1px solid rgba(239,68,68,.3);}
+.check-warn{background:rgba(245,158,11,.15);color:var(--flat);border:1px solid rgba(245,158,11,.3);}
+.check-ok{background:rgba(34,197,94,.12);color:var(--up);border:1px solid rgba(34,197,94,.25);}
+.diff-block{border-radius:8px;overflow:hidden;margin-bottom:10px;border:1px solid var(--border);}
+.diff-orig{background:rgba(239,68,68,.07);padding:9px 12px;border-bottom:1px solid var(--border);}
 .diff-new{background:rgba(34,197,94,.07);padding:9px 12px;}
-.diff-label{font-size:9px;font-family:var(–sans);font-weight:700;margin-bottom:3px;}
-.diff-text{font-size:12px;line-height:1.7;color:var(–text);}
-.step-indicator{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-family:var(–sans);}
+.diff-label{font-size:9px;font-family:var(--sans);font-weight:700;margin-bottom:3px;}
+.diff-text{font-size:12px;line-height:1.7;color:var(--text);}
+.step-indicator{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-family:var(--sans);}
 .step-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
-.step-active{background:var(–accent);color:white;}
-.step-done{background:rgba(34,197,94,.2);color:var(–up);}
-.step-pending{background:rgba(99,179,237,.1);color:var(–muted);}
+.step-active{background:var(--accent);color:white;}
+.step-done{background:rgba(34,197,94,.2);color:var(--up);}
+.step-pending{background:rgba(99,179,237,.1);color:var(--muted);}
 </style>
-
 </head>
 <body>
 <header class="hdr">
@@ -144,46 +138,37 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
       <div class="stat-item" style="text-align:center">公開済み<div class="stat-val" id="pubCnt">0件</div></div>
       <div class="stat-item" style="text-align:right">次回推奨<div class="stat-val" id="nextGenT">今すぐ ✅</div></div>
     </div>
-
-```
-<div class="how mb14">
-  <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:9px;">📋 使い方</div>
-  <div class="how-step"><div class="step-n">1</div><div class="step-t">「記事を生成する」→ プロンプトをコピー</div></div>
-  <div class="how-step"><div class="step-n">2</div><div class="step-t">Claude.aiアプリに貼り付けて送信</div></div>
-  <div class="how-step"><div class="step-n">3</div><div class="step-t">出力されたJSONをコピー →「テキストを貼り付け」</div></div>
-  <div class="how-step"><div class="step-n">4</div><div class="step-t"><strong>「今日の一言」を選ぶ</strong> → 記事を選んで公開</div></div>
-</div>
-
-<button class="btn btn-p mb8" onclick="onGenerate()" style="font-size:14px;padding:14px;">⚡ 記事を生成する</button>
-
-<div id="promptBox" class="hidden mb8">
-  <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">📋 プロンプト</div>
-  <textarea id="promptText" readonly style="width:100%;height:130px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:9px;line-height:1.6;resize:none;-webkit-user-select:text;user-select:text;"></textarea>
-  <div style="display:flex;gap:7px;margin-top:7px;">
-    <button class="btn btn-p" id="cpBtn" onclick="copyPrompt()" style="flex:1;padding:10px;font-size:12px;">📋 コピー</button>
-    <a href="https://claude.ai" target="_blank" class="btn btn-g" style="flex:1;padding:10px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center;">🤖 Claudeを開く</a>
-  </div>
-</div>
-
-<div style="display:flex;gap:7px;margin-bottom:8px;">
-  <button class="btn btn-g" onclick="document.getElementById('fileIn').click()" style="flex:1;padding:10px;font-size:12px;">📥 ファイルから</button>
-  <button class="btn btn-g" onclick="showPaste()" style="flex:1;padding:10px;font-size:12px;">📋 テキストを貼り付け</button>
-</div>
-<input type="file" id="fileIn" accept=".json" class="hidden" onchange="loadFile(event)">
-
-<div id="pasteBox" class="hidden mb8">
-  <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">📋 JSONをここに貼り付け</div>
-  <textarea id="pasteText" style="width:100%;height:110px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:9px;line-height:1.6;resize:none;" placeholder='{"articles":[...]} の形式で貼り付けてください'></textarea>
-  <div style="display:flex;gap:7px;margin-top:7px;">
-    <button class="btn btn-o" onclick="hidePaste()" style="flex:1;padding:9px;font-size:12px;">キャンセル</button>
-    <button class="btn btn-p" onclick="loadPaste()" style="flex:2;padding:9px;font-size:12px;">✅ 読み込む</button>
-  </div>
-</div>
-
-<div id="homeMsg" class="hidden" style="margin-top:10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:10px;font-size:11px;color:#68d391;font-family:var(--sans);line-height:1.7;"></div>
-<div id="homeErr" class="hidden" style="margin-top:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px;font-size:11px;color:#fc8181;font-family:var(--sans);line-height:1.7;"></div>
-```
-
+    <div class="how mb14">
+      <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:9px;">📋 使い方</div>
+      <div class="how-step"><div class="step-n">1</div><div class="step-t">「記事を生成する」→ プロンプトをコピー</div></div>
+      <div class="how-step"><div class="step-n">2</div><div class="step-t">Claude.aiアプリに貼り付けて送信</div></div>
+      <div class="how-step"><div class="step-n">3</div><div class="step-t">出力されたJSONをコピー →「テキストを貼り付け」</div></div>
+      <div class="how-step"><div class="step-n">4</div><div class="step-t"><strong>「今日の一言」を選ぶ</strong> → 記事を選んで公開</div></div>
+    </div>
+    <button class="btn btn-p mb8" onclick="onGenerate()" style="font-size:14px;padding:14px;">⚡ 記事を生成する</button>
+    <div id="promptBox" class="hidden mb8">
+      <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">📋 プロンプト</div>
+      <textarea id="promptText" readonly style="width:100%;height:130px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:9px;line-height:1.6;resize:none;-webkit-user-select:text;user-select:text;"></textarea>
+      <div style="display:flex;gap:7px;margin-top:7px;">
+        <button class="btn btn-p" id="cpBtn" onclick="copyPrompt()" style="flex:1;padding:10px;font-size:12px;">📋 コピー</button>
+        <a href="https://claude.ai" target="_blank" class="btn btn-g" style="flex:1;padding:10px;font-size:12px;text-decoration:none;display:flex;align-items:center;justify-content:center;">🤖 Claudeを開く</a>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:8px;">
+      <button class="btn btn-g" onclick="document.getElementById('fileIn').click()" style="flex:1;padding:10px;font-size:12px;">📥 ファイルから</button>
+      <button class="btn btn-g" onclick="showPaste()" style="flex:1;padding:10px;font-size:12px;">📋 テキストを貼り付け</button>
+    </div>
+    <input type="file" id="fileIn" accept=".json" class="hidden" onchange="loadFile(event)">
+    <div id="pasteBox" class="hidden mb8">
+      <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:5px;">📋 JSONをここに貼り付け</div>
+      <textarea id="pasteText" style="width:100%;height:110px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:11px;font-family:var(--sans);padding:9px;line-height:1.6;resize:none;" placeholder='{"articles":[...]} の形式で貼り付けてください'></textarea>
+      <div style="display:flex;gap:7px;margin-top:7px;">
+        <button class="btn btn-o" onclick="hidePaste()" style="flex:1;padding:9px;font-size:12px;">キャンセル</button>
+        <button class="btn btn-p" onclick="loadPaste()" style="flex:2;padding:9px;font-size:12px;">✅ 読み込む</button>
+      </div>
+    </div>
+    <div id="homeMsg" class="hidden" style="margin-top:10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:10px;font-size:11px;color:#68d391;font-family:var(--sans);line-height:1.7;"></div>
+    <div id="homeErr" class="hidden" style="margin-top:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px;font-size:11px;color:#fc8181;font-family:var(--sans);line-height:1.7;"></div>
   </div>
 
   <!-- Author comment selector -->
@@ -191,45 +176,31 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <div id="vAuthor" class="hidden">
     <h2 id="vAuthorTitle" style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">今日の一言を選ぶ</h2>
     <p id="vAuthorDesc" style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">記事の冒頭・X投稿に自動挿入されます。<br>「AIの分析」の前に置く<strong style="color:var(--text)">あなた自身の感情・視点</strong>です。</p>
-
-```
-<!-- Tab selector -->
-<div style="display:flex;gap:4px;margin-bottom:10px;">
-  <button id="tabHuman" onclick="switchAuthorTab('human')" style="flex:1;padding:7px;border-radius:7px;border:none;font-size:11px;font-family:var(--sans);font-weight:700;cursor:pointer;background:rgba(250,204,21,.2);color:#f59e0b;">😊 素直な反応</button>
-  <button id="tabAI" onclick="switchAuthorTab('ai')" style="flex:1;padding:7px;border-radius:7px;border:none;font-size:11px;font-family:var(--sans);font-weight:700;cursor:pointer;background:rgba(99,179,237,.08);color:var(--muted);">🤖 AI生成コメント</button>
-</div>
-
-<!-- Article preview (collapsed) -->
-<details style="margin-bottom:10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:8px 12px;">
-  <summary style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);cursor:pointer;user-select:none;">📄 記事を確認する（タップで開く）</summary>
-  <div id="authorPreview" style="font-size:11px;line-height:1.8;color:#a0aec0;margin-top:8px;max-height:180px;overflow-y:auto;white-space:pre-wrap;"></div>
-</details>
-
-<!-- Human reaction templates -->
-<div id="humanOpts">
-  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">👆 タップして選ぶだけ。毎回違うパターンが出ます。</p>
-  <div id="humanOptList"></div>
-  <button onclick="refreshHumanTemplates()" style="margin-top:6px;width:100%;padding:7px;background:rgba(99,179,237,.08);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--accent2);font-family:var(--sans);cursor:pointer;">🔄 別のパターンを表示</button>
-</div>
-
-<!-- AI generated comments -->
-<div id="aiOpts" class="hidden">
-  <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">AIが記事のテーマに合わせて生成しました（コンプラチェック後）</p>
-  <div id="authorOpts"></div>
-</div>
-
-<!-- Custom free input -->
-<div style="margin-top:10px;">
-  <div style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:4px;">✏️ 自分の言葉で書く（任意）</div>
-  <textarea id="customComment" placeholder="自由に一言を書いてください（例:「この銘柄、先週から気になってた」）" style="width:100%;height:60px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:var(--sans);padding:8px;resize:none;line-height:1.6;" oninput="onCustomInput(this.value)"></textarea>
-</div>
-
-<div style="display:flex;gap:7px;margin-top:8px;">
-  <button class="btn btn-o" style="flex:1;padding:10px;" onclick="skipAuthor()">スキップ</button>
-  <button class="btn btn-p" id="authorOkBtn" style="flex:2;padding:10px;" onclick="confirmAuthor()" disabled>この一言で進む →</button>
-</div>
-```
-
+    <div style="display:flex;gap:4px;margin-bottom:10px;">
+      <button id="tabHuman" onclick="switchAuthorTab('human')" style="flex:1;padding:7px;border-radius:7px;border:none;font-size:11px;font-family:var(--sans);font-weight:700;cursor:pointer;background:rgba(250,204,21,.2);color:#f59e0b;">😊 素直な反応</button>
+      <button id="tabAI" onclick="switchAuthorTab('ai')" style="flex:1;padding:7px;border-radius:7px;border:none;font-size:11px;font-family:var(--sans);font-weight:700;cursor:pointer;background:rgba(99,179,237,.08);color:var(--muted);">🤖 AI生成コメント</button>
+    </div>
+    <details style="margin-bottom:10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:8px 12px;">
+      <summary style="font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);cursor:pointer;user-select:none;">📄 記事を確認する（タップで開く）</summary>
+      <div id="authorPreview" style="font-size:11px;line-height:1.8;color:#a0aec0;margin-top:8px;max-height:180px;overflow-y:auto;white-space:pre-wrap;"></div>
+    </details>
+    <div id="humanOpts">
+      <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">👆 タップして選ぶだけ。毎回違うパターンが出ます。</p>
+      <div id="humanOptList"></div>
+      <button onclick="refreshHumanTemplates()" style="margin-top:6px;width:100%;padding:7px;background:rgba(99,179,237,.08);border:1px solid var(--border);border-radius:7px;font-size:11px;color:var(--accent2);font-family:var(--sans);cursor:pointer;">🔄 別のパターンを表示</button>
+    </div>
+    <div id="aiOpts" class="hidden">
+      <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">AIが記事のテーマに合わせて生成しました（コンプラチェック後）</p>
+      <div id="authorOpts"></div>
+    </div>
+    <div style="margin-top:10px;">
+      <div style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:4px;">✏️ 自分の言葉で書く（任意）</div>
+      <textarea id="customComment" placeholder="自由に一言を書いてください（例:「この銘柄、先週から気になってた」）" style="width:100%;height:60px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:var(--sans);padding:8px;resize:none;line-height:1.6;" oninput="onCustomInput(this.value)"></textarea>
+    </div>
+    <div style="display:flex;gap:7px;margin-top:8px;">
+      <button class="btn btn-o" style="flex:1;padding:10px;" onclick="skipAuthor()">スキップ</button>
+      <button class="btn btn-p" id="authorOkBtn" style="flex:2;padding:10px;" onclick="confirmAuthor()" disabled>この一言で進む →</button>
+    </div>
   </div>
 
   <!-- Article select -->
@@ -251,7 +222,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <div id="artBody"></div>
   </div>
 
-  <!-- CHECK FLOW: Step1 - Generate check prompt -->
+  <!-- CHECK FLOW: Step1 -->
 
   <div id="vCheck" class="hidden">
     <button class="back-btn" onclick="backToSelect()">← 記事選択へ戻る</button>
@@ -275,7 +246,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <div id="checkErr" class="hidden" style="margin-top:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px;font-size:11px;color:#fc8181;font-family:var(--sans);"></div>
   </div>
 
-  <!-- CHECK FLOW: Step2 - Show check results & generate fix prompt -->
+  <!-- CHECK FLOW: Step2 -->
 
   <div id="vCheckResult" class="hidden">
     <button class="back-btn" onclick="showView('vCheck')">← チェックへ戻る</button>
@@ -307,10 +278,10 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     </div>
   </div>
 
-  <!-- JUDGE FLOW: AI judgment result paste -->
+  <!-- JUDGE FLOW -->
 
   <div id="vJudge" class="hidden">
-    <button class="back-btn" onclick="showView('tPred')">← 予測トラッカーへ戻る</button>
+    <button class="back-btn" onclick="showView('vHome');goTab('track',document.querySelector(\'.tab[onclick*=track]\'))">← 予測トラッカーへ戻る</button>
     <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">🤖 AI判定プロンプト</h2>
     <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">コピーしてClaudeに貼り付けてください</p>
     <textarea id="judgePromptText" readonly style="width:100%;height:160px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:10px;font-family:monospace;padding:9px;line-height:1.5;resize:none;-webkit-user-select:text;user-select:text;margin-bottom:8px;"></textarea>
@@ -331,10 +302,13 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">🔎 修正前後の比較</h2>
     <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:12px;">修正内容を確認して承認・却下してください</p>
     <div id="diffList" style="margin-bottom:14px;"></div>
-    <div style="display:flex;gap:7px;">
-      <button class="btn btn-o" style="flex:1;padding:11px;" onclick="rejectFix()">🗑 記事を破棄</button>
-      <button class="btn btn-g" style="flex:1;padding:11px;" onclick="skipFix()">元のまま公開</button>
-      <button class="btn btn-p" style="flex:2;padding:11px;" onclick="approveFix()">✅ 修正を承認して進む</button>
+    <!-- ★ FIX: ボタン3つのレイアウト調整（縦積み＋横並び）→ iPhoneで確実にタップできる高さを確保 -->
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-p" style="padding:14px;font-size:13px;" onclick="approveFix()">✅ 修正を承認して進む</button>
+      <div style="display:flex;gap:7px;">
+        <button class="btn btn-o" style="flex:1;padding:11px;" onclick="skipFix()">元のまま公開</button>
+        <button class="btn" style="flex:1;padding:11px;background:rgba(239,68,68,.12);color:var(--down);border:1px solid rgba(239,68,68,.3);" onclick="rejectFix()">🗑 記事を破棄</button>
+      </div>
     </div>
   </div>
 </div>
@@ -369,7 +343,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     </div>
   </div>
   <div id="trackList"></div>
-  <button class="btn btn-g mt8" style="margin-top:8px;padding:10px;font-size:12px;" onclick="genTrackPost()">🐦 的中率をXに投稿する</button>
+  <button class="btn btn-g" style="margin-top:8px;padding:10px;font-size:12px;" onclick="genTrackPost()">🐦 的中率をXに投稿する</button>
   <div id="trackPost" class="hidden" style="margin-top:10px;"></div>
 </div>
 
@@ -377,7 +351,6 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 
 <div id="tCfg" class="hidden">
   <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:14px;">設定</h2>
-
   <div class="card mb12">
     <div class="lbl" style="margin-bottom:9px;">💰 アフィリエイトリンク</div>
     <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;line-height:1.7;">記事末尾に自動挿入。クリック数も計測されます。</p>
@@ -387,13 +360,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <label class="aff-lbl">FX口座（任意）</label><input class="aff-in" id="aFX" placeholder="https://...">
     <button class="btn btn-p" style="padding:10px;" onclick="saveAff()">💾 保存する</button>
   </div>
-
   <div class="card mb12">
     <div class="lbl" style="margin-bottom:9px;">📊 クリック計測</div>
     <div id="clickStats" style="font-size:11px;font-family:var(--sans);color:var(--muted);line-height:2;"></div>
     <button class="btn btn-o" style="padding:8px;font-size:11px;margin-top:8px;" onclick="resetClicks()">リセット</button>
   </div>
-
   <div class="card mb12">
     <div class="lbl" style="margin-bottom:9px;">⏱️ 更新頻度</div>
     <select id="genInv" style="width:100%;padding:9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:var(--sans);outline:none;margin-bottom:8px;">
@@ -403,14 +374,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     </select>
     <button class="btn btn-p" style="padding:10px;" onclick="saveInv()">💾 保存する</button>
   </div>
-
   <div class="card mb12">
     <div class="lbl" style="margin-bottom:9px;">🏷️ noteマガジンURL</div>
     <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:8px;line-height:1.7;">有料マガジンのURLを設定するとnote CTAに自動挿入されます</p>
     <input class="aff-in" id="noteUrl" placeholder="https://note.com/あなたのID/m/xxx" style="margin-bottom:8px;">
     <button class="btn btn-p" style="padding:10px;" onclick="saveNote()">💾 保存する</button>
   </div>
-
   <div class="card mb12">
     <div class="lbl" style="margin-bottom:9px;">🤖 J-Quants 株価自動取得（V2）</div>
     <p style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:8px;line-height:1.7;">
@@ -421,14 +390,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     <input class="aff-in" id="jqApiKeyInput" placeholder="APIキーをここに貼り付け" style="margin-bottom:8px;font-family:monospace;font-size:11px;">
     <div id="jqStatus" style="font-size:10px;font-family:var(--sans);margin-bottom:8px;color:var(--muted);"></div>
     <button class="btn btn-p" style="padding:10px;" onclick="saveJQ()">💾 保存して接続</button>
-    <div id="jqStatus" style="font-size:10px;font-family:var(--sans);color:var(--muted);margin-top:6px;"></div>
   </div>
-
   <div class="card mb12">
     <div class="lbl" style="margin-bottom:8px;">📱 ホーム画面に追加</div>
     <p style="font-size:11px;color:var(--muted);font-family:var(--sans);line-height:1.8;">Safari → 共有ボタン（□↑）→「ホーム画面に追加」</p>
   </div>
-
   <div class="card">
     <div class="lbl" style="margin-bottom:9px;">🗂️ データ管理</div>
     <button class="btn btn-o" style="padding:9px;font-size:12px;" onclick="clearAll()">公開済み記事を全件削除</button>
@@ -455,43 +421,47 @@ let S={
   authorOpts:[],selAuthor:null,authorCategoryHook:'',
   preds:DB.g('mi_preds')||[],
   checkCand:null,checkResult:null,fixedCand:null,
+  _currentHumanTemplates:[],
 };
 
 window.onload=()=>{
   loadAffUI();updateStatus();renderClickStats();
   document.getElementById('genInv').value=S.inv;
   document.getElementById('noteUrl').value=S.noteUrl;
-  // Load J-Quants API key status
   const jqStatusEl=document.getElementById('jqStatus');
   const jqKeyEl=document.getElementById('jqApiKeyInput');
   const storedKey=S.jqApiKey||DB.g('mi_jqapikey')||S.jqToken||'';
   if(jqKeyEl&&storedKey)jqKeyEl.value=storedKey.slice(0,12)+'...';
   if(jqStatusEl&&storedKey){jqStatusEl.textContent='✅ APIキー設定済み';jqStatusEl.style.color='var(--up)';}
-  // Check for due predictions and update tab badge
   setTimeout(()=>{
     const now=new Date().getTime();
     const due=S.preds.filter(p=>p.result==='pending'&&p.deadlineTs&&now>=p.deadlineTs).length;
     const tab=document.querySelector('.tab[onclick*="track"]');
-    if(tab&&due>0)tab.textContent=`予測 ⏰${due}`;
-    // Auto-judge if J-Quants token is set
-    // AI判定は手動でトリガー（予測トラッカーの「AI判定する」ボタンを使用）
+    if(tab&&due>0)tab.textContent='予測 ⏰'+due;
   },500);
 };
 
 // ── Tab ──────────────────────────────────────────────────
 function goTab(t,el){
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');
+  if(el)el.classList.add('on');
   ['tNew','tPub','tTrack','tCfg'].forEach(id=>document.getElementById(id).classList.add('hidden'));
   const map={new:'tNew',pub:'tPub',track:'tTrack',cfg:'tCfg'};
   document.getElementById(map[t]).classList.remove('hidden');
   if(t==='pub')renderPubList();
-  if(t==='track'){renderTrack();}
+  if(t==='track')renderTrack();
 }
 
-function showHome(){['vSelect','vArticle','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vHome').classList.remove('hidden');}
-function showSelect(){['vHome','vArticle','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vSelect').classList.remove('hidden');}
-function showAuthor(){['vHome','vSelect','vArticle','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});document.getElementById('vAuthor').classList.remove('hidden');}
+// ── View switcher（全ビューを管理） ──────────────────────
+const ALL_VIEWS=['vHome','vSelect','vArticle','vAuthor','vCheck','vCheckResult','vDiff','vJudge'];
+function showView(id){
+  ALL_VIEWS.forEach(v=>{const el=document.getElementById(v);if(el)el.classList.add('hidden');});
+  const target=document.getElementById(id);
+  if(target)target.classList.remove('hidden');
+}
+function showHome(){showView('vHome');}
+function showSelect(){showView('vSelect');}
+function showAuthor(){showView('vAuthor');}
 
 // ── Status ────────────────────────────────────────────────
 function updateStatus(){
@@ -510,13 +480,9 @@ function updateStatus(){
 function onGenerate(){
   const avoid=S.pub.map(a=>a.title).slice(0,5);
   const avoidNote=avoid.length?'\n既出記事（除外）: '+avoid.join(' / '):'';
-
-  // Generate current datetime string at button-press moment
   const now=new Date();
   const todayStr=now.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'long'})+' '+now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
-
-  const p='あなたは個人投資家向けの人気金融ブロガーです。「読まれる・シェアされる・他にはない」記事を書くのが得意です。\n\n【本日の日時（システム自動取得・変更禁止）】\n'+todayStr+'\nこの日時を全ての記事・日付表現の基準とすること。「明日」「来週」「今週」「先週」などの相対表現はこの日時から計算して使用すること。この日時と異なる日付を記事に使用することは絶対に禁止。\n\n株価に影響しそうな最新の金融ニュースを3つピックアップし、以下のスタイルで記事を書いてください。\n\n【リサーチのルール】\n・各トピックについて必ず異なるメディア（日経・Bloomberg・Reuters・Yahoo!ファイナンス・東洋経済・会社四季報など）の記事を最低3つ参照すること\n・各メディアの論調の違い・温度差を記事の中で明示すること\n・複数ソースを比較した上での独自分析・見解を必ず加えること\n・株価・出来高・騰落率などの具体的な数字を入れること。確認できた数字には（○○報道）と出典を明記し、推計・概算の場合は「〜と推定される」と注釈を入れること\n・そのニュースから3手先に何が起きるかの連鎖予測を文章として自然に組み込むこと\n\n【文体・構成のルール】\n\n■ 記事の必須構成（この順番を厳守）:\n1. フック（1〜2文）: 逆説・数字・問い・驚きで始める。「〜なのに〜」「〜のはずが〜」という逆説構造を優先する\n2. ニュース事実（1段落）: 何が起きたかを簡潔に。数字と出典を入れる\n3. メディア比較（1〜2段落）: 3媒体の温度差を「A社は強気、B社は慎重——どちらが正しいか」という対立構造で書く\n4. 独自分析「だからどうなる？」（1段落）: 筆者の見解を断言する。ただし株価予測ではなく「構造・因果関係」を断言すること\n5. 3手先の連鎖→注目株の自然な登場（1段落）: 矢印(→)でリズムよく連鎖を書き、最後に「この連鎖の終着点にいる会社が〇〇だ」という形で注目株を自然に導出すること。銘柄を別添えで紹介するのは禁止\n6. 読者への問いかけ（1文）: 「あなたはどう見るか」「この数字をどう解釈するか」など\n7. 締め「次に注目すべきポイント」: 具体的な日付・指標・イベントで終わる\n\n■ Funny×Interestingの書き方ルール（全項目必須）:\n・1段落は最大4行。テンポよく短く切る\n・専門用語は「（）内に一言」で説明。長い説明は不要\n・逆説・対立・意外な因果関係を毎記事1回以上入れる\n・3手先の連鎖は矢印(→)でリズムよく書く\n・注目株は「銘柄紹介」として登場させず「連鎖の受益者として自然に登場」させる\n・断言は「株価が上がる」ではなく「この構造は見逃せない」「ここに死角がある」「市場はまだ気づいていない」など分析・構造への断言にする\n・タイトルは「数字」「問い」「驚き」「逆説」で始める\n・読者が「賢くなった気がする」「次が読みたい」と感じる終わり方にする\n\n【銘柄提示のルール】\n・【注目株発掘プロセス・厳守】以下のステップを必ず順番通りに実行すること:\\n  Step1: 記事テーマが決まったら「○○関連 低位株」「○○テーマ 小型株」でWeb検索し候補を3〜4社リストアップする\\n  Step2: 各候補について「企業名 証券コード」でWeb検索してコードを確認する（記憶でのコード出力は絶対禁止）\\n  Step3: 各候補について「証券コード 株価」でWeb検索して当日または前日終値を確認する\\n  Step4: 1000円未満の銘柄を注目株として採用する。複数ある場合は最も株価が低い銘柄を優先する\\n  Step5: 4社試して全て1000円超の場合は最も株価が低い銘柄を採用し、その旨をspotlight_reasonに記載する\\n  Step6: 各記事で異なる銘柄を選ぶこと。同じ銘柄の使い回しは禁止\\n・関連株Aについても「企業名 証券コード」でWeb検索してコードを確認してから出力すること\\n・【株価フィールド】stock_a_price・stock_a_price_date・spotlight_price・spotlight_price_dateには検索で確認した株価（円）と確認日（M/D形式）を必ず入力すること。株価が確認できた場合のみ数値で入力し、確認できない場合は0を入力する\n・【厳守】株価の具体的な数値はstock_a_price/spotlight_priceフィールドにのみ記載すること。reasonフィールドへの株価数値・日付の記載は完全禁止\\n・各銘柄に上昇/下降/横ばいの予測と50字以内の根拠を付ける\n\n【筆者コメントのルール】\n・各記事に「筆者の今日の一言」として異なるトーンの3パターンを生成すること\n・パターン1: 強気・煽り系（「これは乗り遅れたら一生後悔する」「今すぐ口座を開け」系）\n・パターン2: 中立・分析系（「両面を見て自分で判断する」「データが示す通り」系）\n・パターン3: 警戒・逆張り系（「みんなが強気のときこそ疑え」「ここに落とし穴がある」系）\n\n【X投稿文のルール】\n・各記事にX専用の投稿文を別途作成\n・冒頭は数字・驚き・問い・対立構造のいずれかで始める\n・銘柄名・証券コード・予測方向（↑↓→）を必ず含める\n・ハッシュタグは #日本株 #株式投資 #小型株 #個人投資家 を末尾に\n・280文字以内\n\n【記事カテゴリ】以下から1つ割り当て: 金融政策/半導体/エネルギー/海運/アクティビスト/決算/マクロ経済/為替/不動産/防衛・宇宙\n\n【その他条件】\n・記事は全て日本語、800〜1000字\n・過去に記事にした情報以外を選ぶ\n・3件全て一度に出力（選択待ち不要）'+avoidNote+'\n\n以下のJSON形式のみで出力（説明文不要・JSONだけ）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要100字","content":"本文800〜1000字","category":"カテゴリ","x_post":"X投稿文280字以内","author_comments":["強気系一言","中立系一言","警戒系一言"],"stock_a_name":"関連株A企業名","stock_a_ticker":"7203","stock_a_pred":"上昇","stock_a_reason":"根拠50字","stock_a_price":1234,"stock_a_price_date":"3/20","spotlight_name":"注目株企業名","spotlight_ticker":"1234","spotlight_pred":"上昇","spotlight_reason":"ニュースとの因果関係と根拠50字","spotlight_price":567,"spotlight_price_date":"3/20","sources":["URL1","URL2","URL3"]},{"id":"2",...},{"id":"3",...}]}\n```';
-
+  const p='あなたは個人投資家向けの人気金融ブロガーです。「読まれる・シェアされる・他にはない」記事を書くのが得意です。\n\n【本日の日時（システム自動取得・変更禁止）】\n'+todayStr+'\nこの日時を全ての記事・日付表現の基準とすること。\n\n株価に影響しそうな最新の金融ニュースを3つピックアップし、以下のスタイルで記事を書いてください。\n\n【リサーチのルール】\n・各トピックについて必ず異なるメディア（日経・Bloomberg・Reuters・Yahoo!ファイナンス・東洋経済・会社四季報など）の記事を最低3つ参照すること\n・各メディアの論調の違い・温度差を記事の中で明示すること\n・複数ソースを比較した上での独自分析・見解を必ず加えること\n・株価・出来高・騰落率などの具体的な数字を入れること。確認できた数字には（○○報道）と出典を明記し、推計・概算の場合は「〜と推定される」と注釈を入れること\n・そのニュースから3手先に何が起きるかの連鎖予測を文章として自然に組み込むこと\n\n【銘柄提示のルール】\n・Step1: 記事テーマが決まったら「○○関連 低位株」でWeb検索し候補を3〜4社リストアップする\n・Step2: 各候補について「企業名 証券コード」でWeb検索してコードを確認する（記憶でのコード出力は絶対禁止）\n・Step3: 各候補について「証券コード 株価」でWeb検索して当日または前日終値を確認する\n・Step4: 1000円未満の銘柄を注目株として採用する。複数ある場合は最も株価が低い銘柄を優先する\n・Step5: 4社試して全て1000円超の場合は最も株価が低い銘柄を採用し、その旨をspotlight_reasonに記載する\n・Step6: 各記事で異なる銘柄を選ぶこと。同じ銘柄の使い回しは禁止\n\n【筆者コメントのルール】\n・各記事に「筆者の今日の一言」として異なるトーンの3パターンを生成すること\n・パターン1: 強気・煽り系\n・パターン2: 中立・分析系\n・パターン3: 警戒・逆張り系\n\n【その他条件】\n・記事は全て日本語、800〜1000字\n・3件全て一度に出力（選択待ち不要）'+avoidNote+'\n\n以下のJSON形式のみで出力（説明文不要・JSONだけ）:\n```json\n{"articles":[{"id":"1","title":"タイトル","summary":"概要100字","content":"本文800〜1000字","category":"カテゴリ","x_post":"X投稿文280字以内","author_comments":["強気系一言","中立系一言","警戒系一言"],"stock_a_name":"関連株A企業名","stock_a_ticker":"7203","stock_a_pred":"上昇","stock_a_reason":"根拠50字","stock_a_price":1234,"stock_a_price_date":"3/20","spotlight_name":"注目株企業名","spotlight_ticker":"1234","spotlight_pred":"上昇","spotlight_reason":"根拠50字","spotlight_price":567,"spotlight_price_date":"3/20","sources":["URL1","URL2","URL3"]},{"id":"2",...},{"id":"3",...}]}\n```';
   document.getElementById('promptText').value=p;
   document.getElementById('promptBox').classList.remove('hidden');
   S.lastGen=new Date().toISOString();DB.s('mi_lastgen',S.lastGen);updateStatus();
@@ -542,16 +508,8 @@ function parseArts(d){
     authorComments:Array.isArray(a.author_comments)?a.author_comments:[],
     chosenComment:'',
     relatedStocks:{
-      stockA:{
-        name:a.stock_a_name,ticker:a.stock_a_ticker,
-        prediction:a.stock_a_pred,reason:a.stock_a_reason,
-        price:a.stock_a_price||0,priceDate:a.stock_a_price_date||''
-      },
-      spotlight:{
-        name:a.spotlight_name,ticker:a.spotlight_ticker,
-        prediction:a.spotlight_pred,reason:a.spotlight_reason,
-        price:a.spotlight_price||0,priceDate:a.spotlight_price_date||''
-      },
+      stockA:{name:a.stock_a_name,ticker:a.stock_a_ticker,prediction:a.stock_a_pred,reason:a.stock_a_reason,price:a.stock_a_price||0,priceDate:a.stock_a_price_date||''},
+      spotlight:{name:a.spotlight_name,ticker:a.spotlight_ticker,prediction:a.spotlight_pred,reason:a.spotlight_reason,price:a.spotlight_price||0,priceDate:a.spotlight_price_date||''},
     },
     sources:Array.isArray(a.sources)?a.sources.filter(Boolean):[a.source].filter(Boolean),
   }));
@@ -580,17 +538,19 @@ function loadFile(e){
   r.readAsText(f);e.target.value='';
 }
 
-// showAuthorStep removed - now triggered per-article after selection
-
-function selAuthor(i){
+// ── Author ────────────────────────────────────────────────
+function selAuthorOpt(i){
   S.selAuthor=i;
   document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
-  document.getElementById('aopt'+i).classList.add('sel');
+  const el=document.getElementById('aopt'+i);
+  if(el)el.classList.add('sel');
   document.getElementById('authorOkBtn').disabled=false;
 }
 
 function confirmAuthor(){
-  if(S.selAuthor===null||S.selIdx===null)return;
+  // ★ FIX: selIdx が null の場合は checkCand から取得
+  const cand=S.fixedCand||S.checkCand||(S.selIdx!==null?S.cands[S.selIdx]:null);
+  if(!cand){console.error('confirmAuthor: cand is null');return;}
   let chosen='';
   if(S.selAuthor==='custom'){
     const customEl=document.getElementById('customComment');
@@ -598,19 +558,22 @@ function confirmAuthor(){
   } else if(typeof S.selAuthor==='string'&&S.selAuthor.startsWith('human_')){
     const idx=parseInt(S.selAuthor.replace('human_',''));
     chosen=(S._currentHumanTemplates||[])[idx]?.txt||'';
-  } else {
+  } else if(typeof S.selAuthor==='number'){
     chosen=S.authorOpts[S.selAuthor]||'';
   }
-  S.cands[S.selIdx].chosenComment=chosen;
-  S.cands[S.selIdx].categoryHook=S.authorCategoryHook||getCategoryHook(S.cands[S.selIdx].category||'');
-  finalPublish(S.cands[S.selIdx]);
+  cand.chosenComment=chosen;
+  cand.categoryHook=S.authorCategoryHook||getCategoryHook(cand.category||'');
+  if(S.selIdx!==null)S.cands[S.selIdx]={...S.cands[S.selIdx],...cand};
+  finalPublish(cand);
 }
 
 function skipAuthor(){
-  if(S.selIdx===null){renderCands();showSelect();return;}
-  S.cands[S.selIdx].chosenComment='';
-  S.cands[S.selIdx].categoryHook=S.authorCategoryHook||getCategoryHook(S.cands[S.selIdx].category||'');
-  finalPublish(S.cands[S.selIdx]);
+  const cand=S.fixedCand||S.checkCand||(S.selIdx!==null?S.cands[S.selIdx]:null);
+  if(!cand){renderCands();showSelect();return;}
+  cand.chosenComment='';
+  cand.categoryHook=S.authorCategoryHook||getCategoryHook(cand.category||'');
+  if(S.selIdx!==null)S.cands[S.selIdx]={...S.cands[S.selIdx],...cand};
+  finalPublish(cand);
 }
 
 // ── Candidates ────────────────────────────────────────────
@@ -641,7 +604,6 @@ function selCand(i){S.selIdx=i;document.getElementById('pubBtn').disabled=false;
 function doPublish(){
   if(S.selIdx===null)return;
   const cand=S.cands[S.selIdx];
-  // Go to check flow first
   S.checkCand=cand;
   S.checkResult=null;
   S.fixedCand=null;
@@ -650,29 +612,6 @@ function doPublish(){
 
 function backToSelect(){showSelect();}
 
-function showView(id){
-  ['vHome','vSelect','vAuthor','vArticle','vCheck','vCheckResult','vDiff'].forEach(v=>{
-    const el=document.getElementById(v);
-    if(el)el.classList.add('hidden');
-  });
-  const target=document.getElementById(id);
-  if(target)target.classList.remove('hidden');
-}
-
-// ── Strip internal processing text from displayed fields ──
-function cleanReason(text){
-  if(!text)return '';
-  // Remove "コードXXXX確認済み（...）。" patterns
-  text=text.replace(/コード[0-9A-Za-z]+(確認済み)?[（(][^）)]{0,60}[）)][。、]? ?/g,'');
-  // Remove "1000円未満確認済み"
-  text=text.replace(/[・、]?1000円未満確認済み[・、]? ?/g,'');
-  // Remove "（Yahoo!・松井証券...確認済み）" type notes
-  text=text.replace(/（[^）]{0,80}確認済み[^）]{0,30}）/g,'');
-  // Remove "Step5適用・" etc
-  text=text.replace(/Step[0-9]+(適用)?[・:]? ?/g,'');
-  return text.trim();
-}
-
 // ── Category hook mapping ────────────────────────────────
 function getCategoryHook(cat){
   const m={'金融政策':'今日の金融政策ニュースをAIに分析させてみた','半導体':'今日の半導体ニュースをAIに分析させてみた','エネルギー':'今日の原油・エネルギーニュースをAIに分析させてみた','海運':'今日の海運ニュースをAIに分析させてみた','アクティビスト':'気になったアクティビスト案件をAIに深掘りさせてみた','決算':'気になった決算をAIに深掘りさせてみた','マクロ経済':'今日のマクロ経済ニュースをAIに分析させてみた','為替':'今日の円安・為替ニュースをAIに分析させてみた','不動産':'今日の不動産ニュースをAIに分析させてみた','防衛・宇宙':'今日の防衛・宇宙ニュースをAIに分析させてみた'};
@@ -680,33 +619,23 @@ function getCategoryHook(cat){
 }
 
 // ── Human reaction templates ──────────────────────────────
-// ── Dynamic human reaction template pool ─────────────────
 const HUMAN_TEMPLATE_POOL={
-  驚き:['正直この会社名、今日まで知らなかった','こんな数字が出ていたとは思わなかった','AIに聞いてみて初めて気づいた','ニュースを見た瞬間「え、これ本当?」となった','この銘柄、完全にノーマークだった'],
-  疑問:['なぜ全員が下がっている日にこの株だけ上がるのか、最初は意味がわからなかった','この二つのニュースがなぜ繋がるのか、最初はわからなかった','素人目には逆に見える動きがある','「なぜ今?」という疑問が頭から離れなかった','数字は出ているのに、なぜ市場が動かないのか不思議だった'],
-  発見:['仕組みを理解したら急に株価の動きが見えた気がした','点と点が繋がった瞬間があった','AIの説明で「そういう構造だったのか」と腑に落ちた','調べると意外とシンプルな話だった','こういう見方があったのかと思った'],
-  葛藤:['買いたい気持ちと怖い気持ちが半々','データは強いのに、なぜか踏み出せない感覚がある','「今が買い場」と言われるほど逆に慎重になってしまう','リスクとリターンを考えると、まだ整理できていない'],
-  学習:['今日また一つ投資用語を覚えた','知識が増えると世界の見え方が変わるな、と感じた','AIに分析させることで自分も勉強になった','知らなかったことを知ると、ニュースの読み方が変わる'],
-  共感:['急落のニュースを見て売りたくなった。でもデータを見たら踏みとどまった','感情と分析が引っ張り合う感覚、投資の難しさを実感している','みんなが怖がっている局面で冷静でいるのは難しい','こういうニュースが出ると、どうしても不安になる'],
-  気づき:['AIの分析を読んで「そういうことか」と腑に落ちた瞬間があった','3手先を読む、ということが少しわかってきた','個別株より「流れ」を読む方が大事なのかもしれない','ニュースの裏側にある構造を見るクセがついてきた'],
+  驚き:['正直この会社名、今日まで知らなかった','こんな数字が出ていたとは思わなかった','ニュースを見た瞬間「え、これ本当?」となった','この銘柄、完全にノーマークだった'],
+  疑問:['なぜ全員が下がっている日にこの株だけ上がるのか、最初は意味がわからなかった','この二つのニュースがなぜ繋がるのか、最初はわからなかった','「なぜ今?」という疑問が頭から離れなかった'],
+  発見:['仕組みを理解したら急に株価の動きが見えた気がした','点と点が繋がった瞬間があった','AIの説明で「そういう構造だったのか」と腑に落ちた'],
+  葛藤:['買いたい気持ちと怖い気持ちが半々','データは強いのに、なぜか踏み出せない感覚がある','リスクとリターンを考えると、まだ整理できていない'],
+  学習:['今日また一つ投資用語を覚えた','知識が増えると世界の見え方が変わるな、と感じた','知らなかったことを知ると、ニュースの読み方が変わる'],
+  共感:['急落のニュースを見て売りたくなった。でもデータを見たら踏みとどまった','感情と分析が引っ張り合う感覚、投資の難しさを実感している'],
+  気づき:['AIの分析を読んで「そういうことか」と腑に落ちた瞬間があった','3手先を読む、ということが少しわかってきた','ニュースの裏側にある構造を見るクセがついてきた'],
 };
+const HUMAN_TEMPLATE_TAGS={驚き:'😲 驚き系',疑問:'🤔 疑問系',発見:'💡 発見系',葛藤:'😰 葛藤系',学習:'📚 学習系',共感:'😤 共感系',気づき:'🎯 気づき系'};
 
-const HUMAN_TEMPLATE_TAGS={
-  驚き:'😲 驚き系', 疑問:'🤔 疑問系', 発見:'💡 発見系',
-  葛藤:'😰 葛藤系', 学習:'📚 学習系', 共感:'😤 共感系', 気づき:'🎯 気づき系'
-};
-
-// Pick 5 random templates from pool (different each call)
-function getHumanTemplates(category){
-  const keys=Object.keys(HUMAN_TEMPLATE_POOL);
-  // Shuffle keys
-  const shuffled=keys.sort(()=>Math.random()-0.5);
+function getHumanTemplates(){
+  const keys=Object.keys(HUMAN_TEMPLATE_POOL).sort(()=>Math.random()-0.5);
   const result=[];
-  for(const k of shuffled){
+  for(const k of keys){
     const pool=HUMAN_TEMPLATE_POOL[k];
-    // Pick random entry from this category's pool
-    const txt=pool[Math.floor(Math.random()*pool.length)];
-    result.push({tag:HUMAN_TEMPLATE_TAGS[k],txt,key:k});
+    result.push({tag:HUMAN_TEMPLATE_TAGS[k],txt:pool[Math.floor(Math.random()*pool.length)],key:k});
     if(result.length>=5)break;
   }
   return result;
@@ -714,10 +643,8 @@ function getHumanTemplates(category){
 
 function switchAuthorTab(tab){
   const isHuman=tab==='human';
-  const hEl=document.getElementById('humanOpts');
-  const aEl=document.getElementById('aiOpts');
-  if(hEl)hEl.classList.toggle('hidden',!isHuman);
-  if(aEl)aEl.classList.toggle('hidden',isHuman);
+  document.getElementById('humanOpts').classList.toggle('hidden',!isHuman);
+  document.getElementById('aiOpts').classList.toggle('hidden',isHuman);
   const tH=document.getElementById('tabHuman');
   const tA=document.getElementById('tabAI');
   if(tH){tH.style.background=isHuman?'rgba(250,204,21,.2)':'rgba(99,179,237,.08)';tH.style.color=isHuman?'#f59e0b':'var(--muted)';}
@@ -731,18 +658,16 @@ function renderHumanTemplates(){
 }
 
 function refreshHumanTemplates(){
-  // Clear current selection if it was human
   if(typeof S.selAuthor==='string'&&S.selAuthor.startsWith('human_')){
     S.selAuthor=null;
     document.getElementById('authorOkBtn').disabled=true;
   }
-  S._currentHumanTemplates=getHumanTemplates(S.checkCand?.category||'');
+  S._currentHumanTemplates=getHumanTemplates();
   renderHumanTemplates();
 }
 
 function onCustomInput(val){
   if(val.trim().length>0){
-    // Custom input takes priority - deselect other options
     document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
     S.selAuthor='custom';
     document.getElementById('authorOkBtn').disabled=false;
@@ -756,19 +681,10 @@ function onCustomInput(val){
 
 function selHuman(i){
   S.selAuthor='human_'+i;
-  // Clear custom input
   const customEl=document.getElementById('customComment');
   if(customEl)customEl.value='';
   document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
   const el=document.getElementById('hopt'+i);
-  if(el)el.classList.add('sel');
-  document.getElementById('authorOkBtn').disabled=false;
-}
-
-function selAuthor(i){
-  S.selAuthor=i;
-  document.querySelectorAll('.author-opt').forEach(el=>el.classList.remove('sel'));
-  const el=document.getElementById('aopt'+i);
   if(el)el.classList.add('sel');
   document.getElementById('authorOkBtn').disabled=false;
 }
@@ -781,37 +697,31 @@ function showAuthorForArticle(cand){
   S.authorCategoryHook=getCategoryHook(cand.category||'');
   document.getElementById('authorOkBtn').disabled=true;
 
-  // Render AI options (safe - guard against empty array)
   const aiEl=document.getElementById('authorOpts');
   if(aiEl){
     aiEl.innerHTML=comments.length>0
-      ? comments.map((txt,i)=>`<div class="author-opt" id="aopt${i}" onclick="selAuthor(${i})"><div class="author-opt-tag">${labels[i]||'パターン'+(i+1)}</div><div class="author-opt-txt">「${(txt||'').slice(0,60)}」</div></div>`).join('')
+      ? comments.map((txt,i)=>`<div class="author-opt" id="aopt${i}" onclick="selAuthorOpt(${i})"><div class="author-opt-tag">${labels[i]||'パターン'+(i+1)}</div><div class="author-opt-txt">「${(txt||'').slice(0,60)}」</div></div>`).join('')
       : '<div style="font-size:11px;color:var(--muted);font-family:var(--sans)">AIコメントが生成されていません</div>';
   }
 
-  // Render human templates (dynamic)
-  S._currentHumanTemplates=getHumanTemplates(cand.category||'');
+  S._currentHumanTemplates=getHumanTemplates();
   renderHumanTemplates();
 
-  // Show compact preview: summary + spotlight reason
   const previewEl=document.getElementById('authorPreview');
   if(previewEl){
     const sp=cand.relatedStocks&&cand.relatedStocks.spotlight;
     const sa=cand.relatedStocks&&cand.relatedStocks.stockA;
-    const predIcon=function(p){return p==='上昇'?'↑':p==='下降'?'↓':'→';};
     const parts=[];
     parts.push('📰 '+(cand.summary||'').slice(0,80));
-    if(sa)parts.push('📌 関連株A: '+sa.name+' ('+sa.ticker+') '+predIcon(sa.prediction));
-    if(sp)parts.push('⭐ 注目株: '+sp.name+' ('+sp.ticker+') '+predIcon(sp.prediction)+' — '+cleanReason(sp.reason||'').slice(0,60));
+    if(sa)parts.push('📌 '+sa.name+' ('+sa.ticker+') '+pi(sa.prediction));
+    if(sp)parts.push('⭐ '+sp.name+' ('+sp.ticker+') '+pi(sp.prediction)+' — '+cleanReason(sp.reason||'').slice(0,60));
     previewEl.textContent=parts.join(' / ');
   }
 
-  // Reset custom input
-put
+  // ★ FIX: 誤字「put」を削除、正常なコードに修正
   const customEl=document.getElementById('customComment');
   if(customEl)customEl.value='';
 
-  // Update desc safely
   const safeTitle=(cand.title||'').slice(0,30);
   const descEl=document.getElementById('vAuthorDesc');
   if(descEl){
@@ -820,7 +730,6 @@ put
   const h2El=document.getElementById('vAuthorTitle');
   if(h2El)h2El.textContent='「'+safeTitle+'…」の一言を選ぶ';
 
-  // Default to human tab
   switchAuthorTab('human');
   showAuthor();
 }
@@ -837,23 +746,7 @@ function startCheckFlow(cand){
     sources:cand.sources
   }]},null,2);
 
-  const prompt=`以下の金融記事JSONをチェックしてください。
-
-【チェック項目】
-①コンプライアンス: 断定的な投資勧誘・誇大表現（「必ず上がる」「今すぐ買え」「絶対に儲かる」等）を検出
-②ファクト: 数字・社名・証券コードの整合性（コードと社名が一致しているか）
-③ソース: URLが実在しそうか、一次ソースか（公式サイト・主要メディアか）
-④読みやすさ: 1段落が極端に長い・難解な専門用語の未説明・誤字脱字
-
-【出力ルール】
-・JSON形式のみで出力（説明文・マークダウン不要）
-・severity: "error"（必ず修正）/"warn"（要確認）/"ok"（問題なし）
-・問題がなければempty配列で返す
-
-{"checks":[{"article_id":"1","type":"compliance","severity":"error","field":"content","issue":"問題の説明","suggestion":"修正案"},{"article_id":"1","type":"fact","severity":"ok","field":"stock_a_ticker","issue":"","suggestion":""}]}
-
-===対象JSON===
-${artJson}`;
+  const prompt=`以下の金融記事JSONをチェックしてください。\n\n【チェック項目】\n①コンプライアンス: 断定的な投資勧誘・誇大表現を検出\n②ファクト: 数字・社名・証券コードの整合性\n③ソース: URLが実在しそうか\n④読みやすさ: 段落の長さ・専門用語の説明\n\n【出力ルール】\n・JSON形式のみで出力（説明文・マークダウン不要）\n・severity: "error"（必ず修正）/"warn"（要確認）/"ok"（問題なし）\n\n{"checks":[{"article_id":"1","type":"compliance","severity":"error","field":"content","issue":"問題の説明","suggestion":"修正案"}]}\n\n===対象JSON===\n${artJson}`;
 
   document.getElementById('checkPromptText').value=prompt;
   document.getElementById('checkResultText').value='';
@@ -871,18 +764,16 @@ function copyCheckPrompt(){
 
 function sanitizeJson(raw){
   return raw
-    .replace(/\u201c|\u201d|\u2018|\u2019/g,'"') // 全角引用符→半角
-    .replace(/[\u2018\u2019]/g,"'")                 // 全角シングルクォート→半角
-    .replace(/\u2014|\u2013/g,'-')                  // 全角ダッシュ→半角
-    .replace(/[\u00a0]/g,' ')                        // ノーブレークスペース→半角スペース
+    .replace(/\u201c|\u201d/g,'"')
+    .replace(/[\u2018\u2019]/g,"'")
+    .replace(/\u2014|\u2013/g,'-')
+    .replace(/[\u00a0]/g,' ')
     .trim();
 }
 
 function extractJson(raw){
-  // Try code block first
   const m=raw.match(/```(?:json)?\s*([\s\S]*?)```/);
   if(m)return sanitizeJson(m[1]);
-  // Try first { ... } block
   const start=raw.indexOf('{');
   const end=raw.lastIndexOf('}');
   if(start!==-1&&end!==-1&&end>start)return sanitizeJson(raw.slice(start,end+1));
@@ -899,15 +790,12 @@ function loadCheckResult(){
     renderCheckResult();
     showView('vCheckResult');
   }catch(e){
-    document.getElementById('checkErr').textContent='⚠️ 読み込み失敗: '+e.message+'（ヒント: ChatGPTの出力をそのままコピーしてください）';
+    document.getElementById('checkErr').textContent='⚠️ 読み込み失敗: '+e.message;
     document.getElementById('checkErr').classList.remove('hidden');
   }
 }
 
-function skipCheck(){
-  S.checkResult=[];
-  proceedToAuthor();
-}
+function skipCheck(){S.checkResult=[];proceedToAuthor();}
 
 function renderCheckResult(){
   const checks=S.checkResult||[];
@@ -915,15 +803,12 @@ function renderCheckResult(){
   const warns=checks.filter(c=>c.severity==='warn');
   const issues=checks.filter(c=>c.severity!=='ok'&&c.issue);
 
-  // Summary
-  const sumEl=document.getElementById('checkSummary');
-  sumEl.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:8px;">
+  document.getElementById('checkSummary').innerHTML=`<div style="display:flex;gap:8px;margin-bottom:8px;">
     <span class="check-badge check-error">🔴 要修正 ${errors.length}件</span>
     <span class="check-badge check-warn">⚠️ 要確認 ${warns.length}件</span>
     <span class="check-badge check-ok">✅ 問題なし ${checks.filter(c=>c.severity==='ok').length}件</span>
   </div>`;
 
-  // Issues list
   const listEl=document.getElementById('checkIssueList');
   if(issues.length===0){
     listEl.innerHTML='';
@@ -955,25 +840,7 @@ function renderCheckResult(){
     sources:S.checkCand.sources
   }]},null,2);
   const checksJson=JSON.stringify({checks:issues},null,2);
-
-  const fixPrompt=`以下の金融記事JSONをチェック結果に基づいて修正してください。
-
-【修正ルール】
-・severity:"error"は必ず修正する
-・severity:"warn"は内容を判断して修正する
-・修正したフィールドはchangesに記録する
-・記事の論旨・銘柄選定・予測は変更しない
-・金融商品取引法に抵触する断定表現を除去し「〜の可能性がある」「〜と考えられる」に変換
-
-【出力形式】JSONのみ（説明文不要）:
-{"articles":[{全フィールドを含む記事JSON,"changes":[{"field":"フィールド名","original":"修正前の文","revised":"修正後の文","reason":"修正理由"}]}]}
-
-===元の記事JSON===
-${artJson}
-
-===チェック結果===
-${checksJson}`;
-
+  const fixPrompt=`以下の金融記事JSONをチェック結果に基づいて修正してください。\n\n【修正ルール】\n・severity:"error"は必ず修正する\n・severity:"warn"は内容を判断して修正する\n・修正したフィールドはchangesに記録する\n・記事の論旨・銘柄選定・予測は変更しない\n・金融商品取引法に抵触する断定表現を除去し「〜の可能性がある」「〜と考えられる」に変換\n\n【出力形式】JSONのみ（説明文不要）:\n{"articles":[{全フィールドを含む記事JSON,"changes":[{"field":"フィールド名","original":"修正前の文","revised":"修正後の文","reason":"修正理由"}]}]}\n\n===元の記事JSON===\n${artJson}\n\n===チェック結果===\n${checksJson}`;
   document.getElementById('fixPromptText').value=fixPrompt;
 }
 
@@ -989,15 +856,13 @@ function loadFixResult(){
   const raw=document.getElementById('fixResultText').value.trim();
   if(!raw){alert('テキストが空です');return;}
   try{
-    // Strict: only extract content between first { and last }
     const start=raw.indexOf('{');
     const end=raw.lastIndexOf('}');
-    if(start===-1||end===-1||end<=start)throw new Error('JSONが見つかりません。{...}の形式で貼り付けてください');
+    if(start===-1||end===-1||end<=start)throw new Error('JSONが見つかりません');
     const js=sanitizeJson(raw.slice(start,end+1));
     const d=JSON.parse(js);
     if(!d.articles?.length)throw new Error('articles が見つかりません');
     const fixed=d.articles[0];
-    // Build fixedCand preserving relatedStocks from original
     S.fixedCand={
       ...S.checkCand,
       title:fixed.title||S.checkCand.title,
@@ -1006,19 +871,22 @@ function loadFixResult(){
       xPost:fixed.x_post||S.checkCand.xPost,
       category:fixed.category||S.checkCand.category,
       authorComments:fixed.author_comments||S.checkCand.authorComments,
-      // Rebuild relatedStocks from fixed JSON fields
       relatedStocks:{
         stockA:{
           name:fixed.stock_a_name||S.checkCand.relatedStocks?.stockA?.name,
           ticker:fixed.stock_a_ticker||S.checkCand.relatedStocks?.stockA?.ticker,
           prediction:fixed.stock_a_pred||S.checkCand.relatedStocks?.stockA?.prediction,
           reason:fixed.stock_a_reason||S.checkCand.relatedStocks?.stockA?.reason,
+          price:S.checkCand.relatedStocks?.stockA?.price||0,
+          priceDate:S.checkCand.relatedStocks?.stockA?.priceDate||'',
         },
         spotlight:{
           name:fixed.spotlight_name||S.checkCand.relatedStocks?.spotlight?.name,
           ticker:fixed.spotlight_ticker||S.checkCand.relatedStocks?.spotlight?.ticker,
           prediction:fixed.spotlight_pred||S.checkCand.relatedStocks?.spotlight?.prediction,
           reason:fixed.spotlight_reason||S.checkCand.relatedStocks?.spotlight?.reason,
+          price:S.checkCand.relatedStocks?.spotlight?.price||0,
+          priceDate:S.checkCand.relatedStocks?.spotlight?.priceDate||'',
         }
       },
       sources:fixed.sources||S.checkCand.sources,
@@ -1027,16 +895,13 @@ function loadFixResult(){
     renderDiff(fixed.changes||[]);
     showView('vDiff');
   }catch(e){
-    alert('読み込み失敗: '+e.message+'\n\nヒント: JSONの{...}部分だけを貼り付けてください。説明文や```は不要です。');
+    alert('読み込み失敗: '+e.message+'\n\nヒント: JSONの{...}部分だけを貼り付けてください。');
   }
 }
 
 function renderDiff(changes){
   const el=document.getElementById('diffList');
-  if(!changes.length){
-    el.innerHTML='<div class="empty">変更箇所がありませんでした</div>';
-    return;
-  }
+  if(!changes.length){el.innerHTML='<div class="empty">変更箇所がありませんでした</div>';return;}
   el.innerHTML=changes.map(c=>`
     <div class="diff-block">
       <div style="background:rgba(99,179,237,.08);padding:6px 12px;font-size:9px;color:var(--accent2);font-family:var(--sans);font-weight:700;">
@@ -1053,7 +918,28 @@ function renderDiff(changes){
     </div>`).join('');
 }
 
-function skipFix(){proceedToAuthor();}
+// ★ MAIN FIX: approveFix() を完全に書き直し
+// 問題: S.selIdx が null のまま S.cands[S.selIdx] を参照してクラッシュしていた
+function approveFix(){
+  if(!S.fixedCand){
+    // fixedCandがなければそのまま進む
+    proceedToAuthor();
+    return;
+  }
+  // selIdx が有効なら cands も更新
+  if(S.selIdx!==null&&S.selIdx>=0&&S.selIdx<S.cands.length){
+    S.cands[S.selIdx]={...S.cands[S.selIdx],...S.fixedCand};
+  }
+  // checkCand も fixedCand で上書き（proceedToAuthor が参照するため）
+  S.checkCand=S.fixedCand;
+  proceedToAuthor();
+}
+
+function skipFix(){
+  // fixedCand をクリアして元の checkCand で進む
+  S.fixedCand=null;
+  proceedToAuthor();
+}
 
 function rejectFix(){
   if(!confirm('この記事を破棄しますか？'))return;
@@ -1061,28 +947,25 @@ function rejectFix(){
   showSelect();
 }
 
-function approveFix(){
-  if(!S.fixedCand){proceedToAuthor();return;}
-  // Replace checkCand with fixedCand
-  if(S.selIdx!==null)S.cands[S.selIdx]={...S.cands[S.selIdx],...S.fixedCand};
-  S.checkCand=S.cands[S.selIdx];
-  proceedToAuthor();
-}
-
 function proceedToAuthor(){
-  const cand=S.fixedCand||S.checkCand||S.cands[S.selIdx];
-  if(!cand)return;
+  // ★ FIX: 優先順位を明確化。fixedCand > checkCand > cands[selIdx]
+  const cand=S.fixedCand||S.checkCand||(S.selIdx!==null?S.cands[S.selIdx]:null);
+  if(!cand){
+    console.error('proceedToAuthor: cand is null');
+    showSelect();
+    return;
+  }
   if(cand.authorComments&&cand.authorComments.length>0){
     showAuthorForArticle(cand);
     return;
   }
+  cand.chosenComment='';
+  cand.categoryHook=getCategoryHook(cand.category||'');
   finalPublish(cand);
 }
 
 function finalPublish(cand){
   const art={...cand,publishedAt:new Date().toLocaleDateString('ja-JP')};
-  // Save chosen comment back to cand
-  if(S.selIdx!==null)S.cands[S.selIdx].chosenComment=art.chosenComment;
   // Add predictions to tracker
   ['stockA','spotlight'].forEach(k=>{
     const s=art.relatedStocks[k];
@@ -1092,27 +975,20 @@ function finalPublish(cand){
       const deadlineStr=deadline.toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
       const predId=Date.now()+'_'+k;
       S.preds.push({id:predId,name:s.name,ticker:s.ticker,pred:s.prediction,reason:s.reason,artTitle:art.title,date:art.publishedAt,deadline:deadlineStr,deadlineTs:deadline.getTime(),result:'pending'});
-      // Fetch baseline price asynchronously
-      if(S.jqToken){
-        fetchPrice(s.ticker).then(data=>{
-          if(data){S.baselinePrices[predId]=data.latest;DB.s('mi_baselines',S.baselinePrices);}
-        });
-      }
     }
   });
   DB.s('mi_preds',S.preds);
   S.pub.unshift(art);DB.s('mi_pub',S.pub);
   S.curArt=art;S.backFrom='select';
   document.getElementById('artBody').innerHTML=buildArtHTML(art);
-  ['vHome','vSelect','vAuthor','vCheck','vCheckResult','vDiff'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-  document.getElementById('vArticle').classList.remove('hidden');
+  showView('vArticle');
   updateStatus();
   loadPricesForArticle(art);
 }
 
 function backArt(){
-  document.getElementById('vArticle').classList.add('hidden');
-  if(S.backFrom==='pub'){renderPubList();document.getElementById('tPub').classList.remove('hidden');}
+  showView('vHome');
+  if(S.backFrom==='pub'){renderPubList();}
   else showSelect();
 }
 
@@ -1151,16 +1027,13 @@ function renderTrack(){
   document.getElementById('trackMiss').textContent=misses;
   document.getElementById('trackPend').textContent=pend;
   document.getElementById('trackRate').textContent=total>0?Math.round(hits/total*100)+'%':'-%';
-
-  // Show due badge on tab if any are overdue
   const tab=document.querySelector('.tab[onclick*="track"]');
-  if(tab)tab.textContent=due>0?`予測 ⏰${due}`:'予測';
+  if(tab)tab.textContent=due>0?'予測 ⏰'+due:'予測';
 
   const el=document.getElementById('trackList');
   if(!S.preds.length){el.innerHTML='<div class="empty">記事を公開すると予測が自動登録されます<br><span style="font-size:10px;color:#2d3748;font-family:var(--sans)">公開から1週間後に判定期限が自動設定されます</span></div>';return;}
 
-  // Sort: due first, then pending, then judged
-  const sorted=[...S.preds.entries()].sort(([_a,a],[_b,b])=>{
+  const sorted=[...S.preds.entries()].sort(([,a],[,b])=>{
     if(a.result==='pending'&&b.result!=='pending')return -1;
     if(a.result!=='pending'&&b.result==='pending')return 1;
     return (b.deadlineTs||0)-(a.deadlineTs||0);
@@ -1169,13 +1042,12 @@ function renderTrack(){
   el.innerHTML=sorted.map(([ri,p])=>{
     const isDue=p.result==='pending'&&p.deadlineTs&&now>=p.deadlineTs;
     const daysLeft=p.deadlineTs?Math.ceil((p.deadlineTs-now)/(24*3600000)):null;
-    const deadlineInfo=p.deadline?`判定期限: ${p.deadline}`:'';
+    const deadlineInfo=p.deadline?'判定期限: '+p.deadline:'';
     const timeLabel=p.result==='pending'?(
       isDue?'<span style="color:var(--flat);font-weight:700">⏰ 判定期限です！</span>':
-      daysLeft!==null?`<span style="color:var(--muted);font-size:9px">${deadlineInfo}（残${daysLeft}日）</span>`:
-      `<span style="color:var(--muted);font-size:9px">${deadlineInfo}</span>`
-    ):`<span style="font-size:9px;color:var(--muted)">${p.date}予測</span>`;
-
+      daysLeft!==null?'<span style="color:var(--muted);font-size:9px">'+deadlineInfo+'（残'+daysLeft+'日）</span>':
+      '<span style="color:var(--muted);font-size:9px">'+deadlineInfo+'</span>'
+    ):'<span style="font-size:9px;color:var(--muted)">'+p.date+'予測</span>';
     return `<div class="track-row" style="${isDue?'background:rgba(250,204,21,0.04);border-radius:8px;padding:8px;margin-bottom:2px;':''}">
       <div style="flex:1;min-width:0">
         <div class="track-name">${isDue?'⏰ ':''} ${p.name} <span style="font-size:10px;color:var(--muted)">${p.ticker}</span></div>
@@ -1184,7 +1056,7 @@ function renderTrack(){
       </div>
       <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;margin-left:8px">
         ${p.result==='pending'?`
-          ${isDue?`<button onclick="genJudgePrompt()" style="padding:6px 10px;border-radius:5px;border:none;background:rgba(99,179,237,.15);color:var(--accent2);font-size:11px;cursor:pointer;font-family:var(--sans);font-weight:700;margin-bottom:4px;width:100%">🤖 AI判定する</button><br>`:''}
+          ${isDue?`<button onclick="genJudgePrompt()" style="padding:6px 10px;border-radius:5px;border:none;background:rgba(99,179,237,.15);color:var(--accent2);font-size:11px;cursor:pointer;font-family:var(--sans);font-weight:700;">🤖 AI判定する</button><br>`:'' }
           <div style="display:flex;gap:5px">
           <button onclick="setPred(${ri},'hit')" style="padding:5px 10px;border-radius:5px;border:none;background:rgba(34,197,94,.15);color:var(--up);font-size:11px;cursor:pointer;font-family:var(--sans);font-weight:700;">✓ 的中</button>
           <button onclick="setPred(${ri},'miss')" style="padding:5px 10px;border-radius:5px;border:none;background:rgba(239,68,68,.15);color:var(--down);font-size:11px;cursor:pointer;font-family:var(--sans);font-weight:700;">✗ 外れ</button>
@@ -1201,32 +1073,15 @@ function genJudgePrompt(){
   const now=Date.now();
   const duePreds=S.preds.map((p,i)=>({...p,_idx:i})).filter(p=>p.result==='pending'&&p.deadlineTs&&now>=p.deadlineTs);
   if(!duePreds.length){alert('判定期限を過ぎた予測がありません');return;}
-
   const predList=duePreds.map(p=>`・${p.name}（${p.ticker}） 予測:${p.pred} 公開日:${p.date} 判定期限:${p.deadline} 根拠:${p.reason||''}`).join('\n');
-
-  const prompt=`以下の株価予測について、現在の株価をWeb検索で確認し判定してください。
-
-【判定ルール】
-・上昇予測: 公開日終値から+3%以上で「的中」
-・下降予測: 公開日終値から-3%以上で「的中」
-・横ばい予測: ±3%以内で「的中」
-・株価は「証券コード 株価」でWeb検索して確認すること
-
-【予測リスト】
-${predList}
-
-以下のJSON形式のみで出力（説明文不要）:
-{"results":[{"ticker":"証券コード","name":"銘柄名","pred":"予測方向","result":"hit or miss","current_price":現在株価数値,"change_pct":変化率数値,"reason":"判定理由30字"}]}`;
-
+  const prompt=`以下の株価予測について、現在の株価をWeb検索で確認し判定してください。\n\n【判定ルール】\n・上昇予測: 公開日終値から+3%以上で「的中」\n・下降予測: 公開日終値から-3%以上で「的中」\n・横ばい予測: ±3%以内で「的中」\n\n【予測リスト】\n${predList}\n\n以下のJSON形式のみで出力（説明文不要）:\n{"results":[{"ticker":"証券コード","name":"銘柄名","pred":"予測方向","result":"hit or miss","current_price":現在株価数値,"change_pct":変化率数値,"reason":"判定理由30字"}]}`;
   document.getElementById('judgePromptText').value=prompt;
   document.getElementById('judgeResultText').value='';
   document.getElementById('judgeErr').classList.add('hidden');
-
-  // Update showView to handle tPred tab
-  ['vHome','vSelect','vAuthor','vArticle','vCheck','vCheckResult','vDiff'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.classList.add('hidden');
-  });
-  document.getElementById('vJudge').classList.remove('hidden');
+  // ★ FIX: tTrack を非表示にしてから vJudge を tNew 内で表示
+  document.getElementById('tTrack').classList.add('hidden');
+  document.getElementById('tNew').classList.remove('hidden');
+  showView('vJudge');
 }
 
 function copyJudgePrompt(){
@@ -1260,11 +1115,10 @@ function loadJudgeResult(){
     });
     DB.s('mi_preds',S.preds);
     alert(updated+'件の予測を更新しました');
-    // Return to tracker
-    ['vJudge'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-    document.querySelectorAll('.tab-content').forEach(el=>el.classList.add('hidden'));
-    const tPred=document.getElementById('tPred');
-    if(tPred){tPred.classList.remove('hidden');renderTrack();}
+    // 予測タブに戻る
+    document.getElementById('tNew').classList.add('hidden');
+    showView('vHome');
+    goTab('track',document.querySelector('.tab[onclick*="track"]'));
   }catch(e){
     document.getElementById('judgeErr').textContent='⚠️ 読み込み失敗: '+e.message;
     document.getElementById('judgeErr').classList.remove('hidden');
@@ -1278,48 +1132,88 @@ function genTrackPost(){
   const rate=Math.round(hits/total*100);
   const recent=S.preds.filter(p=>p.result==='hit').slice(-3).map(p=>`✅ ${p.name}(${p.ticker}) ${pi(p.pred)}${p.pred}`).join('\n');
   const weekStr=new Date().toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
-  const txt=`【週次予測レポート ${weekStr}】\n\n直近${total}件の1週間予測\n的中率: ${rate}%（${hits}勝${total-hits}敗）\n\n最近の的中予測:\n${recent}\n\n毎日1銘柄の予測を配信中📊\nフォローして投資の精度を上げてください。\n\n#日本株 #株式投資 #個人投資家 #小型株`;
+  const txt=`【週次予測レポート ${weekStr}】\n\n直近${total}件の1週間予測\n的中率: ${rate}%（${hits}勝${total-hits}敗）\n\n最近の的中予測:\n${recent}\n\n毎日1銘柄の予測を配信中📊\n#日本株 #株式投資 #個人投資家 #小型株`;
   const el=document.getElementById('trackPost');
   el.innerHTML=`<div class="ex-block"><div class="ex-lbl">🐦 X投稿文</div><div class="ex-txt" id="tpTxt">${txt}</div><div style="display:flex;gap:6px;margin-top:7px;"><button class="cp-btn" style="flex:1;" onclick="doCopy('tpTxt',this)">📋 コピー</button><button class="btn btn-x" style="flex:1;padding:7px;font-size:11px;border-radius:7px;" onclick="openX('tpTxt')">𝕏 投稿する</button></div></div>`;
   el.classList.remove('hidden');
 }
 
-// ── Price badge from stored data (set at article generation time) ──
+// ── Price display ─────────────────────────────────────────
 function loadPricesForArticle(art){
   const stocks=[art.relatedStocks.stockA,art.relatedStocks.spotlight].filter(s=>s&&s.name&&s.ticker);
   for(const s of stocks){
     if(s.price&&s.price>0){
       updatePriceBadge(s.ticker,s.price,null,null,{date:s.priceDate,stored:true});
     } else {
-      // No price stored - show Yahoo Finance link
-      const el=document.getElementById('pb_'+s.ticker);
-      if(el)el.innerHTML=`<a href="https://finance.yahoo.co.jp/quote/${s.ticker}.T" target="_blank" style="font-size:10px;color:var(--accent2)">株価を確認 →</a>`;
+      document.querySelectorAll('#price_'+s.ticker).forEach(el=>{
+        el.innerHTML=`<a href="https://finance.yahoo.co.jp/quote/${s.ticker}.T" target="_blank" style="font-size:10px;color:var(--accent2)">株価を確認 →</a>`;
+      });
     }
   }
+}
+
+function updatePriceBadge(ticker,price,change,changePct,data){
+  document.querySelectorAll('#price_'+ticker).forEach(el=>{
+    if(!price){el.innerHTML='<span style="font-size:10px;color:var(--muted)">取得失敗</span>';return;}
+    const fmt=new Intl.NumberFormat('ja-JP').format(price);
+    if(data&&data.stored){
+      const dateLabel=data.date?data.date+'時点':'記事生成時';
+      el.innerHTML=`<span class="price-val">${fmt}円</span><span style="font-size:9px;color:var(--muted);margin-left:2px">${dateLabel}</span>`;
+    } else if(change!==null&&changePct!==null){
+      const sign=change>=0?'+':'';
+      const cls=change>0?'price-chg-up':change<0?'price-chg-down':'price-chg-flat';
+      const arrow=change>0?'▲':change<0?'▼':'－';
+      const dateStr=data&&data.date?data.date+'終値':'終値';
+      el.innerHTML=`<span class="price-val">${fmt}円</span><span class="${cls}">${arrow}${sign}${changePct.toFixed(1)}%</span><span style="font-size:9px;color:var(--muted);margin-left:2px">${dateStr}</span>`;
+    } else {
+      el.innerHTML=`<span class="price-val">${fmt}円</span>`;
+    }
+  });
+}
+
+// ── J-Quants ─────────────────────────────────────────────
+// ★ FIX: saveJQ() の未定義変数 `t` を削除し、正常なフローに修正
+function saveJQ(){
+  const apiKey=document.getElementById('jqApiKeyInput').value.trim();
+  const statusEl=document.getElementById('jqStatus');
+  if(!apiKey){
+    statusEl.textContent='⚠️ APIキーを入力してください';
+    statusEl.style.color='var(--down)';
+    return;
+  }
+  S.jqApiKey=apiKey;
+  S.jqToken=apiKey;
+  DB.s('mi_jqapikey',apiKey);
+  DB.s('mi_jqtoken',apiKey);
+  statusEl.textContent='🔄 接続テスト中...';
+  statusEl.style.color='var(--accent2)';
+  fetchPriceWithChange('9432').then(data=>{
+    if(data){
+      statusEl.textContent='✅ 接続成功！株価自動取得が有効になりました';
+      statusEl.style.color='var(--up)';
+    } else {
+      statusEl.textContent='❌ 接続失敗。APIキーを確認してください';
+      statusEl.style.color='var(--down)';
+    }
+  });
+}
+
+async function getJQToken(){
+  const key=S.jqApiKey||DB.g('mi_jqapikey')||S.jqToken||DB.g('mi_jqtoken')||'';
+  if(key)S.jqToken=key;
+  return key||null;
 }
 
 async function fetchPriceWithChange(ticker){
   const token=await getJQToken();
   if(!token)return null;
-  // Fetch 30 days to always find the latest available close price
-  const to=new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const from=new Date(Date.now()-30*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
-  // J-Quants uses 4-digit codes directly (NOT 5-digit)
-  // For codes like 464A, use as-is; for 4-digit numeric, use as-is
-  // V2: 4-digit code → 5-digit with trailing 0 (e.g. 9432 → 94320)
-  // Alphanumeric codes (e.g. 268A) use as-is
+  const to=new Date().toISOString().slice(0,10);
+  const from=new Date(Date.now()-30*24*3600000).toISOString().slice(0,10);
   const rawCode=ticker.replace(/[^0-9A-Za-z]/g,'');
   const code=(/^[0-9]{4}$/.test(rawCode))?rawCode+'0':rawCode;
   try{
-    const freshToken=await getJQToken();
-    if(!freshToken)return null;
-    const res=await fetch(`https://api.jquants.com/v2/equities/bars/daily?code=${code}&from=${from.slice(0,4)+'-'+from.slice(4,6)+'-'+from.slice(6,8)}&to=${to.slice(0,4)+'-'+to.slice(4,6)+'-'+to.slice(6,8)}`,{
-      headers:{'x-api-key':freshToken}
-    });
-    if(!res.ok){
-      console.warn('J-Quants V2 error:',res.status,'for',code);
-      return null;
-    }
+    const res=await fetch(`https://api.jquants.com/v2/equities/bars/daily?code=${code}&from=${from}&to=${to}`,{headers:{'x-api-key':token}});
+    if(!res.ok)return null;
     const d=await res.json();
     const quotes=(d.daily_quotes||[]).filter(q=>q.Close!==null).sort((a,b)=>b.Date.localeCompare(a.Date));
     if(quotes.length<1)return null;
@@ -1329,39 +1223,17 @@ async function fetchPriceWithChange(ticker){
     const change=prev?price-prev.Close:0;
     const changePct=prev?((price-prev.Close)/prev.Close*100):0;
     return{price,change,changePct,date:latest.Date};
-  }catch(e){
-    console.warn('fetchPriceWithChange error:',e,ticker);
-    return null;
-  }
+  }catch(e){return null;}
 }
 
-function updatePriceBadge(ticker,price,change,changePct,data){
-  // Update all elements with this ticker (stockA and spotlight may share)
-  document.querySelectorAll(`#price_${ticker}`).forEach(el=>{
-    if(price===null||price==='株価取得中...'||price==='取得失敗'){
-      el.innerHTML=`<span class="${price==='株価取得中...'?'price-loading':''}" style="font-size:10px;color:var(--muted)">${price}</span>`;
-      return;
-    }
-    const fmt=new Intl.NumberFormat('ja-JP').format(price);
-    if(data&&data.stored){
-      // Stored price from generation time - show with date
-      const dateLabel=data.date?data.date+'記事生成時':'記事生成時';
-      el.innerHTML=`
-        <span class="price-val">${fmt}円</span>
-        <span style="font-size:9px;color:var(--muted);margin-left:2px">${dateLabel}</span>
-      `;
-    } else {
-      const sign=change>=0?'+':'';
-      const cls=change>0?'price-chg-up':change<0?'price-chg-down':'price-chg-flat';
-      const arrow=change>0?'▲':change<0?'▼':'－';
-      const dateStr=data&&data.date?data.date+'終値':'終値';
-      el.innerHTML=`
-        <span class="price-val">${fmt}円</span>
-        <span class="${cls}">${arrow}${sign}${changePct.toFixed(1)}%</span>
-        <span style="font-size:9px;color:var(--muted);margin-left:2px">${dateStr}</span>
-      `;
-    }
-  });
+// ── Strip internal processing text ───────────────────────
+function cleanReason(text){
+  if(!text)return '';
+  text=text.replace(/コード[0-9A-Za-z]+(確認済み)?[（(][^）)]{0,60}[）)][。、]? ?/g,'');
+  text=text.replace(/[・、]?1000円未満確認済み[・、]? ?/g,'');
+  text=text.replace(/（[^）]{0,80}確認済み[^）]{0,30}）/g,'');
+  text=text.replace(/Step[0-9]+(適用)?[・:]? ?/g,'');
+  return text.trim();
 }
 
 // ── Article HTML builder ──────────────────────────────────
@@ -1371,34 +1243,30 @@ function buildArtHTML(a){
   const freeNote=buildFreeNote(a);
   const paidNote=buildPaidNote(a);
   const affHtml=buildAffHtml(a);
-
   return `
     ${a.category?`<div style="display:inline-block;background:rgba(99,179,237,.15);border:1px solid rgba(99,179,237,.3);border-radius:5px;padding:2px 9px;font-size:10px;color:var(--accent2);font-family:var(--sans);margin-bottom:8px;">${a.category}</div>`:''}
     <h1 style="font-size:18px;font-weight:900;line-height:1.55;margin-bottom:10px">${a.title}</h1>
-
     <div style="background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
       <div style="font-size:11px;font-weight:700;color:#f59e0b;font-family:var(--sans);margin-bottom:${a.chosenComment?'8px':'0'}">
         📱 ${a.categoryHook||'今日のニュースをAIに分析させてみた'}
       </div>
       ${a.chosenComment?`<div style="font-size:12px;line-height:1.8;color:#fef3c7;font-style:italic;border-top:1px solid rgba(250,204,21,.15);padding-top:7px;margin-top:2px;">「${a.chosenComment}」</div>`:''}
     </div>
-
     <div class="card mb12" style="background:rgba(99,179,237,.05);border-color:rgba(99,179,237,.25)">
       <div class="lbl">概要</div>
       <div style="font-size:12px;line-height:1.8;color:#cbd5e0">${a.summary}</div>
     </div>
     <div style="font-size:13px;line-height:2.1;margin-bottom:18px;white-space:pre-line">${a.content}</div>
-
     <div class="stocks-box">
       <div class="s-hd">📊 関連銘柄・株価予測</div>
       ${stocks.map(({l,s,star})=>`
-        <div class="s-row" style="${star?'background:rgba(250,204,21,0.04);':''}" >
+        <div class="s-row" style="${star?'background:rgba(250,204,21,0.04);':''}">
           <div style="flex:1;min-width:0">
             <div style="font-size:9px;color:${star?'#f59e0b':'var(--muted)'};margin-bottom:2px;font-family:var(--sans);font-weight:${star?'700':'400'}">${l}</div>
             <div style="font-size:13px;font-weight:700;margin-bottom:2px">${s.name} <span style="font-size:10px;color:var(--muted)">${s.ticker}</span></div>
             <div style="font-size:10px;color:#a0aec0;line-height:1.6;margin-bottom:4px">${cleanReason(s.reason)}</div>
             <div class="price-badge" id="price_${s.ticker}">
-              <span class="price-loading">株価取得中...</span>
+              <span style="font-size:10px;color:var(--muted)">読み込み中...</span>
             </div>
           </div>
           <div class="pred-box" style="background:${pc(s.prediction)}20;border:1px solid ${pc(s.prediction)}40;margin-left:8px">
@@ -1407,12 +1275,8 @@ function buildArtHTML(a){
           </div>
         </div>`).join('')}
     </div>
-
     ${a.sources?.length?`<div style="margin-bottom:16px"><div class="lbl" style="margin-bottom:4px">参照元（${a.sources.length}件）</div>${a.sources.map(s=>`<a href="${s}" target="_blank" style="display:block;font-size:11px;color:var(--accent2);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px">${s}</a>`).join('')}</div>`:''}
-
     ${affHtml}
-
-    <!-- Free/Paid split preview -->
     <div class="split-box mb12">
       <div class="split-free">
         <div class="split-tag" style="color:var(--up)">🆓 無料公開（X・note無料）</div>
@@ -1423,25 +1287,21 @@ function buildArtHTML(a){
         <div style="font-size:11px;color:#a0aec0;font-family:var(--sans);line-height:1.7">全文・詳細分析・毎日配信</div>
       </div>
     </div>
-
     <div class="ex-wrap">
       <div class="ex-hd">📤 コンテンツ出力</div>
-
       <div class="ex-block">
-        <div class="ex-lbl">🐦 X投稿文（筆者コメント入り・バズ仕様）</div>
-        <div class="ex-txt" id="eX${a.id}">${buildX(a)}</div>
+        <div class="ex-lbl">🐦 X投稿文</div>
+        <div class="ex-txt" id="eX${a.id}">${xTxt}</div>
         <div style="display:flex;gap:6px;margin-top:7px;">
           <button class="cp-btn" style="flex:1;" onclick="doCopy('eX${a.id}',this)">📋 コピー</button>
           <button class="btn btn-x" style="flex:1;padding:7px;font-size:11px;border-radius:7px;" onclick="openX('eX${a.id}')">𝕏 投稿する</button>
         </div>
       </div>
-
       <div class="ex-block">
         <div class="ex-lbl">📝 note無料記事（集客用）</div>
         <div class="ex-txt" id="eFree${a.id}">${esc(freeNote)}</div>
         <button class="cp-btn" onclick="doCopy('eFree${a.id}',this)">📋 コピー</button>
       </div>
-
       <div class="ex-block">
         <div class="ex-lbl">💎 note有料記事（マガジン用・全文）</div>
         <div class="ex-txt" id="ePaid${a.id}">${esc(paidNote)}</div>
@@ -1467,215 +1327,63 @@ function buildX(a){
 
 function buildFreeNote(a){
   const noteUrl=S.noteUrl||'https://note.com/';
-  const ctaMap={'金融政策':'利上げ局面の投資戦略','半導体':'AI・半導体相場の深掘り分析','エネルギー':'原油・エネルギー相場の先読み','為替':'円安円高を先読みする分析','防衛・宇宙':'防衛・次世代エネルギーテーマ株分析'};
-  const ctaTheme=ctaMap[a.category]||'最新の株式市場分析';
   const hook=a.categoryHook||getCategoryHook(a.category||'');
-  const comment=`\n\n---\n\n**📱 ${hook}**${a.chosenComment?'\n\n> 「'+a.chosenComment+'」':''}\n`;
+  const comment='\n\n---\n\n**📱 '+hook+'**'+(a.chosenComment?'\n\n> 「'+a.chosenComment+'」':'')+'\n';
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA},{l:'★注目株',s:a.relatedStocks.spotlight}].filter(x=>x.s&&x.s.name);
-  const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} |`).join('\n');
-  return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 |\n|------|------|--------|------|\n${tbl}\n\n---\n\n> 💎 **全文・詳細分析は有料マガジンで**\n> ${ctaTheme}を毎日配信中 → [AI金融アナリスト通信](${noteUrl})\n> 月額980円 | いつでも解約可能\n\n---\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
+  const tbl=stocks.map(({l,s})=>'| '+l+' | '+s.name+' | '+s.ticker+' | '+pi(s.prediction)+s.prediction+' |').join('\n');
+  return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 |\n|------|------|--------|------|\n${tbl}\n\n---\n\n> 💎 **全文・詳細分析は有料マガジンで**\n> 毎日配信中 → [AI金融アナリスト通信](${noteUrl})\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
 }
 
 function buildPaidNote(a){
   const noteUrl=S.noteUrl||'https://note.com/';
   const aff=buildAffMd(a);
   const hook=a.categoryHook||getCategoryHook(a.category||'');
-  const comment=`\n\n---\n\n**📱 ${hook}**${a.chosenComment?'\n\n> 「'+a.chosenComment+'」':''}\n`;
+  const comment='\n\n---\n\n**📱 '+hook+'**'+(a.chosenComment?'\n\n> 「'+a.chosenComment+'」':'')+'\n';
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
-  const tbl=stocks.map(({l,s})=>`| ${l} | ${s.name} | ${s.ticker} | ${pi(s.prediction)}${s.prediction} | ${cleanReason(s.reason)} |`).join('\n');
-  return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n${a.content}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 | 根拠 |\n|------|------|--------|------|------|\n${tbl}\n\n${a.sources?.length?'**参照元（'+a.sources.length+'件）:** '+a.sources.join(' / '):''}\n\n---\n${aff}\n> 💡 この記事が役に立ったら「スキ」をお願いします！\n> フォロー＆マガジン購読で毎日の分析をお届けします → [AI金融アナリスト通信](${noteUrl})\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
+  const tbl=stocks.map(({l,s})=>'| '+l+' | '+s.name+' | '+s.ticker+' | '+pi(s.prediction)+s.prediction+' | '+cleanReason(s.reason)+' |').join('\n');
+  return `# ${a.title}\n${comment}\n## 概要\n${a.summary}\n\n---\n\n${a.content}\n\n---\n\n## 関連銘柄・株価予測\n\n| 区分 | 銘柄 | コード | 予測 | 根拠 |\n|------|------|--------|------|------|\n${tbl}\n\n${a.sources?.length?'**参照元:** '+a.sources.join(' / '):''}\n\n---\n${aff}\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
 }
 
 function buildAffMd(a){
   const af=S.aff;const ls=[];
-  const ctxMap={'金融政策':'利上げ局面の今、まず口座を開設','半導体':'AI半導体銘柄を今すぐ買うなら','エネルギー':'原油・エネルギー株を手数料ゼロで','海運':'海運・高配当株への投資を始めるなら','為替':'円安を味方につけるFX口座','防衛・宇宙':'防衛テーマ株への投資を始めるなら'};
-  const ctx=ctxMap[a.category]||'この記事の銘柄を手数料ゼロで買うなら';
-  if(af.sbi)ls.push(`- [SBI証券 口座開設（無料）](${af.sbi}) — ${ctx}`);
-  if(af.rak)ls.push(`- [楽天証券 口座開設（無料）](${af.rak}) — 楽天ポイントが貯まる`);
-  if(af.gmo)ls.push(`- [GMOクリック証券（無料）](${af.gmo}) — 手数料が業界最安水準`);
-  if(af.fx&&(a.category==='為替'||a.category==='マクロ経済'))ls.push(`- [FX口座開設](${af.fx}) — 為替変動を投資チャンスに`);
-  return ls.length?`\n## 💹 おすすめ証券口座\n\n${ls.join('\n')}\n\n`:'';
+  if(af.sbi)ls.push('- [SBI証券 口座開設（無料）]('+af.sbi+')');
+  if(af.rak)ls.push('- [楽天証券 口座開設（無料）]('+af.rak+')');
+  if(af.gmo)ls.push('- [GMOクリック証券（無料）]('+af.gmo+')');
+  if(af.fx&&(a.category==='為替'||a.category==='マクロ経済'))ls.push('- [FX口座開設]('+af.fx+')');
+  return ls.length?'\n## 💹 おすすめ証券口座\n\n'+ls.join('\n')+'\n\n':'';
 }
 
 function buildAffHtml(a){
   const af=S.aff;const ls=[];
-  const ctxMap={'金融政策':'利上げ局面の今、まず口座を開設','半導体':'AI半導体銘柄を今すぐ買うなら','エネルギー':'原油・エネルギー株を手数料ゼロで','海運':'海運・高配当株への投資を始めるなら','為替':'円安を味方につけるFX口座','防衛・宇宙':'防衛テーマ株への投資を始めるなら'};
-  const ctx=ctxMap[a.category]||'この記事の銘柄を手数料ゼロで買うなら';
+  const ctx={'金融政策':'利上げ局面の今、まず口座を開設','半導体':'AI半導体銘柄を今すぐ買うなら','エネルギー':'原油・エネルギー株を手数料ゼロで','海運':'海運・高配当株への投資を始めるなら','為替':'円安を味方につけるFX口座','防衛・宇宙':'防衛テーマ株への投資を始めるなら'}[a.category]||'この記事の銘柄を手数料ゼロで買うなら';
   const t=(key,url,label,sub)=>`<a href="${url}" target="_blank" onclick="trackClick('${key}')" style="display:block;background:rgba(99,179,237,.05);border:1px solid rgba(99,179,237,.18);border-radius:8px;padding:9px 12px;margin-bottom:5px;text-decoration:none;color:var(--text);font-size:12px;font-family:var(--sans);"><span style="font-weight:700">${label}</span><span style="display:block;font-size:10px;color:var(--muted);margin-top:1px">${sub}</span></a>`;
-  if(af.sbi)ls.push(t('sbi',af.sbi+'?utm_source=mi&utm_campaign=sbi_'+encodeURIComponent(a.category||''),'💹 SBI証券 口座開設（無料）',ctx));
-  if(af.rak)ls.push(t('rak',af.rak+'?utm_source=mi&utm_campaign=rak','💹 楽天証券 口座開設（無料）','楽天ポイントが貯まる・初心者向け'));
-  if(af.gmo)ls.push(t('gmo',af.gmo+'?utm_source=mi&utm_campaign=gmo','💹 GMOクリック証券（無料）','手数料が業界最安水準'));
-  if(af.fx&&(a.category==='為替'||a.category==='マクロ経済'))ls.push(t('fx',af.fx+'?utm_source=mi&utm_campaign=fx','💹 FX口座開設','為替変動を投資チャンスに変える'));
-  return ls.length?`<div style="margin-bottom:16px"><div class="lbl" style="margin-bottom:5px">💰 投資を始めるなら</div><div style="font-size:10px;color:var(--muted);font-family:var(--sans);margin-bottom:7px;">${ctx}</div>${ls.join('')}</div>`:'';
+  if(af.sbi)ls.push(t('sbi',af.sbi,'💹 SBI証券 口座開設（無料）',ctx));
+  if(af.rak)ls.push(t('rak',af.rak,'💹 楽天証券 口座開設（無料）','楽天ポイントが貯まる・初心者向け'));
+  if(af.gmo)ls.push(t('gmo',af.gmo,'💹 GMOクリック証券（無料）','手数料が業界最安水準'));
+  if(af.fx&&(a.category==='為替'||a.category==='マクロ経済'))ls.push(t('fx',af.fx,'💹 FX口座開設','為替変動を投資チャンスに変える'));
+  return ls.length?`<div style="margin-bottom:16px"><div class="lbl" style="margin-bottom:5px">💰 投資を始めるなら</div>${ls.join('')}</div>`:'';
 }
+
+// ── Settings ──────────────────────────────────────────────
+function saveAff(){S.aff={sbi:document.getElementById('aSBI').value.trim(),rak:document.getElementById('aRak').value.trim(),gmo:document.getElementById('aGMO').value.trim(),fx:document.getElementById('aFX').value.trim()};DB.s('mi_aff',S.aff);alert('保存しました ✓');}
+function loadAffUI(){document.getElementById('aSBI').value=S.aff.sbi||'';document.getElementById('aRak').value=S.aff.rak||'';document.getElementById('aGMO').value=S.aff.gmo||'';document.getElementById('aFX').value=S.aff.fx||'';}
+function saveInv(){S.inv=parseInt(document.getElementById('genInv').value);DB.s('mi_inv',S.inv);updateStatus();alert('保存しました ✓');}
+function saveNote(){S.noteUrl=document.getElementById('noteUrl').value.trim();DB.s('mi_noteurl',S.noteUrl);alert('保存しました ✓');}
+function clearAll(){if(!confirm('公開済み記事を全件削除しますか？'))return;S.pub=[];DB.s('mi_pub',[]);alert('削除しました');}
 
 // ── Click tracking ────────────────────────────────────────
 function trackClick(k){S.clicks[k]=(S.clicks[k]||0)+1;DB.s('mi_clicks',S.clicks);renderClickStats();}
-function renderClickStats(){const c=S.clicks;document.getElementById('clickStats').innerHTML=[['SBI証券','sbi'],['楽天証券','rak'],['GMO','gmo'],['FX','fx']].map(([l,k])=>`${l}: <strong style="color:var(--accent2)">${c[k]||0}回</strong>`).join(' / ');}
+function renderClickStats(){document.getElementById('clickStats').innerHTML=[['SBI証券','sbi'],['楽天証券','rak'],['GMO','gmo'],['FX','fx']].map(([l,k])=>`${l}: <strong style="color:var(--accent2)">${S.clicks[k]||0}回</strong>`).join(' / ');}
 function resetClicks(){if(!confirm('クリック数をリセットしますか？'))return;S.clicks={sbi:0,rak:0,gmo:0,fx:0};DB.s('mi_clicks',S.clicks);renderClickStats();}
 
 // ── One-tap post ──────────────────────────────────────────
 function openX(id){const t=encodeURIComponent(document.getElementById(id).innerText);window.open('https://x.com/intent/tweet?text='+t,'_blank');}
 function openNote(){window.open(S.noteUrl||'https://note.com/','_blank');}
 
-// ── Settings ─────────────────────────────────────────────
-function saveAff(){S.aff={sbi:document.getElementById('aSBI').value.trim(),rak:document.getElementById('aRak').value.trim(),gmo:document.getElementById('aGMO').value.trim(),fx:document.getElementById('aFX').value.trim()};DB.s('mi_aff',S.aff);alert('保存しました ✓');}
-function loadAffUI(){document.getElementById('aSBI').value=S.aff.sbi||'';document.getElementById('aRak').value=S.aff.rak||'';document.getElementById('aGMO').value=S.aff.gmo||'';document.getElementById('aFX').value=S.aff.fx||'';}
-function saveInv(){S.inv=parseInt(document.getElementById('genInv').value);DB.s('mi_inv',S.inv);updateStatus();alert('保存しました ✓');}
-function saveNote(){S.noteUrl=document.getElementById('noteUrl').value.trim();DB.s('mi_noteurl',S.noteUrl);alert('保存しました ✓');}
-
-function saveJQ(){
-  const apiKey=document.getElementById('jqApiKeyInput').value.trim();
-  if(!apiKey){alert('APIキーを入力してください');return;}
-  S.jqApiKey=apiKey;
-  DB.s('mi_jqapikey',apiKey);
-  // Also set jqToken for backward compat
-  S.jqToken=apiKey;
-  DB.s('mi_jqtoken',apiKey);
-  const statusEl=document.getElementById('jqStatus');
-  statusEl.textContent='🔄 接続テスト中...';
-  statusEl.style.color='var(--accent2)';
-  // Test with a known ticker
-  fetchPriceWithChange('9432').then(data=>{
-    if(data){
-      statusEl.textContent='✅ 接続成功！株価自動取得が有効になりました';
-      statusEl.style.color='var(--up)';
-    } else {
-      statusEl.textContent='❌ 接続失敗。APIキーを確認してください';
-      statusEl.style.color='var(--down)';
-    }
-  });
-  if(t){
-    document.getElementById('jqStatus').textContent='✅ 保存しました。次回アプリ起動時から自動判定が有効になります。';
-    document.getElementById('jqStatus').style.color='var(--up)';
-  } else {
-    document.getElementById('jqStatus').textContent='APIキーが空です';
-  }
-}
-
-// ── J-Quants API ──────────────────────────────────────────
-async function jqLogin(email,pass){
-  try{
-    // Step1: get refresh token
-    const r1=await fetch('https://api.jquants.com/v1/token/auth_user',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({mailaddress:email,password:pass})
-    });
-    if(!r1.ok)return false;
-    const d1=await r1.json();
-    const refreshToken=d1.refreshToken;
-    if(!refreshToken)return false;
-    S.jqRefreshToken=refreshToken;
-    DB.s('mi_jqrefresh',refreshToken);
-    // Step2: get id token
-    return await jqRefresh();
-  }catch(e){console.warn('jqLogin error:',e);return false;}
-}
-
-async function jqRefresh(){
-  try{
-    if(!S.jqRefreshToken)return false;
-    const r2=await fetch('https://api.jquants.com/v1/token/auth_refresh?refreshtoken='+encodeURIComponent(S.jqRefreshToken));
-    if(!r2.ok)return false;
-    const d2=await r2.json();
-    if(!d2.idToken)return false;
-    S.jqToken='Bearer '+d2.idToken;
-    DB.s('mi_jqtoken',S.jqToken);
-    S.jqTokenExpiry=Date.now()+23*3600*1000; // expire in 23h
-    DB.s('mi_jqexpiry',S.jqTokenExpiry);
-    return true;
-  }catch(e){console.warn('jqRefresh error:',e);return false;}
-}
-
-async function getJQToken(){
-  // V2: just return the API key directly (permanent, no refresh needed)
-  const key=S.jqApiKey||DB.g('mi_jqapikey')||S.jqToken||DB.g('mi_jqtoken')||'';
-  if(key)S.jqToken=key;
-  return key||null;
-}
-
-async function fetchPrice(ticker){
-  const token=await getJQToken();
-  if(!token)return null;
-  // Get last 10 days of daily prices
-  const to=new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const from=new Date(Date.now()-14*24*3600000).toISOString().slice(0,10).replace(/-/g,'');
-  // V2: 4-digit → 5-digit with trailing 0
-  const rawCode2=ticker.replace(/[^0-9A-Za-z]/g,'');
-  const code=(/^[0-9]{4}$/.test(rawCode2))?rawCode2+'0':rawCode2;
-  try{
-    const fromFmt=from.slice(0,4)+'-'+from.slice(4,6)+'-'+from.slice(6,8);
-    const toFmt=to.slice(0,4)+'-'+to.slice(4,6)+'-'+to.slice(6,8);
-    const res=await fetch(`https://api.jquants.com/v2/equities/bars/daily?code=${code}&from=${fromFmt}&to=${toFmt}`,{
-      headers:{'x-api-key':token}
-    });
-    if(!res.ok)return null;
-    const d=await res.json();
-    const quotes=d.daily_quotes||[];
-    if(!quotes.length)return null;
-    // Return latest close price
-    quotes.sort((a,b)=>b.Date.localeCompare(a.Date));
-    return {latest:quotes[0].Close, date:quotes[0].Date, earliest:quotes[quotes.length-1].Close};
-  }catch(e){return null;}
-}
-
-async function autoJudgeAll(){
-  const now=Date.now();
-  const duePreds=S.preds.filter(p=>p.result==='pending'&&p.deadlineTs&&now>=p.deadlineTs);
-  if(!duePreds.length)return;
-
-  // Show auto-judging indicator on track tab
-  const tab=document.querySelector('.tab[onclick*="track"]');
-  if(tab)tab.textContent='予測 ⏳';
-
-  let judged=0;
-  for(const p of duePreds){
-    const priceData=await fetchPrice(p.ticker);
-    if(!priceData)continue;
-
-    // Get baseline price (price at time of prediction)
-    const baseline=S.baselinePrices[p.id]||priceData.earliest;
-    const current=priceData.latest;
-    const changePct=(current-baseline)/baseline*100;
-
-    let result='pending';
-    if(p.pred==='上昇'&&changePct>1)result='hit';
-    else if(p.pred==='上昇'&&changePct<=-1)result='miss';
-    else if(p.pred==='下降'&&changePct<-1)result='hit';
-    else if(p.pred==='下降'&&changePct>=1)result='miss';
-    else if(p.pred==='横ばい'&&Math.abs(changePct)<=3)result='hit';
-    else if(p.pred==='横ばい'&&Math.abs(changePct)>3)result='miss';
-
-    if(result!=='pending'){
-      const idx=S.preds.findIndex(x=>x.id===p.id);
-      if(idx>=0){
-        S.preds[idx].result=result;
-        S.preds[idx].autoJudged=true;
-        S.preds[idx].judgedPrice=current;
-        S.preds[idx].baselinePrice=baseline;
-        S.preds[idx].changePct=changePct.toFixed(1);
-        judged++;
-      }
-    }
-  }
-
-  DB.s('mi_preds',S.preds);
-  if(judged>0){
-    const remaining=S.preds.filter(p=>p.result==='pending'&&p.deadlineTs&&now>=p.deadlineTs).length;
-    if(tab)tab.textContent=remaining>0?`予測 ⏰${remaining}`:'予測';
-    renderTrack();
-  } else {
-    const stillDue=S.preds.filter(p=>p.result==='pending'&&p.deadlineTs&&now>=p.deadlineTs).length;
-    if(tab)tab.textContent=stillDue>0?`予測 ⏰${stillDue}`:'予測';
-  }
-}
-function clearAll(){if(!confirm('公開済み記事を全件削除しますか？'))return;S.pub=[];DB.s('mi_pub',[]);alert('削除しました');}
-
 // ── Helpers ───────────────────────────────────────────────
 function pc(p){return p==='上昇'?'#22c55e':p==='下降'?'#ef4444':'#f59e0b';}
 function pi(p){return p==='上昇'?'↑':p==='下降'?'↓':'→';}
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function showErr(msg){const el=document.getElementById('homeErr');el.textContent='⚠️ '+msg;el.classList.remove('hidden');}
 async function doCopy(id,btn){
   const t=document.getElementById(id).innerText;
