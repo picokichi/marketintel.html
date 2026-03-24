@@ -45,6 +45,23 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .pred-box{flex-shrink:0;border-radius:7px;padding:5px 9px;text-align:center;min-width:46px;}
 .pred-arr{font-size:16px;font-weight:900;display:block;}
 .pred-lbl{font-size:9px;font-weight:700;font-family:var(--sans);}
+/* ★ 結論ボックス */
+.conclusion-box{background:linear-gradient(135deg,rgba(66,153,225,0.1),rgba(99,179,237,0.05));border:1px solid rgba(99,179,237,0.35);border-radius:12px;padding:14px 16px;margin-bottom:16px;}
+.conclusion-title{font-size:12px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.conclusion-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;}
+.conclusion-item:last-child{margin-bottom:0;}
+.conclusion-icon{width:20px;height:20px;border-radius:50%;background:rgba(99,179,237,.2);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
+.conclusion-text{font-size:12px;line-height:1.7;color:#cbd5e0;font-family:var(--sans);}
+/* ★ ストーリーフロー */
+.story-flow{margin-bottom:16px;}
+.story-step{display:flex;gap:10px;margin-bottom:0;position:relative;}
+.story-step:not(:last-child)::after{content:'';position:absolute;left:13px;top:26px;bottom:-12px;width:2px;background:linear-gradient(to bottom,rgba(99,179,237,.3),rgba(99,179,237,.05));pointer-events:none;}
+.story-step+.story-step{margin-top:12px;}
+.story-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#3182ce);color:#fff;font-size:11px;font-weight:700;font-family:var(--sans);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(66,153,225,.3);}
+.story-body{flex:1;padding-bottom:4px;}
+.story-head{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.story-desc{font-size:11px;color:#a0aec0;line-height:1.65;font-family:var(--sans);}
+.story-stock-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.25);border-radius:4px;padding:1px 7px;font-size:10px;font-family:var(--sans);color:#f59e0b;margin-top:5px;}
 .ex-wrap{margin-top:18px;}
 .ex-hd{font-size:11px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:9px;letter-spacing:.05em;}
 .ex-block{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:11px;margin-bottom:8px;}
@@ -60,7 +77,6 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .hidden{display:none!important;}
 .mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}.mb14{margin-bottom:14px;}
 .author-box{background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.2);border-radius:10px;padding:13px;margin-bottom:12px;}
-.author-title{font-size:11px;font-weight:700;color:#f59e0b;font-family:var(--sans);margin-bottom:8px;}
 .author-opt{background:rgba(0,0,0,.3);border:1px solid rgba(250,204,21,.15);border-radius:8px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:.2s;}
 .author-opt:last-child{margin-bottom:0;}
 .author-opt.sel{background:rgba(250,204,21,.1);border-color:rgba(250,204,21,.4);}
@@ -104,10 +120,24 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .step-active{background:var(--accent);color:white;}
 .step-done{background:rgba(34,197,94,.2);color:var(--up);}
 .step-pending{background:rgba(99,179,237,.1);color:var(--muted);}
-/* ★ 証券コード警告バッジ */
 .ticker-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:5px;padding:2px 8px;font-size:11px;font-family:var(--sans);font-weight:700;color:#fbbf24;}
 .ticker-link{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--accent2);text-decoration:none;font-family:var(--sans);}
 .ticker-link:hover{text-decoration:underline;}
+/* ★ 用語チェックボックス */
+.glossary-box{background:rgba(0,0,0,.25);border:1px solid rgba(99,179,237,.2);border-radius:9px;padding:11px 13px;margin-bottom:14px;}
+.glossary-title{font-size:10px;font-weight:700;color:var(--accent2);font-family:var(--sans);margin-bottom:8px;}
+.glossary-item{display:flex;gap:7px;margin-bottom:5px;align-items:flex-start;}
+.glossary-item:last-child{margin-bottom:0;}
+.glossary-term{font-size:11px;font-weight:700;color:#fbbf24;min-width:80px;font-family:var(--sans);}
+.glossary-def{font-size:11px;color:#a0aec0;line-height:1.55;font-family:var(--sans);}
+/* ★ メディア比較カード */
+.media-compare{margin-bottom:14px;}
+.media-card{border-radius:8px;padding:10px 12px;margin-bottom:6px;border-left:3px solid;}
+.media-bull{background:rgba(34,197,94,.06);border-color:var(--up);}
+.media-neu{background:rgba(99,179,237,.06);border-color:var(--accent);}
+.media-bear{background:rgba(239,68,68,.06);border-color:var(--down);}
+.media-label{font-size:9px;font-weight:700;font-family:var(--sans);margin-bottom:3px;}
+.media-text{font-size:11px;color:#a0aec0;line-height:1.6;font-family:var(--sans);}
 </style>
 </head>
 <body>
@@ -278,7 +308,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   <!-- JUDGE FLOW -->
 
   <div id="vJudge" class="hidden">
-    <button class="back-btn" onclick="showView('vHome');goTab('track',document.querySelector(\'.tab[onclick*=track]\'))">← 予測トラッカーへ戻る</button>
+    <button class="back-btn" onclick="showView('vHome');goTab('track',document.querySelector('.tab[onclick*=track]'))">← 予測トラッカーへ戻る</button>
     <h2 style="font-size:15px;font-weight:700;font-family:var(--sans);margin-bottom:4px;">🤖 AI判定プロンプト</h2>
     <p style="font-size:11px;color:var(--muted);font-family:var(--sans);margin-bottom:10px;">コピーしてClaudeに貼り付けてください</p>
     <textarea id="judgePromptText" readonly style="width:100%;height:160px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#a0aec0;font-size:10px;font-family:monospace;padding:9px;line-height:1.5;resize:none;-webkit-user-select:text;user-select:text;margin-bottom:8px;"></textarea>
@@ -472,89 +502,113 @@ function updateStatus(){
   }
 }
 
-// ── Prompt generation ─────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// ★★★ 記事生成プロンプト（全面リライト v3）
+// ═══════════════════════════════════════════════════════════
 function onGenerate(){
   const avoid=S.pub.map(a=>a.title).slice(0,5);
   const avoidNote=avoid.length?'\n既出記事（除外）: '+avoid.join(' / '):'';
   const now=new Date();
   const todayStr=now.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'long'})+' '+now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
 
-  const p=`あなたは個人投資家向けの人気金融ブロガーです。ターゲット読者は「金融初心者・経済ニュースに興味を持ち始めた20〜40代」です。
+  const p=`あなたは「金融初心者でも楽しく読める」をモットーにする人気金融ブロガーです。
+
+【ターゲット読者】
+「経済ニュースに興味を持ち始めた20〜40代。専門知識ゼロだが、お金の流れや株の値動きに興味がある。」
+※この読者像を常に意識して書くこと。専門家向けの文章は不要。
 
 【本日の日時（変更禁止）】
 ${todayStr}
 
-株価に影響しそうな最新の金融ニュースを3つピックアップし、以下のすべてのルールに従って記事を書いてください。
+株価に影響しそうな最新の金融ニュースを3つピックアップし、下記のルールに従って記事を生成してください。
 
 ━━━━━━━━━━━━━━━━━━
-■ リサーチのルール
+■ リサーチの基本ルール
 ━━━━━━━━━━━━━━━━━━
-・異なるメディア（日経・Bloomberg・Reuters・Yahoo!ファイナンス・東洋経済・会社四季報など）の記事を最低3つ参照
-・各メディアの論調の違い・温度差を記事の中で明示
-・複数ソースを比較した上での独自分析・見解を必ず加える
-・具体的な数字（割合・日数・指数値など）を使う。確認できた数字には（○○報道）と出典を明記し、推計は「〜と推定される」と注釈
+・3つ以上の異なるメディア（日経・Bloomberg・Reuters・東洋経済等）を参照する
+・メディアごとの論調の温度差（強気/中立/慎重）を本文で明示すること
+・具体的な数字には出典を明記（例:「〇〇%（Bloomberg報道）」）
+・推計・予測には「〜の可能性がある」「〜と考えられる」を必ず付ける
 
 ━━━━━━━━━━━━━━━━━━
-■ 記事の構成ルール（必須・順番どおりに書くこと）
+■ 蛇足ルール（スリム化の基準）
+━━━━━━━━━━━━━━━━━━
+【論拠として必須 → 書く】
+・記事のテーマに直結する数字・データ・発言
+・株価の値動きに繋がるメカニズムの説明
+・初心者が「なぜ？」と感じる部分への答え
+
+【蛇足 → 書かない・削る】
+・テーマに関係ない歴史的背景の羅列
+・「〜とも言われている」程度の弱い根拠
+・同じ内容の言い換えの繰り返し
+・専門家同士の議論の細部（初心者に不要）
+
+━━━━━━━━━━━━━━━━━━
+■ 記事の構成（必須・この順番で書く）
 ━━━━━━━━━━━━━━━━━━
 
-【1】タイトル＋ベネフィット予告文（WIIFM）
-　タイトルの直後に1〜2文で「この記事を読むと何が得られるか」を書く。
-　例:「この記事では、〇〇が起きているメカニズムと、そこから見えてくる意外な連鎖を解説します。」
+【A】タイトル＋導入（何が得られるか）
+　・タイトル直後に「この記事を読むと〇〇がわかります」という1文を置く
+　・初心者が読む理由を明確にする
 
-【2】読者の素朴な疑問コールアウト
-　「📱 読者の声・今日の素朴な疑問」ラベルで引用ブロックを作る。
-　一般人が抱くシンプルな疑問を1つ設定する。
-　末尾には、その疑問・記事テーマの性質に合わせて毎回異なるフック文を1文で書く。
-　（定型文は使わないこと。疑問の内容・トピックの構造から自然に導かれる言葉で書く。
-　　例A: 「── 実はこの疑問、答えようとすると世界経済の構造が見えてきます。」
-　　例B: 「── シンプルに見えて、背景には3つの力が複雑に絡み合っています。」
-　　例C: 「── この問いへの答えが、次の相場の読み方を変えるかもしれません。」
-　　上記はあくまで例。毎回テーマに応じた独自の一文を生成すること）
+【B】読者の声（素朴な疑問）
+　「📱 読者の声」ラベルで引用ブロック
+　・一般人が持つシンプルな疑問を1つ設定
+　・末尾にテーマに合ったフック文1文（毎回変える）
 
-【3】用語チェックボックス（スキップ可能）
-　「🔍 用語チェック｜初心者向け」という独立したボックスを作る。
-　記事で使う専門用語を2〜3個選び、平易な言い換えをセットで書く。
-　例: XAU/USD →「株価のように毎秒変動する金の国際取引価格」
-　※本文中には括弧書きで用語説明を入れないこと（読みの流れを妨げるため）
+【C】用語チェック（初心者向け・スキップ可）
+　「🔍 用語チェック」ボックス
+　・記事で使う専門用語を2〜3個、平易な言葉で説明
+　・本文中には括弧説明を入れない（読みにくくなるため）
 
-【4】本文（事実・分析・複数メディアの見方）
-　・各メディアの立場（強気/中立/弱気）をカード形式で比較する
-　　例: 「【強気】Bloomberg: ～ 【中立】日経: ～ 【慎重】OANDA: ～」
-　・記事の核心となる一文をプルクォートとして独立表示する
-　　例: ▶「〇〇が高いままなら、〇〇は割を食う。これが『〇〇の逆説』の正体です。」
+【D】ニュース本文（事実＋メディア比較）
+　・3媒体の論調をカード形式で比較
+　　例:「【強気】Bloomberg: 〜 【中立】日経: 〜 【慎重】Reuters: 〜」
+　・記事の核心となる1文をプルクォートで独立表示
+　　例: ▶「〇〇が続くなら、〇〇が最初に打撃を受ける。これが今回の構造です。」
 
-【5】3手先の連鎖（ステップカード形式）
-　矢印の1行テキストではなく、以下の形式で5ステップを書く:
-　Step1 → Step2 → Step3 → Step4 → Step5
-　各ステップに「なぜそうなるか」の補足説明（1〜2文）を付ける。
-　※各ステップには「〜の可能性がある」「〜と考えられる」などの留保表現を必ず入れる
+【E】予測ストーリー（ニュース→株価への連鎖）
+　「📈 このニュースが株価に与える影響」という見出しで書く
+　以下の3ステップの流れで説明する:
+　
+　Step1「何が起きているか」（ニュースの核心を1〜2文で）
+　Step2「なぜ株価に影響するか」（メカニズムを初心者向けに説明）
+　Step3「どのセクター・銘柄が動きやすいか」（具体的に）
+　
+　※各ステップに「〜の可能性がある」等の留保表現を入れること
+　※ここが記事の一番の読みどころ。丁寧に書く
 
-【6】次の注目ポイント（「📅 次に注目すべきポイント」ボックス）
-　3〜4項目をリスト形式で。各項目に「なぜ重要か」の補足（1文）を付ける。
+【F】で、結局どうすればいい？（結論ボックス）
+　「💡 で、結局どうすればいいの？」という見出しで書く
+　初心者読者へのアドバイスを3項目で書く（箇条書き）:
+　・今すぐ確認すること（注目指標や銘柄）
+　・待つべきサイン（どうなったら動くか）
+　・覚えておきたい構造（今回の記事で一番重要な知識）
+　※「〇〇を買え」などの断定は禁止。「〇〇を確認してみよう」の表現で。
 
-【7】まとめ（エンパワーメント型クロージング）
-　投資推奨・断定は禁止。代わりに「構造を理解することの価値」で締める。
-　例:「大切なのは、答えを急いで出すことではなく、『なぜそうなっているか』という構造を理解することです。その連鎖を把握することが、次の動きを読む力につながります。」
+【G】次に注目するポイント
+　「📅 次に注目すべきポイント」ボックス
+　3〜4項目。各項目に「なぜ重要か」を1文で。
 
 ━━━━━━━━━━━━━━━━━━
 ■ 銘柄・証券コード取得ルール（最重要）
 ━━━━━━━━━━━━━━━━━━
-・Step1: 記事テーマが決まったら「○○関連 低位株」でWeb検索し候補を3〜4社リストアップ
+・Step1: テーマ決定後「○○関連 低位株」でWeb検索し3〜4社をリストアップ
 ・Step2: 「企業名 証券コード」でWeb検索してコードを確認（記憶でのコード出力は絶対禁止）
-・Step3: コードが4桁数字であることを確認（東証上場銘柄は全て4桁: 例7203, 6758, 9984）
-・Step4: 株価1000円未満の低位株を注目株として採用。複数ある場合は最も株価が低い銘柄を優先
+・Step3: コードが4桁数字であることを確認（東証上場は全て4桁）
+・Step4: 株価1000円未満の低位株を注目株として採用。複数あれば最安値銘柄を優先
 ・Step5: 4社全て1000円超なら最安値銘柄を採用し、spotlight_reasonにその旨を記載
-・Step6: 各記事で異なる銘柄を選ぶ。同じ銘柄の使い回しは禁止
-・Step7: spotlight_reasonには「4社中最安値」「Step5適用」「1000円超のため」などの内部処理メモを絶対に書かないこと。読者に見える根拠文のみを書く
-・Step7: 小型株・グロース株の場合は根拠欄末尾に「ただし値動きが大きい点に注意。」を必ず追記
+・Step6: 各記事で異なる銘柄を選ぶ（使い回し禁止）
+・Step7: spotlight_reasonは読者向けの根拠文のみ（内部処理メモは書かない）
+・Step8: 小型株・グロース株は根拠欄末尾に「ただし値動きが大きい点に注意。」を追記
 
 ━━━━━━━━━━━━━━━━━━
 ■ 厳守事項
 ━━━━━━━━━━━━━━━━━━
-・株価数値（○○円など）は記事本文・概要・X投稿のいずれにも記載しない
-・断定的な投資勧誘表現は禁止。予測には「〜の可能性がある」「〜と考えられる」を使う
-・記事文字数: 1000〜1200字
+・株価数値（〇〇円など）は記事本文・概要・X投稿のいずれにも記載しない
+・断定的な投資勧誘表現は禁止
+・記事文字数: 900〜1100字（スリム化優先）
 ・3件全て一度に出力${avoidNote}
 
 ━━━━━━━━━━━━━━━━━━
@@ -569,7 +623,40 @@ ${todayStr}
 ■ 出力形式（JSONのみ・説明文不要）
 ━━━━━━━━━━━━━━━━━━
 \`\`\`json
-{"articles":[{"id":"1","title":"タイトル","summary":"概要100字（株価数値なし）","content":"本文1000〜1200字（上記【1】〜【7】の構成どおりに書くこと。株価数値なし）","category":"カテゴリ","x_post":"X投稿文280字以内（株価数値なし）","author_comments":["強気系一言","中立系一言","警戒系一言"],"stock_a_name":"関連株A企業名","stock_a_ticker":"Web検索で確認した4桁証券コード","stock_a_pred":"上昇","stock_a_reason":"根拠50字（株価数値なし）","spotlight_name":"注目株企業名","spotlight_ticker":"Web検索で確認した4桁証券コード","spotlight_pred":"上昇","spotlight_reason":"根拠50字（株価数値なし。小型株なら値動きリスク注意を付記）","sources":["URL1","URL2","URL3"]},{"id":"2",...},{"id":"3",...}]}
+{"articles":[{
+  "id":"1",
+  "title":"タイトル",
+  "summary":"概要100字（株価数値なし）",
+  "content":"本文900〜1100字（A〜G構成どおり。株価数値なし）",
+  "category":"カテゴリ",
+  "x_post":"X投稿文280字以内（株価数値なし）",
+  "author_comments":["強気系一言","中立系一言","警戒系一言"],
+  "glossary":[{"term":"専門用語1","def":"平易な説明"},{"term":"専門用語2","def":"平易な説明"}],
+  "story_steps":[
+    {"step":1,"head":"何が起きているか","desc":"1〜2文の説明","stock_hint":""},
+    {"step":2,"head":"なぜ株価に影響するか","desc":"1〜2文の説明","stock_hint":""},
+    {"step":3,"head":"どのセクター・銘柄が動きやすいか","desc":"1〜2文の説明","stock_hint":"関連する銘柄名またはセクター"}
+  ],
+  "conclusion_items":[
+    {"icon":"🔍","text":"今すぐ確認すること（〜を確認してみよう）"},
+    {"icon":"⏳","text":"待つべきサイン（〜になったら注目）"},
+    {"icon":"📚","text":"覚えておきたい構造（今回の核心知識）"}
+  ],
+  "media_compare":[
+    {"stance":"強気","media":"Bloomberg","text":"論調の要点30字"},
+    {"stance":"中立","media":"日経新聞","text":"論調の要点30字"},
+    {"stance":"慎重","media":"東洋経済","text":"論調の要点30字"}
+  ],
+  "stock_a_name":"関連株A企業名",
+  "stock_a_ticker":"4桁証券コード",
+  "stock_a_pred":"上昇",
+  "stock_a_reason":"根拠50字（株価数値なし）",
+  "spotlight_name":"注目株企業名",
+  "spotlight_ticker":"4桁証券コード",
+  "spotlight_pred":"上昇",
+  "spotlight_reason":"根拠50字（株価数値なし。小型株なら値動きリスク注意を付記）",
+  "sources":["URL1","URL2","URL3"]
+},{"id":"2",...},{"id":"3",...}]}
 \`\`\``;
 
   document.getElementById('promptText').value=p;
@@ -596,6 +683,11 @@ function parseArts(d){
     category:a.category||'',xPost:a.x_post||'',
     authorComments:Array.isArray(a.author_comments)?a.author_comments:[],
     chosenComment:'',
+    // ★ 新フィールド
+    glossary:Array.isArray(a.glossary)?a.glossary:[],
+    storySteps:Array.isArray(a.story_steps)?a.story_steps:[],
+    conclusionItems:Array.isArray(a.conclusion_items)?a.conclusion_items:[],
+    mediaCompare:Array.isArray(a.media_compare)?a.media_compare:[],
     relatedStocks:{
       stockA:{name:a.stock_a_name,ticker:a.stock_a_ticker,prediction:a.stock_a_pred,reason:a.stock_a_reason},
       spotlight:{name:a.spotlight_name,ticker:a.spotlight_ticker,prediction:a.spotlight_pred,reason:a.spotlight_reason},
@@ -957,6 +1049,10 @@ function loadFixResult(){
       xPost:fixed.x_post||S.checkCand.xPost,
       category:fixed.category||S.checkCand.category,
       authorComments:fixed.author_comments||S.checkCand.authorComments,
+      glossary:fixed.glossary||S.checkCand.glossary||[],
+      storySteps:fixed.story_steps||S.checkCand.storySteps||[],
+      conclusionItems:fixed.conclusion_items||S.checkCand.conclusionItems||[],
+      mediaCompare:fixed.media_compare||S.checkCand.mediaCompare||[],
       relatedStocks:{
         stockA:{
           name:fixed.stock_a_name||S.checkCand.relatedStocks?.stockA?.name,
@@ -1009,10 +1105,7 @@ function approveFix(){
   proceedToAuthor();
 }
 
-function skipFix(){
-  S.fixedCand=null;
-  proceedToAuthor();
-}
+function skipFix(){S.fixedCand=null;proceedToAuthor();}
 
 function rejectFix(){
   if(!confirm('この記事を破棄しますか？'))return;
@@ -1205,17 +1298,10 @@ function genTrackPost(){
 function saveJQ(){
   const apiKey=document.getElementById('jqApiKeyInput').value.trim();
   const statusEl=document.getElementById('jqStatus');
-  if(!apiKey){
-    statusEl.textContent='⚠️ APIキーを入力してください';
-    statusEl.style.color='var(--down)';
-    return;
-  }
-  S.jqApiKey=apiKey;
-  S.jqToken=apiKey;
-  DB.s('mi_jqapikey',apiKey);
-  DB.s('mi_jqtoken',apiKey);
-  statusEl.textContent='✅ APIキーを保存しました';
-  statusEl.style.color='var(--up)';
+  if(!apiKey){statusEl.textContent='⚠️ APIキーを入力してください';statusEl.style.color='var(--down)';return;}
+  S.jqApiKey=apiKey;S.jqToken=apiKey;
+  DB.s('mi_jqapikey',apiKey);DB.s('mi_jqtoken',apiKey);
+  statusEl.textContent='✅ APIキーを保存しました';statusEl.style.color='var(--up)';
 }
 
 // ── Strip internal processing text ───────────────────────
@@ -1225,32 +1311,76 @@ function cleanReason(text){
   text=text.replace(/[・、]?1000円未満確認済み[・、]? ?/g,'');
   text=text.replace(/（[^）]{0,80}確認済み[^）]{0,30}）/g,'');
   text=text.replace(/Step[0-9]+(適用)?[・:]? ?/g,'');
-  // ★ 株価数値も除去（例: 「123円」「1,234円」）
   text=text.replace(/[0-9,，]{1,8}円[前後程度台]*[・、。]? ?/g,'');
   return text.trim();
 }
 
-// ★ 記事本文・X投稿から株価数値パターンを除去する関数
 function stripPriceFromText(text){
   if(!text)return '';
-  // 「123円」「1,234円」「1234円」などの株価数値表記を除去
   text=text.replace(/[\d,，]{1,8}円(?:台|前後|程度|水準|付近|超|以上|以下|割れ)?[・、。\s]?/g,'');
-  // 「株価XXX」「終値XXX」などの明示的な株価表記も除去
   text=text.replace(/(?:株価|終値|始値|高値|安値)[：:＝=]?\s*[\d,，]+[・、。\s]?/g,'');
   return text;
 }
 
-// ── Article HTML builder ──────────────────────────────────
-// ★ 修正②: 株価バッジを完全削除。証券コードにYahoo!ファイナンスリンクを付与
+// ═══════════════════════════════════════════════════════════
+// ★★★ 記事HTML生成（全面リライト v3）
+// ═══════════════════════════════════════════════════════════
 function buildArtHTML(a){
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
   const xTxt=buildX(a);
   const freeNote=buildFreeNote(a);
   const paidNote=buildPaidNote(a);
   const affHtml=buildAffHtml(a);
-
-  // 記事本文から株価数値を除去
   const cleanContent=stripPriceFromText(a.content||'');
+
+  // ★ 用語チェックボックス
+  const glossaryHtml=(a.glossary&&a.glossary.length)
+    ?`<div class="glossary-box mb12">
+        <div class="glossary-title">🔍 用語チェック｜初心者向け</div>
+        ${a.glossary.map(g=>`<div class="glossary-item"><div class="glossary-term">${esc(g.term)}</div><div class="glossary-def">${esc(g.def)}</div></div>`).join('')}
+      </div>`
+    :'';
+
+  // ★ メディア比較カード
+  const stanceMap={'強気':'bull','中立':'neu','慎重':'bear'};
+  const stanceLabelMap={'強気':'📈 強気','中立':'📊 中立','慎重':'📉 慎重'};
+  const mediaHtml=(a.mediaCompare&&a.mediaCompare.length)
+    ?`<div class="media-compare mb12">
+        <div class="lbl" style="margin-bottom:7px;">各メディアの見方</div>
+        ${a.mediaCompare.map(m=>`<div class="media-card media-${stanceMap[m.stance]||'neu'}">
+          <div class="media-label" style="color:${m.stance==='強気'?'var(--up)':m.stance==='慎重'?'var(--down)':'var(--accent2)'}">${stanceLabelMap[m.stance]||m.stance} ${esc(m.media)}</div>
+          <div class="media-text">${esc(m.text)}</div>
+        </div>`).join('')}
+      </div>`
+    :'';
+
+  // ★ 予測ストーリー（3ステップ）
+  const storyHtml=(a.storySteps&&a.storySteps.length)
+    ?`<div style="margin-bottom:16px;">
+        <div class="lbl" style="margin-bottom:10px;">📈 このニュースが株価に与える影響</div>
+        <div class="story-flow">
+          ${a.storySteps.map(st=>`<div class="story-step">
+            <div class="story-num">${st.step}</div>
+            <div class="story-body">
+              <div class="story-head">${esc(st.head)}</div>
+              <div class="story-desc">${esc(st.desc)}</div>
+              ${st.stock_hint?`<div class="story-stock-tag">💡 ${esc(st.stock_hint)}</div>`:''}
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`
+    :'';
+
+  // ★ 結論ボックス「で、結局どうすればいいの？」
+  const conclusionHtml=(a.conclusionItems&&a.conclusionItems.length)
+    ?`<div class="conclusion-box mb12">
+        <div class="conclusion-title">💡 で、結局どうすればいいの？</div>
+        ${a.conclusionItems.map(ci=>`<div class="conclusion-item">
+          <div class="conclusion-icon">${ci.icon||'→'}</div>
+          <div class="conclusion-text">${esc(ci.text)}</div>
+        </div>`).join('')}
+      </div>`
+    :'';
 
   return `
     ${a.category?`<div style="display:inline-block;background:rgba(99,179,237,.15);border:1px solid rgba(99,179,237,.3);border-radius:5px;padding:2px 9px;font-size:10px;color:var(--accent2);font-family:var(--sans);margin-bottom:8px;">${a.category}</div>`:''}
@@ -1265,7 +1395,11 @@ function buildArtHTML(a){
       <div class="lbl">概要</div>
       <div style="font-size:12px;line-height:1.8;color:#cbd5e0">${stripPriceFromText(a.summary)}</div>
     </div>
+    ${glossaryHtml}
+    ${mediaHtml}
     <div style="font-size:13px;line-height:2.1;margin-bottom:18px;white-space:pre-line">${cleanContent}</div>
+    ${storyHtml}
+    ${conclusionHtml}
     <div class="stocks-box">
       <div class="s-hd">📊 関連銘柄・予測</div>
       ${stocks.map(({l,s,star})=>`
@@ -1328,7 +1462,6 @@ function buildArtHTML(a){
 // ── Content builders ──────────────────────────────────────
 function buildX(a){
   let base=a.xPost&&a.xPost.length>10?a.xPost:'';
-  // X投稿からも株価数値を除去
   if(base)base=stripPriceFromText(base);
   if(!base){
     const sa=a.relatedStocks.stockA,sp=a.relatedStocks.spotlight;
@@ -1345,7 +1478,11 @@ function buildFreeNote(a){
   const comment='\n\n---\n\n**📱 '+hook+'**'+(a.chosenComment?'\n\n> 「'+a.chosenComment+'」':'')+'\n';
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA},{l:'★注目株',s:a.relatedStocks.spotlight}].filter(x=>x.s&&x.s.name);
   const tbl=stocks.map(({l,s})=>'| '+l+' | '+s.name+' | '+s.ticker+' | '+pi(s.prediction)+s.prediction+' |').join('\n');
-  return `# ${a.title}\n${comment}\n## 概要\n${stripPriceFromText(a.summary)}\n\n---\n\n## 関連銘柄・予測\n\n| 区分 | 銘柄 | コード | 予測 |\n|------|------|--------|------|\n${tbl}\n\n---\n\n> 💎 **全文・詳細分析は有料マガジンで**\n> 毎日配信中 → [AI金融アナリスト通信](${noteUrl})\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
+  // 結論サマリーをnote無料版にも追加
+  const conclusionMd=(a.conclusionItems&&a.conclusionItems.length)
+    ?'\n\n## 💡 で、結局どうすればいいの？\n\n'+a.conclusionItems.map(ci=>'- '+ci.icon+' '+ci.text).join('\n')
+    :'';
+  return `# ${a.title}\n${comment}\n## 概要\n${stripPriceFromText(a.summary)}${conclusionMd}\n\n---\n\n## 関連銘柄・予測\n\n| 区分 | 銘柄 | コード | 予測 |\n|------|------|--------|------|\n${tbl}\n\n---\n\n> 💎 **全文・詳細分析は有料マガジンで**\n> 毎日配信中 → [AI金融アナリスト通信](${noteUrl})\n\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
 }
 
 function buildPaidNote(a){
@@ -1355,7 +1492,13 @@ function buildPaidNote(a){
   const comment='\n\n---\n\n**📱 '+hook+'**'+(a.chosenComment?'\n\n> 「'+a.chosenComment+'」':'')+'\n';
   const stocks=[{l:'関連株A',s:a.relatedStocks.stockA,star:false},{l:'★ 注目株',s:a.relatedStocks.spotlight,star:true}].filter(x=>x.s&&x.s.name);
   const tbl=stocks.map(({l,s})=>'| '+l+' | '+s.name+' | '+s.ticker+' | '+pi(s.prediction)+s.prediction+' | '+cleanReason(s.reason)+' |').join('\n');
-  return `# ${a.title}\n${comment}\n## 概要\n${stripPriceFromText(a.summary)}\n\n---\n\n${stripPriceFromText(a.content)}\n\n---\n\n## 関連銘柄・予測\n\n| 区分 | 銘柄 | コード | 予測 | 根拠 |\n|------|------|--------|------|------|\n${tbl}\n\n${a.sources?.length?'**参照元:** '+a.sources.join(' / '):''}\n\n---\n${aff}\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
+  const conclusionMd=(a.conclusionItems&&a.conclusionItems.length)
+    ?'\n\n## 💡 で、結局どうすればいいの？\n\n'+a.conclusionItems.map(ci=>'- '+ci.icon+' '+ci.text).join('\n')
+    :'';
+  const storyMd=(a.storySteps&&a.storySteps.length)
+    ?'\n\n## 📈 株価への影響（3ステップ）\n\n'+a.storySteps.map(st=>`**Step${st.step}: ${st.head}**\n${st.desc}${st.stock_hint?'\n💡 関連: '+st.stock_hint:''}`).join('\n\n')
+    :'';
+  return `# ${a.title}\n${comment}\n## 概要\n${stripPriceFromText(a.summary)}\n\n---\n\n${stripPriceFromText(a.content)}${storyMd}${conclusionMd}\n\n---\n\n## 関連銘柄・予測\n\n| 区分 | 銘柄 | コード | 予測 | 根拠 |\n|------|------|--------|------|------|\n${tbl}\n\n${a.sources?.length?'**参照元:** '+a.sources.join(' / '):''}\n\n---\n${aff}\n*本記事はAIによる分析を含みます。投資判断はご自身の責任で行ってください。*`;
 }
 
 function buildAffMd(a){
